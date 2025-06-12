@@ -11,8 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-import os # Add this import
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-development-secret-key-if-env-var-not-set')
+import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,12 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-hz0+q^_emr_@@k6zc+am6*uti+gjtd_dyidjz7yx6@jy*h861)'
-
+# This line below should be the ONLY definition of SECRET_KEY for production.
+# The hardcoded key is only a fallback if the environment variable is not set (useful for local dev if you don't set it locally).
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-default-development-secret-key-here-make-it-long-and-random')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+# For clarity, it's often better to default DEBUG to True for local dev if the env var isn't set.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['your-app-name.onrender.com', '127.0.0.1', 'localhost'] # Add more as needed
+ALLOWED_HOSTS = ['https://pegumaxinc.onrender.com/', '127.0.0.1', 'localhost'] # Add more as needed
 if os.environ.get('DJANGO_ALLOWED_HOSTS'):
     ALLOWED_HOSTS.extend(os.environ.get('DJANGO_ALLOWED_HOSTS').split(','))
 
@@ -42,18 +43,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main_site.apps.MainSiteConfig', # or just 'main_site'
-    'django.contrib.humanize', # Useful for template formatting
+    'django.contrib.humanize',
 ]
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Directory where collectstatic will gather files
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'assets')] # Your app's static files
+# STATIC_URL is defined later, this block is for WhiteNoise specific settings
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # This is correct and defined later
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'assets')] # This is correct and defined later
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Should be high up, but after SecurityMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Add WhiteNoise
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -128,13 +130,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+# This is where Django will look for static files during development.
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'assets'), # Tell Django where your assets folder is
 ]
+# This is where `collectstatic` will gather all static files for production.
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 LOGIN_URL = 'login' # Name of the login URL pattern
 LOGIN_REDIRECT_URL = 'main_site:home' # Redirect after successful login
 LOGOUT_REDIRECT_URL = 'main_site:home' # Redirect after logout
-# Email Configuration (Development - prints to console)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
@@ -142,9 +148,6 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@yourdomain.com')
-
-# Optional: For production, when you run `collectstatic`
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_production')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
