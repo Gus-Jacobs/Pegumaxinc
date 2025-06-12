@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
 import os
 
 
@@ -86,11 +87,15 @@ WSGI_APPLICATION = 'pegumax_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-import dj_database_url
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'), # Neon provides this
-        conn_max_age=600
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        # Neon often requires SSL. dj_database_url usually handles this if
+        # ?sslmode=require is part of your DATABASE_URL.
+        # If not, you might need to explicitly set ssl_require:
+        # ssl_require=os.environ.get('DJANGO_DB_SSL_REQUIRE', 'True') == 'True'
     )
 }
 
