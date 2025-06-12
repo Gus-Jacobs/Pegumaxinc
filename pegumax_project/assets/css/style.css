@@ -1,0 +1,802 @@
+/* Import existing styles or reset/normalize if starting fresh */
+/* @import url('your-existing-styles.css'); */
+
+/* Basic Variables (customize these) */
+:root {
+    --primary-font: 'Rajdhani', sans-serif;
+    --heading-font: 'Orbitron', sans-serif;
+    --text-color: #e0e0e0;
+    --bg-color: #0a0b0f; /* Even deeper base background */
+    --primary-color: #0d1b3a; 
+    --secondary-color: #1a2f5a;
+    --accent-color: #00ffff; /* Cyan/Teal accent */
+    --highlight-color: #00ffff;
+    --card-bg: #101a2e;
+    --border-color: #2a3f78;
+    --bg-dark-1: #111217; /* Primary dark section background */
+    --bg-dark-2: #181920; /* Secondary dark section background for alternating */
+}
+
+html {
+    height: 100%; /* For 100vh to work reliably on body/children */
+}
+
+body {
+    font-family: var(--primary-font);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1.6;
+}
+
+body.store-page { height: 100%; } /* Ensure store page body takes full height */
+
+.btn {
+    display: inline-block;
+    font-weight: 500;
+    color: var(--text-color);
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    font-family: var(--secondary-font);
+}
+
+.btn-primary {
+    color: #0d0e12; /* Dark text on light button */
+    background-color: var(--highlight-color);
+    border-color: var(--highlight-color);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.btn-primary:hover {
+    color: #0d0e12;
+    background-color: #00dede; /* Slightly darker cyan on hover */
+    border-color: #00cfcf;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+/* Style for the submit button within the modal specifically if needed */
+#submit-idea-form .btn-primary,
+#subscription-interest-form .btn-primary {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px 20px; /* Larger padding for form buttons */
+    font-size: 1.1em;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--heading-font);
+    color: var(--highlight-color);
+    margin-top: 0;
+}
+h1 .highlight, h2 .highlight, h3 .highlight { color: var(--accent-color); }
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+a:hover {
+    /* text-decoration: underline; Removed for a cleaner look */
+    color: var(--highlight-color); /* Ensure hover color is distinct if no underline */
+}
+
+/* --- Main Navigation Bar (Top of Hero on Index.html) --- */
+.main-navbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(13, 27, 58, 0.7); /* Semi-transparent dark blue */
+    padding: 15px 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    backdrop-filter: blur(5px); /* Subtle blur for modern feel */
+}
+.main-navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.navbar-brand {
+    font-family: var(--heading-font);
+    font-size: 1.8rem;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+.navbar-brand:hover {
+    /* color: var(--accent-color); Smoother transition handled by general 'a:hover' */
+    opacity: 0.85; /* Example of a different hover effect */
+}
+.navbar-logo-img {
+    height: 35px;
+    margin-right: 10px;
+    filter: drop-shadow(0 0 5px var(--accent-color));
+}
+.navbar-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+.navbar-links li a {
+    color: #fff;
+    padding: 10px 15px;
+    font-family: var(--heading-font);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+.navbar-links li a:hover {
+    color: var(--accent-color);
+    text-decoration: none; /* Explicitly remove underline for nav links */
+}
+
+
+/* Page Header for sub-pages */
+.page-header {
+    background-color: var(--primary-color);
+    padding: 20px 0;
+    border-bottom: 2px solid var(--accent-color);
+}
+.page-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header-logo-link {
+    display: flex;
+    align-items: center;
+    font-family: var(--heading-font);
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.header-logo-link:hover {
+    text-decoration: none;
+    opacity: 0.85;
+}
+
+.header-logo-img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+/* Styling for .main-nav on subpages */
+.main-nav { /* This was previously unstyled or minimally styled */
+    display: flex;
+    align-items: center;
+}
+.main-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+.main-nav ul li a {
+    color: #fff;
+    padding: 10px 15px;
+    font-family: var(--heading-font);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+.main-nav ul li a:hover {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+/* --- Hero Section (index.html) --- */
+.hero-section {
+    height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column; /* To stack nav and hero-content */
+    justify-content: center; /* Vertically center hero-content */
+    align-items: center; /* Horizontally center hero-content */
+    text-align: center;
+    overflow: hidden;
+    background: url('../img/img2.webp') no-repeat center center/cover; /* From ogstyle.css */
+    /* background-attachment: fixed; Consider if this effect is desired */
+    padding-top: 70px; /* Adjust if navbar height changes */
+}
+.hero-overlay { /* From ogstyle.css, adjusted */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.65); /* Slightly adjusted overlay */
+    z-index: 1; /* Below navbar, above glows, above hero-content's text */
+}
+.hero-glow-1, .hero-glow-2 { /* From ogstyle.css */
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px); /* Adjusted blur */
+    opacity: 0.25; /* Adjusted opacity */
+    z-index: 0; /* Behind overlay and content */
+}
+.hero-glow-1 {
+    background: var(--accent-color); /* Using theme variable */
+    width: 300px; height: 300px;
+    top: 15%; left: 10%;
+}
+.hero-glow-2 {
+    background: var(--accent-color); /* Could use a secondary accent if defined */
+    width: 250px; height: 250px;
+    bottom: 20%; right: 15%;
+}
+.hero-content {
+    position: relative;
+    z-index: 2; /* Above overlay and glows */
+    color: #fff;
+    max-width: 800px; /* Limit width for readability */
+}
+
+.hero-content .tagline { /* Style for the static tagline */
+    font-size: 1.3em;
+    color: #b0c4de; /* LightSteelBlue - softer than pure white */
+    margin-top: 10px; /* Space below main hero heading */
+    margin-bottom: 20px; /* Space above animated slogan or CTA */
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 8px rgba(0,0,0,0.5);
+}
+
+/* --- Overview Section (replaces #about on index.html) --- */
+.overview-section { /* formerly .about-us */
+    padding: 60px 0;
+    background-color: var(--secondary-color); /* Original blue/dark alternate */
+}
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* First section: 4 tiles in a row */
+    gap: 30px;
+    margin-top: 40px;
+}
+.about-card {
+    background-color: var(--card-bg);
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center icon and text */
+}
+.about-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 255, 255, 0.15); /* Cyan glow on hover */
+
+}
+.about-card .card-icon {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+    line-height: 1; /* Ensure icon vertical alignment is good */
+
+}
+
+.about-card h3 {
+    color: #e0e0e0;
+    margin-bottom: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3em;
+}
+
+.about-card p {
+    color: #a0a0a0;
+    font-size: 0.95em;
+    line-height: 1.6;
+    flex-grow: 1; /* Allows cards to have same height if content varies slightly */
+}
+
+/* --- Site Heroes Section (index.html) --- */
+.site-heroes-section {
+    padding: 60px 0;
+    background-color: var(--primary-color); /* Original blue/dark */
+}
+.heroes-grid {
+    display: grid;
+    /* For 4 items, a 2x2 grid is often good. For more, adjust. */
+    grid-template-columns: repeat(4, 1fr); /* Explore section: 2x2 grid */
+    gap: 30px; /* Adjust gap as needed */
+    margin-top: 40px;
+}
+.hero-link-card {
+    background-color: #1f1f23; /* Slightly lighter than deep background */
+    padding: 25px;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #333; /* Subtle border */
+    display: flex; /* For better internal alignment */
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+}
+.hero-link-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 255, 255, 0.2); /* Cyan glow */
+}
+.hero-link-icon {
+    font-size: 2.5em; /* Larger icons */
+    margin-bottom: 15px;
+    color: #00ffff; /* Cyan icon color */
+}
+.hero-link-card h3 {
+    color: #e0e0e0; /* Lighter text for heading */
+    margin-bottom: 10px;
+    font-family: 'Orbitron', sans-serif;
+}
+.hero-link-card p {
+    color: #a0a0a0; /* Softer text for description */
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+
+.animated-text-container {
+    margin-top: 25px; /* Space above the slogan */
+    margin-bottom: 35px; /* Space below the slogan */
+    padding: 10px 20px;
+    background: linear-gradient(145deg, rgba(0, 40, 40, 0.6), rgba(0, 80, 80, 0.8)); /* Slightly more pronounced gradient */
+    border-left: 5px solid #00ffff; /* Accent border */
+    border-right: 5px solid #00ffff; /* Accent border on other side */
+    display: block; /* Changed to block to ensure it takes full width available or can be centered */
+    width: fit-content; /* Make the block only as wide as its content */
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), 0 0 10px rgba(0, 255, 255, 0.2) inset; /* Enhanced glow */
+    margin-left: auto;   /* Center the block */
+    margin-right: auto;  /* Center the block */
+    min-height: 2.5em; /* Ensure space for text even when empty */
+    border-radius: 4px; /* Slightly rounded corners */
+}
+
+#animated-slogan {
+    font-size: 1.6em; /* Larger font size */
+    color: #f0f8ff; /* AliceBlue - very light for contrast */
+    font-weight: 500;
+    font-family: 'Rajdhani', sans-serif; /* Consistent with other text if desired */
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 6px rgba(0, 255, 255, 0.7), 0 0 12px rgba(0,255,255,0.4), 0 0 2px #fff; /* Brighter Cyan glow text shadow */
+    /* Add a blinking cursor effect */
+    border-right: 0.1em solid #00ffff; /* Blinking cursor */
+    animation: blink-caret 0.75s step-end infinite;
+    white-space: nowrap; /* Keep slogan on one line during typing */
+    overflow: hidden; /* Hide text that overflows during typing if needed */
+}
+
+/* Blinking cursor animation */
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: #00ffff; }
+}
+
+/* Responsive adjustments for slogan */
+@media (max-width: 768px) {
+    #animated-slogan {
+        font-size: 1.3em;
+    }
+    .animated-text-container {
+        padding: 8px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    #animated-slogan {
+        font-size: 1.1em;
+        white-space: normal; /* Allow wrapping on very small screens */
+        overflow: visible;
+    }
+}
+
+/* --- New Engaging Section (index.html) --- */
+.engaging-section {
+    padding: 80px 0;
+    background-color: var(--secondary-color); /* Original blue/dark alternate */
+    text-align: center;
+}
+.engaging-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+.engaging-image-container {
+    max-width: 600px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+}
+.engaging-image-container img {
+    width: 100%;
+    display: block;
+}
+
+/* --- Software Center Page --- */
+.software-listing { padding: 60px 0; }
+.app-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+a.software-card, div.software-card {
+    background-color: #1f1e1e; /* Grey background for category tag */
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative; /* For badge */
+    display: flex; /* Use flex for internal layout */
+    flex-direction: column; /* Stack content vertically */
+    align-items: center; /* Center content like icon and title */
+    text-align: center; /* Center text content */
+    color: var(--text-color); /* Ensure text color is not default link blue */
+    text-decoration: none; /* Remove underline from links */
+}
+/* Ensure child elements inside a.software-card also inherit text color */
+a.software-card h4, a.software-card p {
+    color: inherit; /* Inherit from a.software-card */
+}
+a.software-card:hover, div.software-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0, 255, 255, 0.15);
+}
+.app-icon {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+}
+a.app-card.coming-soon, div.app-card.coming-soon {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+a.app-card.coming-soon:hover, div.app-card.coming-soon:hover {
+    transform: none;
+    box-shadow: none;
+}
+.coming-soon-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    padding: 3px 8px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.payment-poll-section {
+    background-color: var(--secondary-color);
+    padding: 30px;
+    margin-bottom: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--accent-color);
+}
+.payment-poll-section h3 { margin-top: 0; }
+.poll-option { margin-bottom: 10px; }
+.poll-option label { margin-left: 8px; cursor: pointer; }
+.poll-option input[type="radio"] {
+    accent-color: var(--accent-color);
+}
+
+
+/* --- App Detail Page (e.g., movie-word-scanner.html) --- */
+.app-detail-page { padding: 60px 0; }
+.app-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+.app-icon-large {
+    font-size: 4rem;
+    color: var(--accent-color);
+    margin-right: 20px;
+}
+.app-detail-page h1 { font-size: 2.5rem; }
+.download-links {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.download-button {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-family: var(--heading-font);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.download-button:hover {
+    /* background-color: darken(var(--accent-color), 10%); */
+    filter: brightness(0.9);
+    color: var(--bg-color) !important; /* Ensure text color remains contrasting on hover */
+    text-decoration: none;
+}
+.download-button.disabled {
+    background-color: #555;
+    color: #999;
+    cursor: not-allowed;
+    pointer-events: none; /* Makes it non-clickable */
+}
+
+.download-button.disabled:hover { background-color: #555; }
+.coming-soon-inline { font-size: 0.8em; opacity: 0.7; }
+.small-text { font-size: 0.9em; color: #aaa; margin-top: 15px; }
+
+/* --- Generic Content & Text Center Sections --- */
+.content-section { padding: 60px 0; }
+.section-intro {
+    font-size: 1.1rem;
+    color: #ccc;
+    max-width: 800px;
+    margin: 10px auto 30px auto;
+    text-align: center; /* If generally centered */
+}
+.content-section h2 + .section-intro { /* If intro is directly after h2 */
+    margin-top: -10px; /* Pull it up a bit */
+}
+.text-center-section .container {
+    text-align: center;
+}
+.text-center-section h2 { margin-bottom: 20px; }
+
+
+/* --- Admin Login Page --- */
+.admin-login-section { padding: 60px 0; }
+.login-form-container {
+    max-width: 400px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #ccc;
+}
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.cta-button { /* General CTA button style */
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: var(--bg-color) !important; /* Ensure text color contrasts */
+    padding: 12px 25px;
+    font-family: var(--heading-font);
+    text-transform: uppercase;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.cta-button.hero-cta { /* Specific styles for hero CTA if needed */
+    padding: 15px 35px;
+    font-size: 1.2rem;
+    margin-top: 20px; /* Space above button in hero */
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+/* Ensure button text remains visible on hover */
+.btn:hover, .cta-button:hover {
+    color: var(--text-color-on-hover, #fff); /* Define --text-color-on-hover or use a fallback */
+    /* If the background changes, ensure text color contrasts */
+}
+.cta-button.future-cta-btn {
+    /* Styles for the future CTA if different */
+}
+
+.cta-button:hover {
+    /* background-color: darken(var(--accent-color), 10%); */
+    filter: brightness(0.9);
+    text-decoration: none;
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+}
+
+.cta-button.hero-cta:hover {
+    transform: translateY(-3px);
+}
+
+.error-message {
+    color: #ff6b6b; /* Red for errors */
+    margin-top: 10px;
+}
+.warning-message {
+    color: #ffcc00; /* Yellow for warnings */
+    margin-top: 20px;
+    padding: 10px;
+    background-color: rgba(255,204,0,0.1);
+    border: 1px solid #ffcc00;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* --- Admin Dashboard Page --- */
+.admin-dashboard { padding: 60px 0; }
+.dashboard-content {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+}
+.placeholder-box {
+    border: 2px dashed var(--border-color);
+    padding: 40px;
+    text-align: center;
+    margin-top: 20px;
+    color: #777;
+}
+
+
+/* --- Footer --- */
+.site-footer {
+    background-color: var(--primary-color);
+    color: #aaa;
+    padding: 40px 0;
+    text-align: center;
+    font-size: 0.9rem;
+    border-top: 2px solid var(--accent-color);
+}
+.site-footer p { margin: 5px 0; }
+.social-links { margin: 15px 0; }
+.social-links a {
+    color: #ccc;
+    margin: 0 10px;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+.social-links a:hover { color: var(--accent-color); }
+.contact-info { margin-top: 15px; }
+.contact-info a { color: var(--accent-color); }
+
+/* Scroll fade-in effect (from original script.js context) */
+.js-scroll {
+    opacity: 0;
+    transition: opacity 1s ease-out, transform 0.8s ease-out;
+}
+.js-scroll.scrolled {
+    opacity: 1;
+    transform: translateY(0); /* Or whatever your preferred scrolled state is */
+}
+/* Updated selector to match HTML, and removed mission/future as they are being removed */
+.overview-section .js-scroll,
+.site-heroes-section .js-scroll { /* Add other sections that use js-scroll */
+    transform: translateY(50px); /* Initial offset before scroll */
+}
+
+.skip-link {
+    position: absolute;
+    top: -40px; /* Hide off-screen */
+    left: 0;
+    background: var(--highlight-color, #00efff);
+    color: var(--bg-color, #121212);
+    padding: 8px;
+    z-index: 10000; /* Ensure it's on top */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.skip-link:focus {
+    top: 0; /* Bring into view on focus */
+}
+
+/* Example of what your modal CSS should look like */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: none; /* Shown by JS */
+    justify-content: center; /* Centers .modal-content horizontally */
+    align-items: center;   /* Centers .modal-content vertically */
+    z-index: 2000;
+    padding: 20px;
+}
+
+.modal-content {
+    background-color: purple;/* your card background color */
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 550px; /* Or your preferred max width */
+    max-height: 90vh; /* Prevents the card from being taller than the viewport */
+    overflow-y: auto; /* IMPORTANT: Adds scrollbar INSIDE the card ONLY if content is too long */
+    /* Other styling */
+}
+
+.modal-content h3 { /* Assuming h3 is used for modal title */
+    text-align: center;
+    color: var(--highlight-color);
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+
+.close-modal-btn { /* Style for your 'x' close button */
+    /* Add styles if you have a specific close button, e.g., position absolute top-right */
+}
+
+/* Responsive adjustments (basic example) */
+
+@media (max-width: 992px) { /* For tablets */
+    .heroes-grid { /* Explore section */
+        grid-template-columns: repeat(2, 1fr); /* 2x2 on tablets */
+    }
+    .about-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2x2 on tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .heroes-grid { /* Explore section */
+        grid-template-columns: 1fr; /* Stack on small screens */
+    }
+    .main-navbar .container {
+        flex-direction: column;
+    }
+    .navbar-brand {
+        margin-bottom: 10px;
+    }
+    .navbar-links {
+        flex-direction: column;
+        align-items: center;
+    }
+    .navbar-links li a {
+        padding: 8px 10px;
+    }
+
+    .page-header .container {
+        flex-direction: column;
+    }
+    .page-header .main-nav { margin-top: 15px; } /* For subpage nav responsiveness */
+    .app-grid, .about-grid, .heroes-grid, .engaging-content {
+        grid-template-columns: 1fr; /* Stack on smaller screens */
+    }
+    .about-grid { /* First section stacks */
+        grid-template-columns: 1fr; 
+    }
+    .about-card {
+        padding: 20px;
+    }
+    .about-card .card-icon {
+        font-size: 2.5em;
+    }
+    .about-card h3 {
+        font-size: 1.2em;
+    }
+}

@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community - Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Styles specific to the community page content area */
+        .community-hero-background {
+            background-image: url("{% static 'img/img11.webp' %}");
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            padding: 100px 0; /* Adjust padding as needed */
+            text-align: center;
+            color: #fff;
+            min-height: 50vh; /* Ensure it takes significant viewport height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative; /* For overlay positioning */
+        }
+        .community-hero-background::before { /* Overlay */
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent overlay */
+            z-index: 1; /* Behind the text content */
+        }
+        .community-hero-background .container { /* Ensure content is above overlay */
+            position: relative;
+            z-index: 2;
+        }
+        .community-hero-background h2, .community-hero-background p { /* Keep text shadow for extra pop if needed */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+        .community-hero-background h2 .highlight {
+            text-shadow: 0 10px 8px rgba(0, 255, 255, 0.7), 0 0 12px rgba(0, 255, 255, 0.5);
+        }
+        .highlight {
+            letter-spacing:10px;
+            font-size: 48px;
+        }
+    </style>
+</head>
+<body class="community-page">
+    <header class="page-header">
+        <div class="container">
+             <div class="logo-container">
+                <a href="{% url 'main_site:home' %}" class="header-logo-link">
+                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="header-logo-img">
+                    <span class="header-logo-text">Pegumax Inc.</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                 <ul>
+                    <li><a href="{% url 'main_site:home' %}">Home</a></li>
+                    <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
+                    <li><a href="{% url 'main_site:about' %}">About Us</a></li>
+                    <li><a href="{% url 'main_site:community' %}">Community</a></li>
+                    <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li> {# Create account_view and URL later #}
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="community-main" class="community-hero-background js-scroll">
+            <div class="container">
+                <h1 class="highlight">Pegumax</h1>
+                <p class="section-intro" style="font-size: 1.5em; margin-top: 20px;">Connect, Share, and Innovate Together!</p>
+                <p style="margin-top: 10px;">Forums, discussions, and collaborative projects are on the horizon.</p>
+                <h1 class="highlight">Static</h1>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> Pegumax Inc. All rights reserved.</p>
+        </div>
+    </footer>
+    <!-- script.js already handles current-year -->
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

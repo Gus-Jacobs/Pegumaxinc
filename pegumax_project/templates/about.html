@@ -1,0 +1,283 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* General Page Styles */
+        body {
+            /* Ensure your global styles are applied */
+        }
+
+        #about-content {
+            /* Styles for the main content area of the about page */
+        }
+
+        /* Hero Section */
+        .about-hero {
+            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/about_hero_background.webp' %}"); /* Replace with a suitable background image */
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .about-hero h1 {
+            font-size: 3.5em;
+            font-family: var(--secondary-font);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .about-hero .tagline {
+            font-size: 1.4em;
+            font-weight: 300;
+            max-width: 700px;
+            margin: 0 auto 20px auto;
+            opacity: 0.9;
+        }
+
+        /* Our Story Section */
+        .our-story-section {
+            padding: 60px 0;
+            background-color: var(--bg-dark-1); /* Or your preferred section background */
+        }
+
+        .our-story-section h2,
+        .our-values-section h2,
+        .meet-the-team-section h2,
+        .join-us-cta h2 {
+            text-align: center;
+            font-size: 2.8em;
+            font-family: var(--secondary-font);
+            margin-bottom: 40px;
+            color: var(--text-color);
+        }
+
+        .our-story-section h2 .highlight,
+        .our-values-section h2 .highlight,
+        .meet-the-team-section h2 .highlight,
+        .join-us-cta h2 .highlight {
+            color: var(--highlight-color);
+        }
+
+        .story-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .story-text {
+            flex: 1;
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: var(--text-light);
+        }
+
+        .story-visual {
+            flex-basis: 40%;
+            max-width: 400px; /* Adjust as needed */
+        }
+
+        .story-visual img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Our Values Section */
+        .our-values-section {
+            padding: 60px 0;
+            background-color: var(--bg-dark-2); /* Alternate background */
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .value-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .value-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.15);
+        }
+
+        .value-icon {
+            font-size: 3em;
+            color: var(--highlight-color);
+            margin-bottom: 20px;
+        }
+
+        .value-card h3 {
+            font-size: 1.5em;
+            font-family: var(--secondary-font);
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .value-card p {
+            font-size: 0.95em;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Meet the Team Section (Optional) */
+        .meet-the-team-section {
+            padding: 60px 0;
+            background-color: var(--bg-dark-1);
+        }
+        .meet-the-team-section .section-intro {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            color: var(--text-light);
+        }
+
+        /* Join Us CTA Section */
+        .join-us-cta {
+            padding: 70px 0;
+            background-color: var(--highlight-color); /* Or a distinct CTA background */
+            text-align: center;
+            color: var(--bg-color); /* Dark text on light background */
+        }
+
+        .join-us-cta h2 {
+            color: var(--bg-color); /* Dark text for heading */
+            margin-bottom: 20px;
+        }
+        .join-us-cta h2 .highlight {
+            color: #fff; /* White highlight on dark text */
+            /* Or another contrasting color */
+        }
+
+        .join-us-cta p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .join-us-cta .cta-button {
+            margin: 0 10px;
+            background-color: var(--bg-color); /* Dark button */
+            color: var(--highlight-color); /* Light text */
+            border: 2px solid var(--bg-color);
+        }
+        .join-us-cta .cta-button:hover {
+            background-color: transparent;
+            color: var(--bg-color);
+        }
+
+        .join-us-cta .cta-button.secondary {
+            background-color: transparent;
+            color: var(--bg-color);
+            border: 2px solid var(--bg-color);
+        }
+        .join-us-cta .cta-button.secondary:hover {
+            background-color: var(--bg-color);
+            color: var(--highlight-color);
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .about-hero h1 {
+                font-size: 2.8em;
+            }
+            .about-hero .tagline {
+                font-size: 1.2em;
+            }
+            .story-content {
+                flex-direction: column;
+            }
+            .story-visual {
+                margin-top: 30px;
+                max-width: 100%;
+            }
+            .our-story-section h2,
+            .our-values-section h2,
+            .meet-the-team-section h2,
+            .join-us-cta h2 {
+                font-size: 2.2em;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="container">
+            <div class="logo-container">
+                <a href="{% url 'main_site:home' %}" class="header-logo-link">
+                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="header-logo-img">
+                    <span class="header-logo-text">Pegumax Inc.</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'main_site:home' %}">Home</a></li>
+                    <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
+                    <li><a href="{% url 'main_site:about' %}">About Us</a></li>
+                    <li><a href="{% url 'main_site:community' %}">Community</a></li>
+                    <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li> {# Create account_view and URL later #}
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="about-content" class="content-section js-scroll">
+            <div class="container">
+                <h2>About <span class="highlight">Pegumax Inc.</span></h2>
+                <p class="section-intro">At Pegumax Inc., we are driven by a singular vision: to build innovative software solutions that empower users and provide exceptional value. We believe technology should be accessible, powerful, and affordable.</p>
+                
+                <h3>Our Mission</h3>
+                <p>Our mission is to develop cutting-edge software tools that address real-world needs, enhance productivity, and inspire creativity. We are committed to a user-centric approach, ensuring our products are intuitive, reliable, and deliver tangible benefits. We strive to make high-quality technology accessible by offering our tools at fair and competitive prices, challenging the notion that advanced software must come with a premium cost.</p>
+
+                <h3>Our Philosophy</h3>
+                <p>Innovation, quality, and affordability are the cornerstones of Pegumax Inc. We foster a culture of continuous improvement, constantly exploring new technologies and methodologies to enhance our offerings. We are dedicated to ethical practices, transparency, and building lasting relationships with our users and the broader tech community.</p>
+                <p>Join us on our journey as we forge the future of software, one impactful application at a time.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
+            <p>Empowering the human spirit through technological transcendence.</p>
+            <div class="social-links">
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </footer>
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

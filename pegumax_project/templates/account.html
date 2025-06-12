@@ -1,0 +1,437 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - {{ user.username|capfirst }} - Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> {# Your global styles #}
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.webp' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            /* Ensure these are defined in your style.css or here for fallback */
+            --bg-color: #0d0e12;
+            --bg-dark-1: #1a1c23;
+            --bg-dark-2: #22242b;
+            --card-bg: #16181d; /* Slightly different from bg-dark-1 for depth */
+            --text-color: #e0e0e0;
+            --text-light: #b0b0b0;
+            --highlight-color: #00efff; /* Neon cyan/teal */
+            --border-color: #333740;
+            --primary-font: 'Rajdhani', sans-serif;
+            --secondary-font: 'Orbitron', sans-serif;
+            --danger-color: #ff4d4f;
+            --success-color: #52c41a;
+            --warning-color: #faad14;
+        }
+        body {
+            font-family: var(--primary-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .page-header-minimal {
+            background-color: var(--bg-dark-1);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0, 239, 255, 0.1);
+        }
+        .page-header-minimal .container { display: flex; justify-content: center; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .page-header-minimal .logo-link { display: flex; align-items: center; text-decoration: none; color: var(--text-color); font-family: var(--secondary-font); font-size: 1.5em; font-weight: bold; }
+        .page-header-minimal .logo-link img { height: 40px; margin-right: 10px; filter: drop-shadow(0 0 5px var(--highlight-color)); }
+
+
+        .dashboard-main {
+            flex-grow: 1;
+            padding: 30px 20px;
+        }
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .dashboard-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2), 0 0 0 1px transparent; /* Base shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 239, 255, 0.15), 0 0 0 1px var(--highlight-color); /* Glow effect on hover */
+        }
+        .dashboard-card::before { /* Subtle animated gradient border */
+            content: "";
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: conic-gradient(from 180deg at 50% 50%, var(--highlight-color) 0deg, var(--bg-dark-2) 60deg, var(--highlight-color) 120deg, var(--bg-dark-2) 180deg, var(--highlight-color) 240deg, var(--bg-dark-2) 300deg, var(--highlight-color) 360deg);
+            z-index: -1;
+            border-radius: 14px; /* Slightly larger than card's border-radius */
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .dashboard-card:hover::before {
+            opacity: 0.6;
+            animation: spin 4s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .dashboard-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        .dashboard-card-header i {
+            font-size: 1.8em;
+            color: var(--highlight-color);
+            margin-right: 15px;
+            text-shadow: 0 0 8px var(--highlight-color);
+        }
+        .dashboard-card-header h3 {
+            font-family: var(--secondary-font);
+            font-size: 1.4em;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .profile-card { grid-column: 1 / -1; display: flex; align-items: center; gap: 30px; } /* Span full width */
+        .profile-picture-wrapper {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%; /* Default circle */
+            /* Hexagon attempt - more complex, might need ::before/::after or clip-path */
+            /* For a simpler unique look, consider a glowing border or a non-standard shape if CSS allows easily */
+            background-color: var(--bg-dark-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--highlight-color);
+            box-shadow: 0 0 15px var(--highlight-color), inset 0 0 10px rgba(0, 239, 255, 0.3);
+            overflow: hidden; /* if using an img tag */
+        }
+        .profile-picture-wrapper i.fa-user-astronaut { font-size: 5em; color: var(--highlight-color); opacity: 0.8; }
+        .profile-info h2 { font-family: var(--secondary-font); font-size: 2em; color: var(--highlight-color); margin-bottom: 5px; }
+        .profile-info p { color: var(--text-light); margin: 5px 0; font-size: 1.1em; }
+
+        .info-item { margin-bottom: 12px; }
+        .info-item strong { color: var(--text-color); min-width: 100px; display: inline-block; }
+        .info-item span { color: var(--text-light); }
+
+        .dashboard-button, .dashboard-form button {
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: var(--secondary-font);
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            display: inline-block;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .dashboard-button:hover, .dashboard-form button:hover {
+            background-color: #00c0c0; /* Slightly darker highlight */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 239, 255, 0.3);
+        }
+        .dashboard-button.danger { background-color: var(--danger-color); color: white; }
+        .dashboard-button.danger:hover { background-color: #cc3032; box-shadow: 0 5px 15px rgba(255, 77, 79, 0.4); }
+        .dashboard-button.secondary { background-color: var(--bg-dark-2); color: var(--text-light); border: 1px solid var(--border-color); }
+        .dashboard-button.secondary:hover { border-color: var(--highlight-color); color: var(--highlight-color); box-shadow: 0 5px 15px rgba(0, 239, 255, 0.2); }
+
+        .dashboard-form { margin-top: 15px; }
+
+        .site-footer-minimal { text-align: center; padding: 30px 20px; border-top: 1px solid var(--border-color); color: var(--text-light); font-size: 0.9em; margin-top: 40px; }
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.7); /* Black w/ opacity */
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: auto;
+            padding: 30px 40px;
+            border: 1px solid var(--highlight-color);
+            border-radius: 10px;
+            width: 90%;
+            max-width: 550px;
+            box-shadow: 0 10px 30px rgba(0, 239, 255, 0.2);
+            position: relative;
+            color: var(--text-color);
+        }
+        .modal-content h3 { font-family: var(--secondary-font); color: var(--highlight-color); margin-top: 0; margin-bottom: 25px; font-size: 1.8em; }
+        .close-button { color: var(--text-light); float: right; font-size: 28px; font-weight: bold; position: absolute; top: 15px; right: 25px; }
+        .close-button:hover, .close-button:focus { color: var(--highlight-color); text-decoration: none; cursor: pointer; }
+        .form-input { width: 100%; padding: 12px 15px; margin-bottom: 15px; background-color: var(--bg-dark-2); border: 1px solid var(--border-color); border-radius: 5px; color: var(--text-color); font-size: 1em; }
+        .form-input:focus { border-color: var(--highlight-color); box-shadow: 0 0 8px var(--highlight-color); outline: none; }
+        .form-error { color: var(--danger-color); font-size: 0.9em; margin-bottom: 10px; display: block; }
+        .login-history-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .login-history-table th, .login-history-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.95em; }
+        .login-history-table th { color: var(--highlight-color); font-family: var(--secondary-font); }
+        .login-history-table td { color: var(--text-light); }
+        .login-history-table tr.current-device td { background-color: rgba(0, 239, 255, 0.05); }
+        .login-history-table td .fa-check-circle { color: var(--success-color); margin-left: 5px; }
+        .message-area { padding: 10px; margin-bottom: 15px; border-radius: 5px; text-align: center; }
+        .message-area.success { background-color: rgba(82, 196, 26, 0.2); color: var(--success-color); border: 1px solid var(--success-color); }
+        .message-area.error { background-color: rgba(255, 77, 79, 0.2); color: var(--danger-color); border: 1px solid var(--danger-color); }
+
+    </style>
+</head>
+<body>
+    <header class="page-header-minimal">
+        <div class="container">
+            <a href="{% url 'main_site:home' %}" class="logo-link">
+                <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo"> Pegumax Inc.
+            </a>
+        </div>
+    </header>
+    <main class="dashboard-main">
+        <div id="message-container" style="max-width: 1200px; margin: 0 auto 20px auto;">
+            {# Django messages will be injected here by JS if not using AJAX for all, or use for JS-driven messages #}
+        </div>
+        <div class="dashboard-container">
+            
+            <div class="dashboard-card profile-card">
+                <div class="profile-picture-wrapper">
+                    <!-- Placeholder for profile picture - could be an <img> tag or just icon -->
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+                <div class="profile-info">
+                    <h2>{{ user.username|capfirst }}</h2>
+                    <p><i class="fas fa-envelope fa-fw"></i> {{ user.email|default:"No email provided" }}</p>
+                    <p><i class="fas fa-calendar-alt fa-fw"></i> Joined: {{ user.date_joined|date:"M d, Y" }}</p>
+                </div>
+            </div>
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <i class="fas fa-user-edit"></i><h3>Account Details</h3>
+                </div>
+                <div class="info-item"><strong>Username:</strong> <span>{{ user.username }}</span></div>
+                <div class="info-item"><strong>Email:</strong> <span>{{ user.email|default:"Not set" }}</span></div>
+                <button type="button" id="editProfileBtn" class="dashboard-button secondary">Edit Profile</button>
+                <button type="button" id="changePasswordBtn" class="dashboard-button secondary">Change Password</button>
+            </div>
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <i class="fas fa-shield-alt"></i><h3>Security &amp; Activity</h3>
+                </div>
+                <p>Last Login: {{ user.last_login|date:"M d, Y, P T"|default:"N/A" }}</p> {# Added Timezone T #}
+                {# <p>Recent Activity: (Placeholder for activity log)</p> #}
+                <button type="button" id="loginHistoryBtn" class="dashboard-button secondary">View Login History</button>
+            </div>
+            {% if user.is_staff or user.is_superuser %}
+            <div class="dashboard-card admin-tools-card">
+                <div class="dashboard-card-header">
+                    <i class="fas fa-user-shield"></i><h3>Admin Tools</h3>
+                </div>
+                <a href="{% url 'admin:index' %}" class="dashboard-button" target="_blank">Django Admin Panel</a>
+                <a href="{% url 'main_site:admin_dashboard' %}" class="dashboard-button">Site Admin Dashboard</a>
+            </div>
+            {% endif %}
+
+            <div class="dashboard-card logout-card">
+                 <div class="dashboard-card-header">
+                    <i class="fas fa-sign-out-alt"></i><h3>Session</h3>
+                </div>
+                <form method="post" action="{% url 'logout' %}" class="dashboard-form">
+                    {% csrf_token %}
+                    <button type="submit" class="dashboard-button danger">Logout Securely</button>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="site-footer-minimal">
+        <p>&copy; {% now "Y" %} Pegumax Inc. All rights reserved. Empowering the Future.</p>
+    </footer>
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('editProfileModal')">&times;</span>
+            <h3>Edit Your Profile</h3>
+            <div id="editProfileMessageArea"></div>
+            <form id="editProfileForm">
+                {% csrf_token %}
+                <div>
+                    <label for="id_username_edit">Username:</label>
+                    <input type="text" name="username" value="{{ user.username }}" required id="id_username_edit" class="form-input">
+                    <span class="form-error" id="error_username_edit"></span>
+                </div>
+                <div>
+                    <label for="id_email_edit">Email:</label>
+                    <input type="email" name="email" value="{{ user.email }}" required id="id_email_edit" class="form-input">
+                    <span class="form-error" id="error_email_edit"></span>
+                </div>
+                <button type="submit" class="dashboard-button" style="width: 100%; margin-top: 20px;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('changePasswordModal')">&times;</span>
+            <h3>Change Your Password</h3>
+            <div id="changePasswordMessageArea"></div>
+            <form id="changePasswordForm">
+                {% csrf_token %}
+                <div>
+                    <label for="id_old_password">Old Password:</label>
+                    <input type="password" name="old_password" required id="id_old_password" class="form-input">
+                    <span class="form-error" id="error_old_password"></span>
+                </div>
+                <div>
+                    <label for="id_new_password1">New Password:</label>
+                    <input type="password" name="new_password1" required id="id_new_password1" class="form-input">
+                    <span class="form-error" id="error_new_password1"></span>
+                </div>
+                <div>
+                    <label for="id_new_password2">Confirm New Password:</label>
+                    <input type="password" name="new_password2" required id="id_new_password2" class="form-input">
+                    <span class="form-error" id="error_new_password2"></span>
+                </div>
+                <button type="submit" class="dashboard-button" style="width: 100%; margin-top: 20px;">Update Password</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login History Modal -->
+    <div id="loginHistoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('loginHistoryModal')">&times;</span>
+            <h3>Recent Login Activity</h3>
+            <div id="loginHistoryContent">
+                <p>Loading history...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+        // Clear any previous messages or form errors
+        const messageArea = document.getElementById(modalId.replace('Modal', 'MessageArea'));
+        if (messageArea) messageArea.innerHTML = '';
+        document.querySelectorAll(`#${modalId.replace('Modal', 'Form')} .form-error`).forEach(el => el.textContent = '');
+    }
+
+    // Close modal if user clicks outside of it
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            closeModal(event.target.id);
+        }
+    }
+
+    function displayMessage(areaId, message, isSuccess) {
+        const area = document.getElementById(areaId);
+        area.innerHTML = `<div class="message-area ${isSuccess ? 'success' : 'error'}">${message}</div>`;
+    }
+    function displayFormErrors(formId, errors) {
+        for (const field in errors) {
+            const errorEl = document.getElementById(`error_${field}_edit`) || document.getElementById(`error_${field}`);
+            if (errorEl) errorEl.textContent = errors[field];
+        }
+    }
+
+    document.getElementById('editProfileBtn').onclick = () => openModal('editProfileModal');
+    document.getElementById('changePasswordBtn').onclick = () => openModal('changePasswordModal');
+    document.getElementById('loginHistoryBtn').onclick = () => {
+        openModal('loginHistoryModal');
+        fetch("{% url 'main_site:get_login_history' %}")
+            .then(response => response.json())
+            .then(data => {
+                const contentEl = document.getElementById('loginHistoryContent');
+                if (data.history && data.history.length > 0) {
+                    let tableHtml = '<table class="login-history-table"><thead><tr><th>Timestamp</th><th>IP Address</th><th>Device/Browser</th></tr></thead><tbody>';
+                    data.history.forEach(item => {
+                        tableHtml += `<tr class="${item.is_current_device ? 'current-device' : ''}">
+                                        <td>${item.timestamp} ${item.is_current_device ? '<i class="fas fa-check-circle"></i>' : ''}</td>
+                                        <td>${item.ip_address}</td>
+                                        <td>${item.user_agent.substring(0, 50)}${item.user_agent.length > 50 ? '...' : ''}</td>
+                                      </tr>`;
+                    });
+                    tableHtml += '</tbody></table>';
+                    contentEl.innerHTML = tableHtml;
+                } else {
+                    contentEl.innerHTML = '<p>No login history found.</p>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('loginHistoryContent').innerHTML = '<p>Error loading history.</p>';
+                console.error('Error fetching login history:', error);
+            });
+    };
+
+    document.getElementById('editProfileForm').onsubmit = function(e) {
+        e.preventDefault();
+        fetch("{% url 'main_site:edit_profile' %}", {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value}
+        })
+        .then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(({status, body}) => {
+            if (status === 200 && body.success) {
+                displayMessage('editProfileMessageArea', body.message, true);
+                setTimeout(() => { closeModal('editProfileModal'); location.reload(); }, 1500); // Reload to see changes
+            } else {
+                displayMessage('editProfileMessageArea', body.message || 'Error updating profile.', false);
+                if(body.errors) displayFormErrors('editProfileForm', body.errors);
+            }
+        }).catch(error => displayMessage('editProfileMessageArea', 'An unexpected error occurred.', false));
+    };
+
+    document.getElementById('changePasswordForm').onsubmit = function(e) {
+        e.preventDefault();
+        fetch("{% url 'main_site:change_password_popup' %}", {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value}
+        })
+        .then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(({status, body}) => {
+            if (status === 200 && body.success) {
+                displayMessage('changePasswordMessageArea', body.message, true);
+                setTimeout(() => closeModal('changePasswordModal'), 2000);
+                this.reset(); // Clear the form
+            } else {
+                displayMessage('changePasswordMessageArea', body.message || 'Error changing password.', false);
+                if(body.errors) displayFormErrors('changePasswordForm', body.errors);
+            }
+        }).catch(error => displayMessage('changePasswordMessageArea', 'An unexpected error occurred.', false));
+    };
+    </script>
+</body>
+</html>
