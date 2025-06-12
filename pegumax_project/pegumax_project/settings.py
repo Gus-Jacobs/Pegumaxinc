@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-default-development-secre
 # For clarity, it's often better to default DEBUG to True for local dev if the env var isn't set.
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['https://pegumaxinc.onrender.com/', '127.0.0.1', 'localhost'] # Add more as needed
+ALLOWED_HOSTS = ['pegumaxinc.onrender.com', '127.0.0.1', 'localhost'] # Add more as needed
 if os.environ.get('DJANGO_ALLOWED_HOSTS'):
     ALLOWED_HOSTS.extend(os.environ.get('DJANGO_ALLOWED_HOSTS').split(','))
 
