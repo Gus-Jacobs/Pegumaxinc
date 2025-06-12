@@ -141,7 +141,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 LOGIN_URL = 'login' # Name of the login URL pattern
 LOGIN_REDIRECT_URL = 'main_site:home' # Redirect after successful login
 LOGOUT_REDIRECT_URL = 'main_site:home' # Redirect after logout
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # Keep production settings commented for now
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # TEMPORARY for signup
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
@@ -153,3 +154,7 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@yourdomain.
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Add these if not already present or uncommented at the end of your settings.py
+CSRF_TRUSTED_ORIGINS = ['https://pegumaxinc.onrender.com'] # Replace if your URL is different
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
