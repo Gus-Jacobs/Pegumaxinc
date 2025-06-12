@@ -30,6 +30,7 @@ def create_superuser(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [
         # Add dependency on the previous auth migration or your last user-related migration
+        ('main_site', '0001_initial'), # Ensure this migration depends on the app's initial migration        
         ('auth', '0012_alter_user_first_name_max_length'), # Example, check your latest auth migration
     ]
     operations = [
