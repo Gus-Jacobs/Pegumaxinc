@@ -1,0 +1,93 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Word Scanner - Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header class="page-header">
+        <div class="container">
+            <div class="logo-container">
+                <a href="{% url 'main_site:home' %}" class="header-logo-link">
+                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="header-logo-img">
+                    <span class="header-logo-text">Pegumax Inc.</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'main_site:home' %}">Home</a></li>
+                    <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
+                    <li><a href="{% url 'main_site:about' %}">About Us</a></li>
+                    <li><a href="{% url 'main_site:community' %}">Community</a></li>
+                    <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li> {# Create account_view and URL later #}
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="content-section app-detail-page">
+            <div class="container">
+                <div class="app-header">
+                    <div class="app-icon-large"><i class="fas fa-film"></i></div>
+                    <h1>Movie Word <span class="highlight">Scanner</span></h1>
+                </div>
+                <p class="section-intro">Unlock insights from screenplays and movie scripts with our powerful analysis tool. Movie Word Scanner helps writers, researchers, and enthusiasts delve deep into textual data, identifying word frequencies, character dialogue patterns, and thematic elements with ease.</p>
+                
+                <h3>Key Features:</h3>
+                <ul>
+                    <li>Detailed word frequency analysis.</li>
+                    <li>Character-specific dialogue extraction.</li>
+                    <li>Customizable stop-word lists.</li>
+                    <li>Exportable reports and data visualizations.</li>
+                    <li>Supports various script formats (e.g., .fdx, .txt, .pdf - feature planned).</li>
+                </ul>
+
+                <h3>Download Options:</h3>
+                <div class="download-links">
+                    <a href="https://github.com/Gus-Jacobs/Movie-Word-Scanner/releases/download/v1.0.0/MovieWordScanner.exe" class="download-button windows-dl active" target="_blank" rel="noopener noreferrer"><i class="fab fa-windows"></i> Windows</a>
+                    <a href="#" class="download-button ios-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a>
+                    <a href="#" class="download-button android-dl disabled"><i class="fab fa-android"></i> Android <span class="coming-soon-inline">(Soon)</span></a>
+                    <a href="#" class="download-button linux-dl disabled"><i class="fab fa-linux"></i> Linux <span class="coming-soon-inline">(Soon)</span></a>
+                    <a href="#" class="download-button online-dl disabled"><i class="fas fa-globe"></i> Online Version <span class="coming-soon-inline">(Soon)</span></a>
+                </div>
+                <p class="small-text">*Windows version available now. Other platforms and online version coming soon!</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
+            <p>Empowering the human spirit through technological transcendence.</p>
+            <div class="social-links">
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+            </div>
+             <div class="contact-info">
+                <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
+                <p>123 Innovation Drive, Tech City, TX 75001</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

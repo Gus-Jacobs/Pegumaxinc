@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store - Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+         /* Styles specific to the community page content area */
+        .store-hero-background {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Make the entire page structure take full viewport height */
+            background-color: var(--bg-color); /* Fallback background for the page */
+        }
+        .store-hero-background > header.page-header,
+        .store-hero-background > footer.site-footer {
+            flex-shrink: 0; /* Prevent header and footer from shrinking */
+            position: relative; /* Ensure they are not overlapped by main's pseudo-elements */
+            z-index: 10; /* Above main content's pseudo-elements */
+        }
+        .store-hero-background > main {
+            flex-grow: 1; /* Allow main content to grow and push footer down */
+            display: flex; /* For centering content within main */
+            align-items: center;
+            justify-content: center;
+            position: relative; /* For overlay positioning */
+            color: #fff;
+            text-align: center;
+            background-image: url("{% static 'img/img10.webp' %}");
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+        }
+        .store-hero-background > main::before { /* Overlay for the main content area only */
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent overlay */
+            z-index: 1; /* Behind the text content */
+        }
+        .store-hero-background > main .container { /* Ensure content is above overlay */
+            position: relative;
+            z-index: 2;
+        }
+        .store-hero-background h2, .store-hero-background p {
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0; /* Reset default margin */
+        }
+        /* If store page is special, target its body specifically */
+        body.store-page { /* Assuming you add 'store-page' class to body for this page */
+            display: flex; /* If applying flex directly to body */
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        body.store-page > .store-hero-background { /* If .store-hero-background is a direct child wrapper */
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        }
+    </style>
+</head>
+<body class="store-page store-hero-background"> <!-- Added store-page class -->
+    <header class="page-header">
+        <div class="container">
+            <div class="logo-container">
+                <a href="{% url 'main_site:home' %}" class="header-logo-link">
+                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="header-logo-img">
+                    <span class="header-logo-text">Pegumax Inc.</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                 <ul>
+                    <li><a href="{% url 'main_site:home' %}">Home</a></li>
+                    <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
+                    <li><a href="{% url 'main_site:about' %}">About Us</a></li>
+                    <li><a href="{% url 'main_site:community' %}">Community</a></li>
+                    <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li> {# Create account_view and URL later #}
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="store-main"> <!-- js-scroll removed as page is not meant to scroll -->
+            <div class="container">
+                <h2>Pegumax <span class="highlight">Store</span></h2>
+                <p class="section-intro" style="font-size: 1.5em; margin-top: 20px;">Coming Soon!</p>
+                <p style="margin-top: 10px;">Get ready for exclusive Pegumax merchandise, software licenses, and more.</p>
+            </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> Pegumax Inc. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

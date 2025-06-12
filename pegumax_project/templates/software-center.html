@@ -1,0 +1,537 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Center - Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Basic Tab Styling - consider moving to style.css */
+        #software-center-main .content-section {
+            padding-top: 40px; /* Or your desired padding */
+            padding-bottom: 40px;
+            min-height: 60vh; /* Ensure section has some height on load */
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #444;
+        }
+        .tab-link {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            color: #ccc;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1em;
+            transition: color 0.3s, border-bottom 0.3s;
+        }
+        .tab-link.active {
+            color: #00ffff; /* Highlight color */
+            border-bottom: 2px solid #00ffff;
+        }
+        .tab-content {
+            display: none; /* Hide inactive tabs */
+            animation: fadeInTab 0.5s ease-in-out; /* Optional: fade-in animation */
+        }
+        .tab-content.active {
+            display: block; /* CRITICAL: Show active tab */
+        }
+        @keyframes fadeInTab {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #software-center-main .content-section {
+            padding-top: 20px; /* Reduced top padding if header is present */
+            padding-bottom: 40px;
+            min-height: 70vh; /* Ensure section has some height on load */
+        }
+        .software-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .software-card {
+            background-color: #1a1a1a; /* Darker card background */
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .software-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+        }
+        .software-card .card-icon { /* Changed from img to .card-icon */
+            font-size: 3em; /* Adjust icon size */
+            color: #00ffff; /* Icon color */
+            margin-bottom: 15px;
+        }
+        /* Remove img styles if no longer used elsewhere, or keep if other cards might use images */
+        /* .software-card img {
+            max-width: 100px;
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }*/
+        .software-card h4 {
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+        .software-card p {
+            font-size: 0.9em;
+            color: #bbb;
+            margin-bottom: 15px;
+        }
+        .software-card .status {
+            font-weight: bold;
+            color: #ffae00; /* Orange for "Coming Soon" */
+        }
+        .software-card .category-tag {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-top: 10px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000; /* Ensure it's above other content */
+            padding: 20px; /* Add some padding for smaller screens */
+        }
+        .modal-content {
+            background-color: #2a2a30;
+            padding: 30px;
+            border-radius: 8px;
+            color: #e0e0e0;
+            width: 100%; /* Take available width within padding */
+            max-width: 550px; /* Max width of the modal card */
+            text-align: center;
+            position: relative;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            max-height: 90vh; /* Prevent modal from being taller than viewport */
+            overflow-y: auto; /* Allow internal scrolling if form content is long */
+        }
+        .modal-content h3 {
+            color: #00ffff;
+            margin-top: 0;
+        }
+        .close-modal-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.8em;
+            color: #777;
+            cursor: pointer;
+        }
+        .close-modal-btn:hover {
+            color: #fff;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ccc;
+            font-weight: 500;
+        }
+        .form-control-dark {
+            width: 100%;
+            padding: 10px;
+            background-color: #1a1a1d;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            border-radius: 4px;
+            box-sizing: border-box; /* Important for width 100% */
+        }
+        .form-control-dark:focus {
+            border-color: #00ffff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 255, 0.25);
+        }
+        textarea.form-control-dark {
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="container">
+            <div class="logo-container">
+                <a href="{% url 'main_site:home' %}" class="header-logo-link">
+                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="header-logo-img">
+                    <span class="header-logo-text">Pegumax Inc.</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'main_site:home' %}">Home</a></li>
+                    <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
+                    <li><a href="{% url 'main_site:about' %}">About Us</a></li>
+                    <li><a href="{% url 'main_site:community' %}">Community</a></li>
+                    <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li> {# Create account_view and URL later #}
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="software-center-main" class="js-scroll">
+        <section class="content-section">
+            <div class="container">
+                <h2>Pegumax <span class="highlight">Software Center</span></h2>
+                <p class="section-intro">Explore our innovative tools, powerful suites, and engaging games designed to elevate your digital experience.</p>
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="cta-button" onclick="openSubmitIdeaForm()">Got an Idea? Submit It!</button>
+                </div>
+                <div class="tabs">
+                    <button class="tab-link active" onclick="openTab(event, 'all')">All</button>
+                    <button class="tab-link" onclick="openTab(event, 'tools')">Tools</button>
+                    <button class="tab-link" onclick="openTab(event, 'suites')">Suites</button>
+                    <button class="tab-link" onclick="openTab(event, 'games')">Games</button>
+                </div>
+
+                <div id="all" class="tab-content active">
+                    <h3>All Offerings</h3>
+                    <div class="software-grid">
+                        <!-- Items will be duplicated here by JS or you can list them all -->
+                    </div>
+                </div>
+
+                <div id="tools" class="tab-content">
+                    <h3>Productivity Tools</h3>
+                    <div class="software-grid">
+                        <!-- In software-center.html, within the #tools tab-content -->
+                        <a href="{% url 'main_site:movie_word_scanner' %}" class="software-card" data-category="tool">
+                            <div class="card-icon"><i class="fas fa-film"></i></div>
+                            <h4>Movie Word Scanner</h4>
+                            <p>Analyze scripts and text with linguistic precision.</p>
+                            <span class="category-tag">Tool</span> <!-- Ensure this class is present for styling -->
+                        </a>
+
+                        <!-- Example of a non-clickable card for comparison -->
+                        <div class="software-card coming-soon" data-category="tool">
+                            <div class="card-icon"><i class="fas fa-user-secret"></i></div>
+                            <h4>VPN</h4>
+                            <p>Secure your connection and browse privately.</p>
+                            <p class="status">Coming Soon</p>
+                            <span class="category-tag">Tool</span>
+                        </div>
+                        <div class="software-card" data-category="tool">
+                            <div class="card-icon"><i class="fas fa-pencil-ruler"></i></div>
+                            <h4>Drawing Assist</h4>
+                            <p>Intuitive tools for digital artists and illustrators.</p>
+                            <p class="status">Coming Soon</p>
+                            <span class="category-tag">Tool</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="suites" class="tab-content">
+                    <h3>Powerful Suites</h3>
+                    <div class="software-grid">
+                        <div class="software-card" data-category="suite">
+                            <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+                            <h4>Student Suite</h4>
+                            <p>Essential applications for academic success and productivity.</p>
+                            <p class="status">Coming Soon</p>
+                            <span class="category-tag">Suite</span>
+                        </div>
+                        <div class="software-card" data-category="suite">
+                            <div class="card-icon"><i class="fas fa-edit"></i></div>
+                            <h4>Editor Suite</h4>
+                            <p>Professional tools for video, audio, and image editing.</p>
+                            <p class="status">Coming Soon</p>
+                            <span class="category-tag">Suite</span>
+                        </div>
+                        <div class="software-card" data-category="suite">
+                            <div class="card-icon"><i class="fas fa-briefcase"></i></div>
+                            <h4>Office Suite</h4>
+                            <p>A complete set of applications for all your office needs.</p>
+                            <p class="status">Coming Soon</p>
+                            <span class="category-tag">Suite</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="games" class="tab-content">
+                    <h3>Immersive Games</h3>
+                    <div class="software-grid">
+                        <div class="software-card" data-category="game">
+                            <div class="card-icon"><i class="fas fa-chess-knight"></i></div>
+                            <h4>Dominion</h4>
+                            <p>Conquer realms in this upcoming strategy masterpiece.</p>
+                            <p class="status">Coming Soon</p>
+
+                             <span class="category-tag">Game</span>
+                         </div>
+                     </div>
+                </div>
+            </div>
+        </section>
+        <div id="subscription-popup" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <span class="close-modal-btn" onclick="document.getElementById('subscription-popup').style.display='none'">&times;</span>
+                <h3>Hey <span id="popup-user-name">User</span>!</h3>
+                <p>Tired of managing different subscriptions? Hate signing up for new tools or cancelling old ones?</p>
+                <p>We will soon be offering you the unique ability to gain a <strong>master key</strong> to all our tools for just <strong>$100 a month!</strong></p>
+                <p>Interested?</p>
+                <button class="btn btn-primary" onclick="openSubscriptionInterestForm()">Let Us Know!</button>
+                <!-- You might want a small form or a button that links to a contact/interest form -->
+            </div>
+        </div>
+        <!-- Submit Idea Modal -->
+        <div id="submit-idea-popup" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <span class="close-modal-btn" onclick="closeSubmitIdeaForm()">&times;</span>
+                <h3>Submit Your Idea!</h3>
+                <p>Have a great idea for a new app, game, or suite? We'd love to hear it!</p>
+                <form id="submit-idea-form" style="text-align: left; margin-top: 20px;">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="idea-name">Your Name (Optional):</label>
+                        <input type="text" id="idea-name" name="idea-name" class="form-control-dark">
+                    </div>
+                    <div class="form-group">
+                        <label for="idea-email">Your Email (Optional, for updates):</label>
+                        <input type="email" id="idea-email" name="idea-email" class="form-control-dark">
+                    </div>
+                    <div class="form-group">
+                        <label for="idea-type">Type of Idea:</label>
+                        <select id="idea-type" name="idea-type" class="form-control-dark">
+                            <option value="tool">Tool/Utility</option>
+                            <option value="game">Game</option>
+                            <option value="suite">Software Suite</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="idea-description">Describe your idea:</label>
+                        <textarea id="idea-description" name="idea-description" rows="5" class="form-control-dark" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top:15px;">Submit Idea</button>
+                </form>
+            </div>
+        </div>
+        <!-- Subscription Interest Modal -->
+        <div id="subscription-interest-popup" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <span class="close-modal-btn" onclick="closeSubscriptionInterestForm()">&times;</span>
+                <h3>All-Access Pass Interest</h3>
+                <p>Help us tailor the perfect all-access pass for you!</p>
+                <form id="subscription-interest-form" style="text-align: left; margin-top: 20px;">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="interest-email">Your Email (To notify you when it's live!):</label>
+                        <input type="email" id="interest-email" name="interest-email" class="form-control-dark" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="interest-tools-worth">How many individual tools/software would $100/month be worth to you for full access?</label>
+                        <input type="number" id="interest-tools-worth" name="interest-tools-worth" class="form-control-dark" min="1" placeholder="e.g., 5">
+                    </div>
+                    <div class="form-group">
+                        <label for="interest-replaces">What current subscriptions could this potentially replace for you?</label>
+                        <textarea id="interest-replaces" name="interest-replaces" rows="3" class="form-control-dark" placeholder="e.g., Adobe Creative Cloud, various utility subscriptions..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="interest-wants">Are there any specific types of tools or software you'd be most excited to see included?</label>
+                        <textarea id="interest-wants" name="interest-wants" rows="3" class="form-control-dark" placeholder="e.g., Advanced video editors, specific game genres, AI-powered utilities..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top:15px;">Submit Feedback</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> Pegumax Inc. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial population of "All" tab
+            populateAllTab();
+
+            // Show subscription popup after a delay (e.g., 5 seconds)
+            // setTimeout(() => {
+            //     const popup = document.getElementById('subscription-popup');
+            //     if (popup.style.display === 'none') { // Only show if not already interacted with
+            //         const userNameSpan = document.getElementById('popup-user-name');
+            //         {% if user.is_authenticated %}
+            //             userNameSpan.textContent = "{{ user.username|escapejs }}";
+            //         {% else %}
+            //             userNameSpan.textContent = "Explorer"; // Default for guests
+            //         {% endif %}
+            //         popup.style.display = 'flex';
+            //     }
+            // }, 5000);
+        });
+
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-link");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            if (evt) { // Check if evt is passed (not null on initial load)
+                 evt.currentTarget.classList.add("active");
+            } else { // For initial load, find the 'all' tab link and activate it
+                document.querySelector('.tab-link[onclick*="\'all\'"]').classList.add('active');
+            }
+        }
+
+        function populateAllTab() {
+            const allTabGrid = document.querySelector('#all .software-grid');
+            allTabGrid.innerHTML = ''; // Clear existing items
+
+            const categories = ['tools', 'suites', 'games'];
+            categories.forEach(category => {
+                const categoryGrid = document.querySelector(`#${category} .software-grid`);
+                if (categoryGrid) {
+                    const items = categoryGrid.querySelectorAll('.software-card');
+                    items.forEach(item => {
+                        allTabGrid.appendChild(item.cloneNode(true));
+                    });
+                }
+            });
+        }
+
+        // Initialize the first tab (All) on page load
+        openTab(null, 'all');
+
+        // Modal functions
+        function openSubmitIdeaForm() {
+            document.getElementById('submit-idea-popup').style.display = 'flex';
+        }
+        function closeSubmitIdeaForm() {
+            document.getElementById('submit-idea-popup').style.display = 'none';
+            // Optionally reset the form
+            // document.getElementById('submit-idea-form').reset();
+        }
+
+        function openSubscriptionInterestForm() {
+            document.getElementById('subscription-popup').style.display = 'none'; // Hide the initial popup
+            document.getElementById('subscription-interest-popup').style.display = 'flex';
+        }
+
+        function closeSubscriptionInterestForm() {
+            document.getElementById('subscription-interest-popup').style.display = 'none';
+            // Optionally reset the form
+            // document.getElementById('subscription-interest-form').reset();
+        }
+
+        // Handle Submit Idea Form
+        const submitIdeaForm = document.getElementById('submit-idea-form');
+        if (submitIdeaForm) {
+            submitIdeaForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const form = event.target;
+                const formData = new FormData(form);
+                // The view expects 'idea_text' and 'user_email_idea'
+                // FormData from HTML form has 'idea-description' and 'idea-email'
+                const dataForBackend = new FormData();
+                dataForBackend.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
+                dataForBackend.append('idea_text', formData.get('idea-description'));
+                if (formData.get('idea-email')) {
+                    dataForBackend.append('user_email_idea', formData.get('idea-email'));
+                }
+                // You can also append 'idea-name' and 'idea-type' if you want to use them in the email body
+                // dataForBackend.append('idea_name', formData.get('idea-name'));
+                // dataForBackend.append('idea_type', formData.get('idea-type'));
+
+
+                fetch("{% url 'main_site:submit_software_idea' %}", {
+                    method: 'POST',
+                    body: dataForBackend,
+                    // No 'Content-Type' header needed for FormData, browser sets it with boundary
+                    // headers: { 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value } // CSRF token is in FormData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message); // Or update a message div in the modal
+                    if(data.success) {
+                        closeSubmitIdeaForm();
+                        form.reset();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting idea:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            });
+        }
+
+        // Handle Subscription Interest Form
+        const subInterestForm = document.getElementById('subscription-interest-form');
+        if (subInterestForm) {
+            subInterestForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const form = event.target;
+                const formData = new FormData(form);
+
+                // The view expects 'email_access' and 'interest_reason_access'
+                const dataForBackend = new FormData();
+                dataForBackend.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
+                dataForBackend.append('email_access', formData.get('interest-email'));
+                let reason = `Tools worth: ${formData.get('interest-tools-worth') || 'N/A'}\n`;
+                reason += `Could replace: ${formData.get('interest-replaces') || 'N/A'}\n`;
+                reason += `Wants included: ${formData.get('interest-wants') || 'N/A'}`;
+                dataForBackend.append('interest_reason_access', reason);
+
+                fetch("{% url 'main_site:full_access_inquiry' %}", {
+                    method: 'POST',
+                    body: dataForBackend,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message); // Or update a message div
+                    if(data.success) {
+                        closeSubscriptionInterestForm();
+                        form.reset();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting interest:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            });
+        }
+
+    </script>
+
+</body>
+</html>

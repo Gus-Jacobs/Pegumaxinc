@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> {# Link to your main stylesheet #}
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.webp' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Styles specific to login page can go here or be in style.css */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--bg-color); /* Assuming --bg-color is defined in style.css */
+        }
+        .page-header.minimal-header { /* Optional: for a simpler header on auth pages */
+            box-shadow: none;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-form-container {
+            max-width: 450px;
+            width: 100%; /* Ensure it takes up space */
+            margin: 0 auto; /* Centering if not using flex on parent */
+            padding: 35px 40px;
+            background-color: var(--card-bg, #2a2a30);
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3), 0 0 0 1px var(--border-color, #444);
+            color: var(--text-color, #e0e0e0);
+        }
+        .auth-form-container h2 { text-align: center; color: var(--highlight-color); margin-bottom: 25px; font-family: var(--secondary-font); }
+        .auth-form-container form p { margin-bottom: 15px; }
+        .auth-form-container label { display: block; margin-bottom: 5px; color: var(--text-light); }
+        .auth-form-container input[type="text"],
+        .auth-form-container input[type="password"],
+        .auth-form-container input[type="email"] { width: 100%; padding: 12px 15px; background-color: var(--bg-dark-2, #1f1f24); border: 1px solid var(--border-color, #444); border-radius: 5px; color: var(--text-color, #e0e0e0); font-size: 1em; }
+        .auth-form-container button { display: block; width: 100%; padding: 12px; background-color: var(--highlight-color); color: var(--bg-color, #121212); border: none; border-radius: 5px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; }
+        .auth-form-container button:hover { background-color: #00cccc; transform: translateY(-2px); }
+        .auth-form-container .form-footer-links { text-align: center; margin-top: 20px; }
+        .auth-form-container .form-footer-links p { margin-bottom: 10px; font-size: 0.95em; }
+        .auth-form-container .form-footer-links a { color: var(--highlight-color); text-decoration: none; }
+        .auth-form-container .form-footer-links a:hover { text-decoration: underline; }
+        /* Minimal Footer for auth pages */
+        .site-footer.minimal-footer {
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9em;
+            border-top: 1px solid var(--border-color);
+        }
+        .site-footer.minimal-footer p { margin: 5px 0; }
+
+    </style>
+</head>
+<body>
+    <header class="page-header minimal-header"> {# Using a class for potentially simpler header #}
+        <div class="container">
+            <div class="logo-container">
+                <a href="{% url 'main_site:home' %}" class="navbar-brand">
+                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img"> <!-- Corrected, was fine -->
+                    Pegumax Inc.
+                </a>
+            </div>
+            {# No main-nav here for a truly minimal login page, or a very simplified one #}
+        </div>
+    </header>
+
+    <main id="main-content" class="main-content">
+        <div class="auth-form-container js-scroll">
+            <h2>Login to Pegumax</h2>
+            {% if form.errors %}
+                <div class="form-errors" style="color: #ff6b6b; background-color: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                    <p>Your username and password didn't match. Please try again.</p>
+                </div>
+            {% endif %}
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" style="color: var(--highlight-color); background-color: var(--bg-dark-2); border: 1px solid var(--highlight-color); padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }} {# Renders form fields as paragraphs. Customize if needed. #}
+                <button type="submit">Login</button>
+            </form>
+            <div class="form-footer-links" style="margin-top: 25px;">
+                <p>Don't have an account? <a href="{% url 'main_site:signup' %}">Sign Up</a></p>
+                <p>Or, <a href="{% url 'main_site:home' %}">Continue as Guest</a></p>
+                {# <p><a href="{% url 'password_reset' %}">Forgot password?</a></p> #}
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer minimal-footer">
+        <div class="container">
+            <p>&copy; {% now "Y" %} Pegumax Inc. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script> {# Link to your main JS file if needed #}
+</body>
+</html>

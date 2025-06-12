@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.webp' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --bg-color: #0d0e12; --bg-dark-1: #1a1c23; --card-bg: #16181d; --text-color: #e0e0e0;
+            --text-light: #b0b0b0; --highlight-color: #00efff; --border-color: #333740;
+            --primary-font: 'Rajdhani', sans-serif; --secondary-font: 'Orbitron', sans-serif;
+        }
+        body { font-family: var(--primary-font); background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        /* Minimal Header - copy from account.html or admin_dashboard.html if desired, or use your main site header */
+        .page-header-minimal { background-color: var(--bg-dark-1); padding: 15px 0; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0, 239, 255, 0.1); }
+        .page-header-minimal .container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .page-header-minimal .logo-link { display: flex; align-items: center; text-decoration: none; color: var(--text-color); font-family: var(--secondary-font); font-size: 1.5em; font-weight: bold; }
+        .page-header-minimal .logo-link img { height: 40px; margin-right: 10px; filter: drop-shadow(0 0 5px var(--highlight-color)); }
+        .page-header-minimal .nav-links a { color: var(--text-light); text-decoration: none; margin-left: 20px; font-size: 1em; transition: color 0.3s ease; }
+        .page-header-minimal .nav-links a:hover { color: var(--highlight-color); }
+
+        .contact-main { flex-grow: 1; padding: 40px 20px; }
+        .contact-container { max-width: 800px; margin: 0 auto; background-color: var(--card-bg); padding: 30px 40px; border-radius: 10px; border: 1px solid var(--border-color); box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .contact-container h1 { font-family: var(--secondary-font); color: var(--highlight-color); text-align: center; margin-bottom: 15px; font-size: 2.5em; }
+        .contact-container .tagline { text-align: center; color: var(--text-light); margin-bottom: 30px; font-size: 1.1em; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: var(--text-light); margin-bottom: 8px; font-weight: 500; }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--bg-dark-2);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group textarea:focus {
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 0 2px rgba(0, 239, 255, 0.3);
+            outline: none;
+        }
+        .form-group textarea { min-height: 120px; resize: vertical; }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 6px;
+            font-family: var(--secondary-font);
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .submit-button:hover { background-color: #00c0c0; transform: translateY(-2px); }
+
+        .django-messages { list-style: none; padding: 0; margin: 0 0 20px 0; }
+        .django-messages li { padding: 10px 15px; margin-bottom: 10px; border-radius: 5px; text-align: center; }
+        .django-messages li.success { background-color: rgba(82, 196, 26, 0.2); color: #52c41a; border: 1px solid #52c41a; }
+        .django-messages li.error { background-color: rgba(255, 77, 79, 0.2); color: #ff4d4f; border: 1px solid #ff4d4f; }
+
+        .site-footer-minimal { text-align: center; padding: 30px 20px; border-top: 1px solid var(--border-color); color: var(--text-light); font-size: 0.9em; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <header class="page-header-minimal">
+        <div class="container">
+            <a href="{% url 'main_site:home' %}" class="logo-link">
+                <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo"> Pegumax Inc.
+            </a>
+            <nav class="nav-links">
+                <a href="{% url 'main_site:home' %}">Home</a>
+                <a href="{% url 'main_site:software_center' %}">Software</a>
+                {# Add other relevant links if needed #}
+            </nav>
+        </div>
+    </header>
+
+    <main class="contact-main">
+        <div class="contact-container">
+            <h1>Get In Touch</h1>
+            <p class="tagline">Have questions, feedback, or need support? We're here to help.</p>
+
+            {% if messages %}
+            <ul class="django-messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <form method="POST" action="{% url 'main_site:contact' %}">
+                {% csrf_token %}
+                <div class="form-group"><label for="name">Full Name</label><input type="text" id="name" name="name" required></div>
+                <div class="form-group"><label for="email">Email Address</label><input type="email" id="email" name="email" required></div>
+                <div class="form-group"><label for="subject">Subject</label><input type="text" id="subject" name="subject" required></div>
+                <div class="form-group"><label for="message">Your Message</label><textarea id="message" name="message" rows="5" required></textarea></div>
+                <button type="submit" class="submit-button">Send Message <i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="site-footer-minimal">
+        <p>&copy; {% now "Y" %} Pegumax Inc. All rights reserved.</p>
+    </footer>
+</body>
+</html>
