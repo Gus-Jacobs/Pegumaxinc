@@ -1063,6 +1063,13 @@ img, video, iframe {
     z-index: 1001; /* Ensure it's above other nav elements if needed */
 }
 
+/* Ensure parent containers of the dropdown can act as positioning contexts */
+.main-navbar .container,
+.page-header .container {
+    position: relative; /* This is crucial for absolute positioning of the dropdown */
+}
+
+
 .hamburger-line {
     display: block;
     width: 25px;
@@ -1101,6 +1108,7 @@ img, video, iframe {
         padding: 10px 0;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
+    
 
     /* Style for when the menu is active/open */
     .main-navbar .navbar-links.active,
@@ -1130,8 +1138,10 @@ img, video, iframe {
 
     /* Adjust main navbar/header container if needed when toggle is active */
     .main-navbar .container,
-    .page-header .container {
-        /* flex-wrap: wrap; /* Allow brand and toggle to be on same line if space */
+    .page-header .container { 
+        /* The position: relative added above is key. */
+        /* We also want to ensure the toggle and brand can sit side-by-side if space allows before wrapping. */
+        flex-wrap: wrap; 
         /* justify-content: space-between; */
     }
 
