@@ -1,4 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const navToggles = document.querySelectorAll('.nav-toggle');
+
+    navToggles.forEach(toggle => {
+        toggle.addEventListener('click', function () {
+            this.classList.toggle('active');
+            this.setAttribute('aria-expanded', this.classList.contains('active'));
+
+            // Find the sibling navigation links to toggle
+            let navLinks;
+            if (this.nextElementSibling && (this.nextElementSibling.classList.contains('navbar-links') || this.nextElementSibling.tagName === 'NAV')) {
+                if (this.nextElementSibling.classList.contains('navbar-links')) {
+                    navLinks = this.nextElementSibling;
+                } else if (this.nextElementSibling.tagName === 'NAV') {
+                    navLinks = this.nextElementSibling.querySelector('ul');
+                }
+            }
+            
+            // Fallback: Try to find it within the same container if not an immediate sibling
+            if (!navLinks) {
+                const parentContainer = this.closest('.container');
+                if (parentContainer) {
+                    navLinks = parentContainer.querySelector('.navbar-links') || parentContainer.querySelector('.main-nav ul');
+                }
+            }
+
+            if (navLinks) {
+                navLinks.classList.toggle('active');
+            }
+        });
+    });
     // 1. Dynamic Slogan Typewriter Effect
     const slogans = [
         "Unlocking the Next Dimension of Reality.",
