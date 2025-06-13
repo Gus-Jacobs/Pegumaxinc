@@ -1107,6 +1107,7 @@ img, video, iframe {
         border-top: 1px solid var(--accent-color);
         padding: 10px 0;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        z-index: 1000; /* Ensure dropdown is above other content */
     }
     
 
