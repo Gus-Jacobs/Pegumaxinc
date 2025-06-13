@@ -751,10 +751,6 @@ a.app-card.coming-soon:hover, div.app-card.coming-soon:hover {
     /* Add styles if you have a specific close button, e.g., position absolute top-right */
 }
 
-/* ==========================================================================
-   Responsive Styles - Add this block to the end of your style.css
-   ========================================================================== */
-
 /* General Responsive Utilities & Adjustments */
 img, video, iframe {
     max-width: 100%;
@@ -1052,4 +1048,118 @@ img, video, iframe {
        or elements within them not respecting their parent's boundaries.
        The `max-width: 100%` on images should help.
        If text is overflowing, consider `word-break: break-word;` on problematic text elements. */
+}
+
+/* ==========================================================================
+   NEW Responsive Navbar with Dropdown (Hamburger Menu)
+   ========================================================================== */
+
+.nav-toggle {
+    display: none; /* Hidden by default, shown in media query */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001; /* Ensure it's above other nav elements if needed */
+}
+
+.hamburger-line {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--accent-color); /* Or #fff if against dark nav */
+    margin: 5px 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Active state for hamburger icon (transforms into an 'X') */
+.nav-toggle.active .hamburger-line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+.nav-toggle.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+.nav-toggle.active .hamburger-line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+@media (max-width: 992px) { /* Adjust breakpoint as needed, 992px is a common tablet breakpoint */
+    .nav-toggle {
+        display: block; /* Show hamburger button */
+    }
+
+    .main-navbar .navbar-links,
+    .page-header .main-nav ul {
+        display: none; /* Hide the links by default on mobile */
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 100%; /* Position below the navbar/header */
+        left: 0;
+        background-color: var(--primary-color); /* Match your nav background */
+        border-top: 1px solid var(--accent-color);
+        padding: 10px 0;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    /* Style for when the menu is active/open */
+    .main-navbar .navbar-links.active,
+    .page-header .main-nav ul.active {
+        display: flex;
+    }
+
+    .main-navbar .navbar-links li,
+    .page-header .main-nav ul li {
+        width: 100%;
+        text-align: center;
+        margin-left: 0;
+    }
+
+    .main-navbar .navbar-links li a,
+    .page-header .main-nav ul li a {
+        display: block;
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(0, 255, 255, 0.1); /* Subtle separator */
+        width: 100%; /* Ensure links take full width */
+    }
+
+    .main-navbar .navbar-links li:last-child a,
+    .page-header .main-nav ul li:last-child a {
+        border-bottom: none;
+    }
+
+    /* Adjust main navbar/header container if needed when toggle is active */
+    .main-navbar .container,
+    .page-header .container {
+        /* flex-wrap: wrap; /* Allow brand and toggle to be on same line if space */
+        /* justify-content: space-between; */
+    }
+
+    /* Ensure the brand/logo and toggle button are spaced correctly */
+    .main-navbar .navbar-brand,
+    .page-header .header-logo-link {
+        /* Potentially reduce margin if they were pushing toggle too far */
+    }
+
+    /* Ensure hero section content is not overlapped by an open absolute positioned nav */
+    .hero-section {
+        /* If navbar is absolute, hero might need more top padding when nav is open,
+           or ensure nav is not part of the hero's direct flex flow.
+           The current .main-navbar is already position: absolute.
+           The .page-header is not, so its children stacking is fine.
+        */
+    }
+
+    /* The previous responsive styles for stacking nav items at 768px can be removed
+       or adjusted, as this new approach handles the dropdown behavior.
+       Specifically, these lines from your previous @media (max-width: 768px) block
+       might conflict or be redundant for .navbar-links and .main-nav ul:
+
+        .main-navbar .container, .page-header .container { flex-direction: column; align-items: center; }
+        .navbar-brand, .header-logo-link { margin-bottom: 15px; }
+        .navbar-links, .main-nav ul { flex-direction: column; width: 100%; text-align: center; }
+        .navbar-links li, .main-nav ul li { margin-left: 0; width: 100%; }
+        .navbar-links li a, .main-nav ul li a { display: block; padding: 12px 15px; border-bottom: 1px solid rgba(0, 255, 255, 0.1); }
+        .navbar-links li:last-child a, .main-nav ul li:last-child a { border-bottom: none; }
+    */
 }
