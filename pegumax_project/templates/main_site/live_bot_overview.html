@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Bot Operations Monitor - Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.webp' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --bg-color: #0d0e12; --bg-dark-1: #1a1c23; --card-bg: #16181d; --text-color: #e0e0e0;
+            --text-light: #b0b0b0; --highlight-color: #00efff; --border-color: #333740;
+            --primary-font: 'Rajdhani', sans-serif; --secondary-font: 'Orbitron', sans-serif;
+            --danger-color: #ff4d4f; --success-color: #52c41a; --warning-color: #faad14;
+        }
+        body { font-family: var(--primary-font); background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        .page-header-minimal { background-color: var(--bg-dark-1); padding: 15px 0; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0, 239, 255, 0.1); }
+        .page-header-minimal .container { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        .page-header-minimal .logo-link { display: flex; align-items: center; text-decoration: none; color: var(--text-color); font-family: var(--secondary-font); font-size: 1.5em; font-weight: bold; }
+        .page-header-minimal .logo-link img { height: 40px; margin-right: 10px; filter: drop-shadow(0 0 5px var(--highlight-color)); }
+        .admin-nav-links a { color: var(--text-light); text-decoration: none; margin-left: 25px; font-size: 1em; transition: color 0.3s ease, text-shadow 0.3s ease; padding: 5px 0; border-bottom: 2px solid transparent; }
+        .admin-nav-links a:hover, .admin-nav-links a.active { color: var(--highlight-color); text-shadow: 0 0 8px var(--highlight-color); border-bottom-color: var(--highlight-color); }
+        .dashboard-main { flex-grow: 1; padding: 30px 20px; }
+        .bot-monitor-header { text-align: center; margin-bottom: 40px; }
+        .bot-monitor-header h1 { font-family: var(--secondary-font); font-size: 2.8em; color: var(--highlight-color); text-shadow: 0 0 10px var(--highlight-color); margin-bottom: 5px;}
+        .bot-monitor-header p { font-size: 1.2em; color: var(--text-light); margin-top: 0; }
+
+        .bots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; }
+        .bot-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .bot-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0, 239, 255, 0.15), 0 0 0 1px var(--highlight-color); }
+        .bot-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+        .bot-card-header h3 { font-family: var(--secondary-font); font-size: 1.3em; color: var(--text-color); margin: 0; }
+        .bot-card-header .status-indicator { width: 12px; height: 12px; border-radius: 50%; }
+        .bot-card-header .status-indicator.online { background-color: var(--success-color); box-shadow: 0 0 8px var(--success-color); }
+        .bot-card-header .status-indicator.offline { background-color: var(--danger-color); box-shadow: 0 0 8px var(--danger-color); }
+        .bot-card-header .status-indicator.warning { background-color: var(--warning-color); box-shadow: 0 0 8px var(--warning-color); }
+
+        .bot-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; font-size: 0.95em;}
+        .bot-info-grid div strong { color: var(--text-light); }
+        .bot-info-grid div span { color: var(--text-color); font-weight: 500; }
+        .bot-income { color: var(--success-color); font-weight: bold; }
+        .bot-errors { color: var(--danger-color); font-weight: bold; }
+
+        .bot-activity-log { margin-top: 15px; max-height: 150px; overflow-y: auto; background-color: var(--bg-dark-2); padding: 10px; border-radius: 5px; font-size: 0.85em; }
+        .bot-activity-log p { margin: 0 0 5px 0; color: var(--text-light); border-bottom: 1px dashed var(--border-color); padding-bottom: 3px; }
+        .bot-activity-log p:last-child { border-bottom: none; }
+        .bot-activity-log .log-time { color: var(--highlight-color); margin-right: 8px; }
+        .bot-activity-log .log-error { color: var(--danger-color); }
+        
+        .bot-card .action-button {
+            display: block; width: 100%; text-align: center; padding: 10px;
+            border: none; border-radius: 0 0 8px 8px; /* Rounded bottom corners if card has rounded top */
+            font-weight: bold; cursor: pointer; text-decoration: none;
+            transition: background-color 0.3s ease; margin-top: 15px;
+        }
+        .bot-card .action-button.status-online { background-color: var(--danger-color); color: var(--text-color); } /* Stop button */
+        .bot-card .action-button.status-offline { background-color: var(--success-color); color: var(--text-color); } /* Start button */
+        .bot-card .action-button.status-warning { background-color: var(--warning-color); color: var(--bg-dark-1); } /* Restart button */
+
+        .site-footer-minimal { text-align: center; padding: 30px 20px; border-top: 1px solid var(--border-color); color: var(--text-light); font-size: 0.9em; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <header class="page-header-minimal">
+        <div class="container">
+            <a href="{% url 'main_site:home' %}" class="logo-link">
+                <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo"> Pegumax Inc.
+            </a>
+            <nav class="admin-nav-links">
+                <a href="{% url 'main_site:admin_dashboard' %}"><i class="fas fa-arrow-left fa-fw"></i> Back to Dashboard</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="bot-monitor-header">
+            <h1><i class="fas fa-wave-square"></i> Live Bot Operations Monitor</h1>
+            <p>Real-time telemetry and status overview of all active automated agents.</p>
+        </div>
+
+        <div class="bots-grid" id="botsGridContainer">
+            <!-- Bot cards will be injected here by JavaScript -->
+            <p style="text-align: center; grid-column: 1 / -1;">Initializing bot data stream... (No bots configured yet)</p>
+        </div>
+    </main>
+
+    <footer class="site-footer-minimal">
+        <p>&copy; {% now "Y" %} Pegumax Inc. Bot Operations Command.</p>
+    </footer>
+
+    <script>
+        // Placeholder data - replace with actual data fetching (e.g., via WebSocket or periodic AJAX)
+        const mockBotsData = [
+            { id: 'BOT-001-ALPHA', status: 'online', uptime: '72h 15m', tasksCompleted: 1203, currentTask: 'Data Scraping - Site X', income: 150.75, errors: 0, activity: [{time: '10:35', msg: 'Task #1203 completed.'}, {time: '10:30', msg: 'Initiated new task.'}] },
+            { id: 'BOT-002-BETA', status: 'warning', uptime: '12h 05m', tasksCompleted: 88, currentTask: 'Image Processing - Batch 7', income: 22.50, errors: 1, activity: [{time: '10:32', msg: 'Encountered timeout on image_xyz.jpg', type: 'error'}, {time: '10:20', msg: 'Processing batch 7.'}] },
+            { id: 'BOT-003-GAMMA', status: 'offline', uptime: '0h 0m', tasksCompleted: 0, currentTask: 'Idle', income: 0, errors: 0, activity: [{time: '09:50', msg: 'System shutdown initiated.'}] },
+        ];
+
+        function renderBotCards(bots) {
+            const container = document.getElementById('botsGridContainer');
+            if (!bots || bots.length === 0) {
+                container.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">No active bots found or data stream unavailable.</p>';
+                return;
+            }
+            container.innerHTML = bots.map(bot => `
+                <div class="bot-card">
+                    <div class="bot-card-header">
+                        <h3><i class="fas fa-robot"></i> ${bot.id}</h3>
+                        <span class="status-indicator ${bot.status}"></span>
+                    </div>
+                    <div class="bot-info-grid">
+                        <div><strong>Status:</strong> <span style="text-transform: capitalize; color: var(--${bot.status === 'online' ? 'success' : bot.status === 'warning' ? 'warning' : 'danger'}-color);">${bot.status}</span></div>
+                        <div><strong>Uptime:</strong> <span>${bot.uptime}</span></div>
+                        <div><strong>Tasks Done:</strong> <span>${bot.tasksCompleted}</span></div>
+                        <div><strong>Income:</strong> <span class="bot-income">$${bot.income.toFixed(2)}</span></div>
+                        <div><strong>Errors:</strong> <span class="bot-errors">${bot.errors}</span></div>
+                        <div style="grid-column: 1 / -1;"><strong>Current Task:</strong> <span>${bot.currentTask}</span></div>
+                    </div>
+                    <div class="bot-activity-log">
+                        ${bot.activity.map(log => `<p><span class="log-time">${log.time}</span> <span class="${log.type === 'error' ? 'log-error' : ''}">${log.msg}</span></p>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+        // Initial render (replace with actual data fetching logic)
+        // renderBotCards(mockBotsData); 
+        // To simulate fetching, you might do:
+        // setTimeout(() => renderBotCards(mockBotsData), 1000);
+    </script>
+</body>
+</html>
