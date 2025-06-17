@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm
+from .models import SoftwareIdea, FullAccessInquiry, ContactMessage, UserLoginHistory # Make sure you have models.py
 from .forms import SignUpForm, UserProfileEditForm, CustomPasswordChangeForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
@@ -160,57 +161,86 @@ def contact_page_view(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard_view(request):
-    if not (request.user.is_staff or request.user.is_superuser): # Redundant due to user_passes_test but good for clarity
-        return redirect('main_site:home')
-        
-    # Fetch data for the admin dashboard
-    # For "running number of bots", assuming BotStatus is a singleton for now
-    running_bots_count = 0
+    # Total configured bots (assuming each BotStatus entry is a configured bot)
+    total_configured_bots_count = BotStatus.objects.count()
+
+    # For popups - initial data (can be fetched via AJAX too)
+    # For now, let's count unacknowledged logs for notifications
+    # Convert QuerySets to list of dicts for JSON serialization
+    recent_logs_list = list(BotActivityLog.objects.order_by('-timestamp').values(
+        'timestamp', 'log_level', 'message', 'bot_id', 'platform' # Added platform
+    )[:20])
+    critical_logs_list = list(BotActivityLog.objects.filter(log_level__in=['ERROR', 'CRITICAL']).order_by('-timestamp').values(
+        'timestamp', 'log_level', 'message', 'bot_id', 'platform' # Added platform
+    )[:20])
+
+    # Notification counts (example: unacknowledged logs)
+    # You'd need to refine this logic, perhaps based on logs since last admin login or a specific timeframe
+    # For simplicity, count unacknowledged logs.
+    unacknowledged_general_logs_count = BotActivityLog.objects.filter(is_acknowledged=False).count()
+    unacknowledged_critical_logs_count = BotActivityLog.objects.filter(is_acknowledged=False, log_level__in=['ERROR', 'CRITICAL']).count()
+
+    # Get current running status for the single bot (if only one)
+    # This is for the "Active Bots" card which you wanted to show total bots,
+    # but the original template had "Active Bots". Let's provide both.
+    active_bots_count = 0
     try:
         bot_status_instance = BotStatus.objects.first() # Get the first (and only) BotStatus
         if bot_status_instance and "running" in bot_status_instance.status_message.lower(): # Or other active states
-            running_bots_count = 1
+            active_bots_count = 1
     except BotStatus.DoesNotExist:
         pass # running_bots_count remains 0
         
     total_users_count = User.objects.count()
     context = {
         'total_users_count': total_users_count,
-        'running_bots_count': running_bots_count,
-        # Add other context data needed for the main admin dashboard
+        'total_configured_bots_count': total_configured_bots_count, # For the card you mentioned
+        'active_bots_count': active_bots_count,
+        'recent_logs_for_popup_json': recent_logs_list, # Pass as JSON-ready list
+        'critical_logs_for_popup_json': critical_logs_list, # Pass as JSON-ready list
+        'unacknowledged_general_logs_count': min(unacknowledged_general_logs_count, 20), # Cap at 20 for display
+        'unacknowledged_critical_logs_count': min(unacknowledged_critical_logs_count, 20), # Cap at 20
+
     }
     return render(request, 'main_site/admin_dashboard.html', context)
 
 @login_required
 @user_passes_test(is_admin)
 def live_bot_overview_view(request):
-    if not request.user.is_staff: # Redundant due to user_passes_test
-        return redirect('main_site:home')
-        
     # Fetch data for all bots to display in cards
-    # For now, assuming a single "Freelance Bot" based on the singleton BotStatus model
     bots_data = []
-    try:
-        bot_status_instance = BotStatus.objects.first()
-        if bot_status_instance:
-            # Try to get the latest activity
-            latest_activity = BotActivityLog.objects.filter(
-                log_level__in=['INFO', 'SUCCESS', 'ERROR', 'WARNING'] # Example relevant levels
-            ).order_by('-timestamp').first()
+    all_bot_statuses = BotStatus.objects.all() # Assuming BotStatus can have multiple entries
+
+    for bot_status in all_bot_statuses:
+        latest_activity = BotActivityLog.objects.filter(bot_id=bot_status.bot_id).order_by('-timestamp').first()
+        
+        # Determine button state
+        button_action = "START_REQUESTED"
+        button_text = "Start Bot"
+        button_class = "success"
+        if "running" in bot_status.status_message.lower():
+            button_action = "STOP_REQUESTED"
+            button_text = "Stop Bot"
+            button_class = "danger"
+        elif "error" in bot_status.status_message.lower():
+            button_action = "RESTART_REQUESTED" # Assuming your bot handles this
+            button_text = "Restart Bot"
+            button_class = "warning"
             
             bots_data.append({
-                'id': 'freelance-bot', # A slug for URL generation
-                'name': 'Freelance Bot',
-                'status': bot_status_instance.status_message,
-                'last_heartbeat': bot_status_instance.last_heartbeat,
-                'latest_task': latest_activity.message if latest_activity else "No recent activity",
-                # Placeholder for stats - these need to be implemented in BotStatus or another model
-                'total_money_made': "N/A",
-                'jobs_scraped_today': "N/A",
-                'tasks_completed_today': "N/A",
-            })
-    except BotStatus.DoesNotExist:
-        pass # No bot status found
+            'id': bot_status.bot_id, # Use the unique bot_id from the model
+            'name': getattr(bot_status, 'name', bot_status.bot_id), # Use name field if exists, else bot_id
+            'status_message': bot_status.status_message,
+            'last_heartbeat': bot_status.last_heartbeat,
+            'latest_task': latest_activity.message if latest_activity else "No recent activity",
+            'total_earnings': getattr(bot_status, 'total_earnings', "0.00"), # Placeholder for earnings
+            'button_action': button_action,
+            'button_text': button_text,
+            'button_class': button_class,
+            # Add other stats here once BotStatus model is updated and bot reports them
+            'jobs_scraped_today': "N/A", # Placeholder
+            'tasks_completed_today': "N/A", # Placeholder
++        })
 
     context = {
         'bots': bots_data,
