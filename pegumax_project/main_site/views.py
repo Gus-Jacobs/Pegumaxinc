@@ -8,6 +8,8 @@ from .models import UserLoginActivity
 from django.contrib import messages
 from django.contrib.auth.models import User # Import the User model
 from django.core.mail import send_mail
+# Add any other necessary imports, e.g., models from bot_monitor
+from bot_monitor.models import BotStatus, BotActivityLog # Assuming these are your models
 
 
 def is_admin(user):
@@ -59,18 +61,6 @@ def signup_view(request):
     return render(request, 'main_site/signup.html', {'form': form})
 
 @login_required
-def admin_dashboard_view(request):
-    if not (request.user.is_staff or request.user.is_superuser):
-        return redirect('main_site:home')
-
-    total_users_count = User.objects.count() # Get total user count
-
-    context = {
-        'total_users_count': total_users_count,
-    }
-    return render(request, 'main_site/admin_dashboard.html', context)
-
-@login_required
 def edit_profile_view(request):
     if request.method == 'POST':
         form = UserProfileEditForm(request.POST, instance=request.user)
@@ -115,13 +105,6 @@ def get_login_history_view(request):
             'is_current_device': is_current_device,
         })
     return JsonResponse({'history': history_data})
-
-@login_required
-def live_bot_mode_view(request):
-    if not request.user.is_staff:
-        return redirect('main_site:home')
-    # You would fetch actual bot data here in a real scenario
-    return render(request, 'main_site/live_bot_mode.html')
 
 @login_required # Or remove if guests can submit
 def submit_software_idea_view(request):
@@ -175,13 +158,84 @@ def contact_page_view(request):
     return render(request, 'main_site/contact.html')
 
 @login_required
-@user_passes_test(is_admin) # Protect this view
+@user_passes_test(is_admin)
 def admin_dashboard_view(request):
-    # This view just renders the template. Data will be fetched by JavaScript.
-    return render(request, 'main_site/admin_dashboard.html')
+    if not (request.user.is_staff or request.user.is_superuser): # Redundant due to user_passes_test but good for clarity
+        return redirect('main_site:home')
+        
+    # Fetch data for the admin dashboard
+    # For "running number of bots", assuming BotStatus is a singleton for now
+    running_bots_count = 0
+    try:
+        bot_status_instance = BotStatus.objects.first() # Get the first (and only) BotStatus
+        if bot_status_instance and "running" in bot_status_instance.status_message.lower(): # Or other active states
+            running_bots_count = 1
+    except BotStatus.DoesNotExist:
+        pass # running_bots_count remains 0
+        
+    total_users_count = User.objects.count()
+    context = {
+        'total_users_count': total_users_count,
+        'running_bots_count': running_bots_count,
+        # Add other context data needed for the main admin dashboard
+    }
+    return render(request, 'main_site/admin_dashboard.html', context)
 
 @login_required
-@user_passes_test(is_admin) # Protect this view
-def live_bot_mode_view(request):
-    # This view just renders the template. Data will be fetched by JavaScript.
-    return render(request, 'main_site/live_bot_mode.html')
+@user_passes_test(is_admin)
+def live_bot_overview_view(request):
+    if not request.user.is_staff: # Redundant due to user_passes_test
+        return redirect('main_site:home')
+        
+    # Fetch data for all bots to display in cards
+    # For now, assuming a single "Freelance Bot" based on the singleton BotStatus model
+    bots_data = []
+    try:
+        bot_status_instance = BotStatus.objects.first()
+        if bot_status_instance:
+            # Try to get the latest activity
+            latest_activity = BotActivityLog.objects.filter(
+                log_level__in=['INFO', 'SUCCESS', 'ERROR', 'WARNING'] # Example relevant levels
+            ).order_by('-timestamp').first()
+            
+            bots_data.append({
+                'id': 'freelance-bot', # A slug for URL generation
+                'name': 'Freelance Bot',
+                'status': bot_status_instance.status_message,
+                'last_heartbeat': bot_status_instance.last_heartbeat,
+                'latest_task': latest_activity.message if latest_activity else "No recent activity",
+                # Placeholder for stats - these need to be implemented in BotStatus or another model
+                'total_money_made': "N/A",
+                'jobs_scraped_today': "N/A",
+                'tasks_completed_today': "N/A",
+            })
+    except BotStatus.DoesNotExist:
+        pass # No bot status found
+
+    context = {
+        'bots': bots_data,
+    }
+    return render(request, 'main_site/live_bot_overview.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def bot_detail_view(request, bot_id: str):
+    # Fetch detailed data for the specific bot_id
+    # For now, we only have one bot, so 'bot_id' might be "freelance-bot"
+    # This view will use the existing API endpoints from bot_monitor for logs, commands etc.
+    # The template bot_detail_page.html will make AJAX calls to those endpoints.
+    
+    # You might pass the bot_id or some initial bot info to the template
+    bot_name = "Freelance Bot" # Placeholder, derive from bot_id if multiple bots
+    if bot_id != "freelance-bot":
+        # Handle case for unknown bot_id if necessary, e.g., redirect or 404
+        pass
+
+    context = {
+        'bot_id': bot_id,
+        'bot_name': bot_name,
+        # Add any other initial context needed for the bot detail page
+    }
+    return render(request, 'main_site/bot_detail_page.html', context)
+
+# ... (your other views like edit_profile_view, etc.) ...
