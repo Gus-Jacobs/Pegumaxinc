@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm
 from .forms import SignUpForm, UserProfileEditForm, CustomPasswordChangeForm
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
 from .models import UserLoginActivity
 from django.contrib import messages
@@ -10,7 +10,10 @@ from django.contrib.auth.models import User # Import the User model
 from django.core.mail import send_mail
 
 
+def is_admin(user):
+    return user.is_authenticated and user.is_staff # or user.is_superuser
 
+# ... (your existing views like home, signup, login_view, etc.)
 
 # @login_required # Allow guest access to home page
 def home_view(request):
@@ -170,3 +173,15 @@ def contact_page_view(request):
         messages.success(request, "Thank you for your message! We'll get back to you soon.")
         return redirect('main_site:contact') # Redirect to clear form
     return render(request, 'main_site/contact.html')
+
+@login_required
+@user_passes_test(is_admin) # Protect this view
+def admin_dashboard_view(request):
+    # This view just renders the template. Data will be fetched by JavaScript.
+    return render(request, 'main_site/admin_dashboard.html')
+
+@login_required
+@user_passes_test(is_admin) # Protect this view
+def live_bot_mode_view(request):
+    # This view just renders the template. Data will be fetched by JavaScript.
+    return render(request, 'main_site/live_bot_mode.html')
