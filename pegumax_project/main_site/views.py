@@ -11,12 +11,68 @@ from django.contrib.auth.models import User # Import the User model
 from django.core.mail import send_mail
 # Add any other necessary imports, e.g., models from bot_monitor
 from bot_monitor.models import BotStatus, BotActivityLog # Assuming these are your models
-
+# views.py
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required, user_passes_test
+from bot_monitor.models import BotStatus, BotActivityLog # Ensure this import itself doesn't fail
+from django.db.utils import ProgrammingError
 
 def is_admin(user):
-    return user.is_authenticated and user.is_staff # or user.is_superuser
+    return user.is_authenticated and user.is_staff
 
-# ... (your existing views like home, signup, login_view, etc.)
+@login_required
+@user_passes_test(is_admin)
+def admin_dashboard_view(request):
+    context = {
+        'total_users_count': 0,
+        'total_configured_bots_count': 0,
+        'active_bots_count': 0,
+        'recent_logs_for_popup_json': [],
+        'critical_logs_for_popup_json': [],
+        'unacknowledged_general_logs_count': 0,
+        'unacknowledged_critical_logs_count': 0,
+    }
+    error_message_for_template = None
+
+    try:
+        context['total_users_count'] = User.objects.count()
+
+        # Test BotStatus access
+        context['total_configured_bots_count'] = BotStatus.objects.count()
+        bot_status_instance = BotStatus.objects.first()
+        if bot_status_instance:
+            status_msg = getattr(bot_status_instance, 'status_message', '')
+            if isinstance(status_msg, str) and "running" in status_msg.lower():
+                context['active_bots_count'] = 1
+        
+        # Test BotActivityLog access (very basic)
+        if BotActivityLog.objects.exists(): # Check if we can query it at all
+            # If exists() works, try a minimal .values() with fields you are most sure about
+            # For example, if 'timestamp' and 'message' are definitely in BotActivityLog
+            try:
+                # Only include fields you are 100% sure exist and are correctly named
+                # Start with just one or two core fields.
+                test_logs = list(BotActivityLog.objects.order_by('-timestamp').values('timestamp', 'message')[:1])
+                context['recent_logs_for_popup_json'] = test_logs # For testing, assign this minimal list
+            except Exception as e_log_query:
+                error_message_for_template = f"Error querying BotActivityLog: {type(e_log_query).__name__}"
+                print(f"Error querying BotActivityLog in admin_dashboard_view: {e_log_query}")
+
+
+    except ProgrammingError as db_error:
+        error_message_for_template = f"Database schema error: {type(db_error).__name__}. Check model fields and migrations."
+        print(f"Database ProgrammingError in admin_dashboard_view: {db_error}")
+    except Exception as e:
+        error_message_for_template = f"An unexpected error occurred: {type(e).__name__}"
+        print(f"Unexpected error in admin_dashboard_view: {e}")
+
+    if error_message_for_template:
+        context['error_message_for_template'] = error_message_for_template
+        # Potentially render a different template or add this error to the existing one
+        # For now, it will be in the context if an error is caught.
+
+    return render(request, 'main_site/admin_dashboard.html', context)
 
 # @login_required # Allow guest access to home page
 def home_view(request):
