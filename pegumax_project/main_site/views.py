@@ -184,12 +184,11 @@ def admin_dashboard_view(request):
     # This is for the "Active Bots" card which you wanted to show total bots,
     # but the original template had "Active Bots". Let's provide both.
     active_bots_count = 0
-    try:
-        bot_status_instance = BotStatus.objects.first() # Get the first (and only) BotStatus
-        if bot_status_instance and "running" in bot_status_instance.status_message.lower(): # Or other active states
+    bot_status_instance = BotStatus.objects.first()
+    if bot_status_instance: # Check if an instance exists
+        if hasattr(bot_status_instance, 'status_message') and isinstance(bot_status_instance.status_message, str) and \
+           "running" in bot_status_instance.status_message.lower():
             active_bots_count = 1
-    except BotStatus.DoesNotExist:
-        pass # running_bots_count remains 0
         
     total_users_count = User.objects.count()
     context = {
@@ -227,7 +226,7 @@ def live_bot_overview_view(request):
             button_text = "Restart Bot"
             button_class = "warning"
             
-            bots_data.append({
+        bots_data.append({
             'id': bot_status.bot_id, # Use the unique bot_id from the model
             'name': getattr(bot_status, 'name', bot_status.bot_id), # Use name field if exists, else bot_id
             'status_message': bot_status.status_message,
