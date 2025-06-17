@@ -155,7 +155,9 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Additional locations of static files
 STATICFILES_DIRS = [
-    BASE_DIR / "static", # If you have a project-wide static directory
+    # BASE_DIR / "static", # Remove or comment out if not used
+    BASE_DIR / "assets",   # Add path to your project-level assets directory
+
 ]
 
 LOGIN_URL = 'login' # Name of the login URL pattern
