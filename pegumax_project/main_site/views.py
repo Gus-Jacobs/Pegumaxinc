@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm
-from .models import SoftwareIdea, FullAccessInquiry, ContactMessage, UserLoginHistory # Make sure you have models.py
+from .models import SoftwareIdea, FullAccessInquiry, ContactMessage, UserLoginActivity # Make sure you have models.py
 from .forms import SignUpForm, UserProfileEditForm, CustomPasswordChangeForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
