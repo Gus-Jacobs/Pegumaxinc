@@ -2,9 +2,11 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import BasePermission
-from .serializers import BotActivityLogSerializer
+# from .serializers import BotActivityLogSerializer # Old name
 from .models import BotActivityLog, BotStatus # Import BotStatus
-from .serializers import BotActivityLogCreateSerializer, BotActivityLogDisplaySerializer, BotStatusSerializer
+from .serializers import (
+    BotActivityLogCreateSerializer, BotActivityLogDisplaySerializer, BotStatusSerializer
+)
 from django.utils.decorators import method_decorator # Ensure this is imported
 from django.conf import settings
 from django.utils import timezone # For timedelta
