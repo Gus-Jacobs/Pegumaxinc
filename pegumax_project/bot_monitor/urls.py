@@ -4,6 +4,9 @@ from .views import (
     AcknowledgeLogsView, BotCommandView
 )
 
+app_name = 'bot_monitor' # This line is crucial for namespacing
+
+
 urlpatterns = [
     path('receive-logs/', LogReceiverView.as_view(), name='receive_logs'),
     path('dashboard-data/', DashboardDataView.as_view(), name='dashboard_data'),
