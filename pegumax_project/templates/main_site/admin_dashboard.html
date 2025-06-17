@@ -4,261 +4,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Bot Dashboard</title>
-    <!-- Link to your existing CSS or use Bootstrap if available -->
-    <!-- <link rel="stylesheet" href="{% static 'css/your_styles.css' %}"> -->
+    <title>Admin Dashboard - Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> {# Your global styles #}
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.webp' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        body { font-family: sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; color: #333; }
-        .container { max-width: 1200px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2, h4 { color: #333; }
-        .card { border: 1px solid #ddd; border-radius: 4px; margin-bottom: 20px; }
-        .card-body { padding: 15px; }
-        .card-title { margin-top: 0; margin-bottom: 10px; font-size: 1.2em; }
-        .row { display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; }
-        .col-md-4 { position: relative; width: 100%; padding-right: 15px; padding-left: 15px; flex: 0 0 33.333333%; max-width: 33.333333%; }
-        .btn { display: inline-block; font-weight: 400; color: #212529; text-align: center; vertical-align: middle; cursor: pointer; background-color: transparent; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; }
-        .btn-sm { padding: .25rem .5rem; font-size: .875rem; line-height: 1.5; border-radius: .2rem; }
-        .btn-danger { color: #fff; background-color: #dc3545; border-color: #dc3545; }
-        .btn-primary { color: #fff; background-color: #007bff; border-color: #007bff; }
-        .btn-warning { color: #212529; background-color: #ffc107; border-color: #ffc107; }
-        .btn-secondary { color: #fff; background-color: #6c757d; border-color: #6c757d; }
-        .btn-info { color: #fff; background-color: #17a2b8; border-color: #17a2b8; }
-        .btn-success { color: #fff; background-color: #28a745; border-color: #28a745; }
-        .btn-group .btn { margin-right: 5px; }
-        .badge { display: inline-block; padding: .25em .4em; font-size: 75%; font-weight: 700; line-height: 1; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: .25rem; }
-        .bg-secondary { background-color: #6c757d !important; }
-        .bg-success { background-color: #28a745 !important; }
-        .bg-danger { background-color: #dc3545 !important; }
-        .bg-info { background-color: #17a2b8 !important; }
-        .bg-warning { background-color: #ffc107 !important; color: #212529 !important; }
-        .table-responsive { display: block; width: 100%; overflow-x: auto; }
-        .table { width: 100%; margin-bottom: 1rem; color: #212529; border-collapse: collapse; }
-        .table th, .table td { padding: .75rem; vertical-align: top; border-top: 1px solid #dee2e6; }
-        .table thead th { vertical-align: bottom; border-bottom: 2px solid #dee2e6; }
-        .table-striped tbody tr:nth-of-type(odd) { background-color: rgba(0,0,0,.05); }
-        .mb-3 { margin-bottom: 1rem !important; }
+        :root {
+            /* Ensure these are defined in your style.css or here for fallback */
+            --bg-color: #0d0e12;
+            --bg-dark-1: #1a1c23;
+            --card-bg: #16181d;
+            --text-color: #e0e0e0;
+            --text-light: #b0b0b0;
+            --highlight-color: #00efff;
+            --border-color: #333740;
+            --primary-font: 'Rajdhani', sans-serif;
+            --secondary-font: 'Orbitron', sans-serif;
+            --danger-color: #ff4d4f;
+            --success-color: #52c41a;
+            --warning-color: #faad14;
+        }
+        body {
+            font-family: var(--primary-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; min-height: 100vh;
+        }
+        .page-header-minimal {
+            background-color: var(--bg-dark-1); padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0, 239, 255, 0.1);
+        }
+        .page-header-minimal .container { display: flex; justify-content: space-between; align-items: center; max-width: 1300px; margin: 0 auto; padding: 0 20px; }
+        .page-header-minimal .logo-link { display: flex; align-items: center; text-decoration: none; color: var(--text-color); font-family: var(--secondary-font); font-size: 1.5em; font-weight: bold; }
+        .page-header-minimal .logo-link img { height: 40px; margin-right: 10px; filter: drop-shadow(0 0 5px var(--highlight-color)); }
+        .admin-nav-links a { color: var(--text-light); text-decoration: none; margin-left: 25px; font-size: 1em; transition: color 0.3s ease, text-shadow 0.3s ease; padding: 5px 0; border-bottom: 2px solid transparent; }
+        .admin-nav-links a:hover, .admin-nav-links a.active { color: var(--highlight-color); text-shadow: 0 0 8px var(--highlight-color); border-bottom-color: var(--highlight-color); }
+        .dashboard-main { flex-grow: 1; padding: 40px 30px; /* Increased padding */ }
+        .admin-dashboard-header { text-align: center; margin-bottom: 50px; /* Increased margin */ }
+        .admin-dashboard-header h1 { font-family: var(--secondary-font); font-size: 3em; /* Larger title */ color: var(--highlight-color); text-shadow: 0 0 12px var(--highlight-color), 0 0 20px rgba(0, 239, 255, 0.5); margin-bottom: 10px;}
+        .admin-dashboard-header p { font-size: 1.3em; color: var(--text-light); margin-top: 0; letter-spacing: 0.5px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* Slightly larger minmax */
+            gap: 30px; /* Increased gap */
+            margin-bottom: 50px; /* Increased margin */
+        }
+        .stat-card {
+            background: linear-gradient(145deg, var(--card-bg), var(--bg-dark-2)); /* Subtle gradient */
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.03); /* More pronounced hover */
+            box-shadow: 0 10px 25px rgba(0, 239, 255, 0.2), 0 0 0 2px var(--highlight-color); /* Glow border */
+        }
+        .stat-card i {
+            font-size: 2.8em; /* Larger icon */
+            color: var(--highlight-color);
+            margin-bottom: 15px; display: block;
+            text-shadow: 0 0 10px rgba(0, 239, 255, 0.7);
+        }
+        .stat-card .stat-value {
+            font-family: var(--secondary-font);
+            font-size: 2.5em; /* Larger value */
+            color: var(--text-color); display: block; margin-bottom: 5px;
+            line-height: 1;
+        }
+        .stat-card .stat-label { font-size: 1.1em; color: var(--text-light); }
+
+        .dashboard-sections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); /* Slightly larger minmax */
+            gap: 30px; /* Increased gap */
+        }
+        .dashboard-section-card {
+            background: radial-gradient(circle at top left, var(--card-bg) 0%, var(--bg-dark-1) 100%); /* Different gradient */
+            border-radius: 12px;
+            padding: 25px 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .dashboard-section-card h3 {
+            font-family: var(--secondary-font); font-size: 1.5em; color: var(--highlight-color);
+            margin-top: 0; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--highlight-color); /* Highlighted border */
+            display: flex; align-items: center;
+        }
+        .dashboard-section-card h3 i.section-icon { /* Specific class for section header icons */
+            margin-right: 12px;
+            font-size: 1.2em; /* Relative to h3 font-size */
+            opacity: 0.9;
+        }
+        .dashboard-section-card ul { list-style: none; padding-left: 0; }
+        .dashboard-section-card ul li { margin-bottom: 10px; }
+        .dashboard-section-card ul li a {
+            color: var(--text-light); text-decoration: none;
+            transition: color 0.3s ease, background-color 0.3s ease, padding-left 0.3s ease;
+            display: flex; align-items: center;
+            padding: 8px 10px; border-radius: 5px;
+        }
+        .dashboard-section-card ul li a:hover { color: var(--highlight-color); background-color: rgba(0, 239, 255, 0.05); padding-left: 15px; }
+        .dashboard-section-card ul li a i.link-icon { margin-right: 10px; color: var(--highlight-color); width: 20px; text-align: center; transition: transform 0.3s ease; }
+        .dashboard-section-card ul li a:hover i.link-icon { transform: scale(1.1) rotate(-5deg); }
+        .notification-badge {
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7em;
+            margin-left: 8px;
+            vertical-align: super;
+        }
+        .site-footer-minimal { text-align: center; padding: 30px 20px; border-top: 1px solid var(--border-color); color: var(--text-light); font-size: 0.9em; margin-top: 40px; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>Bot Administration Dashboard</h2>
-    <hr>
+    <header class="page-header-minimal">
+        <div class="container">
+            <a href="{% url 'main_site:home' %}" class="logo-link">
+                <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo"> Pegumax Inc.
+            </a>
+            <nav class="admin-nav-links">
+                <a href="{% url 'main_site:account' %}"><i class="fas fa-user-circle fa-fw"></i> User Account</a>
+                <a href="{% url 'admin:index' %}" target="_blank"><i class="fas fa-cogs fa-fw"></i> Core Admin</a>
+            </nav>
+        </div>
+    </header>
 
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Bot Status</h5>
-                    <p id="bot-active-status">Status: <span class="badge bg-secondary">Unknown</span></p>
-                    <p id="bot-last-heartbeat">Last Heartbeat: N/A</p>
-                    <p id="bot-current-message">Message: N/A</p>
-                    <p id="bot-current-command">Command: N/A</p>
-                    <button id="stop-bot-btn" class="btn btn-danger btn-sm">Request Bot Stop</button>
-                </div>
+    <main class="dashboard-main">
+        <div class="admin-dashboard-header">
+            <h1>Administrator Control Hub</h1>
+            <p>System Oversight &amp; Operational Management Interface</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><i class="fas fa-users"></i> <span class="stat-value" id="total-users">{{ total_users_count|default:"N/A" }}</span> <span class="stat-label">Registered Users</span></div>
+            <div class="stat-card"><i></i> <span class="stat-value" id="total-bots">{{ total_configured_bots_count|default:"0" }}</span> <span class="stat-label">Total Configured Bots</span></div>
+            <div class="stat-card"><i class="fas fa-chart-line"></i> <span class="stat-value" id="site-traffic">--</span> <span class="stat-label">Traffic (Pending)</span></div>
+            <div class="stat-card"><i class="fas fa-server"></i> <span class="stat-value" id="server-status" style="color: var(--success-color);">Nominal</span> <span class="stat-label">System Status</span></div>
+        </div>
+
+        <div class="dashboard-sections-grid">
+            <section class="dashboard-section-card">
+                <h3><i class="fas fa-microchip fa-fw section-icon"></i> Bot Operations</h3>
+                <p>Real-time status and performance of automated systems.</p>
+                <ul>
+                    <li><a href="{% url 'main_site:live_bot_mode' %}"><i class="fas fa-tv fa-fw link-icon"></i> Live Bot Mode</a></li>
+                    <li><a href="#" id="botActivityLogsLink"><i class="fas fa-history fa-fw link-icon"></i> Bot Activity Logs
+                        {% if unacknowledged_general_logs_count > 0 %}
+                            <span class="notification-badge" id="generalLogsBadge">{{ unacknowledged_general_logs_count }}</span>
+                        {% endif %}
+                    </a></li>
+                    <li><a href="#" id="systemAlertsLink"><i class="fas fa-exclamation-triangle fa-fw link-icon"></i> System Alerts
+                        {% if unacknowledged_critical_logs_count > 0 %}
+                            <span class="notification-badge" id="criticalLogsBadge">{{ unacknowledged_critical_logs_count }}</span>
+                        {% endif %}
+                    </a></li>
+                </ul>
+                <p><em>(Backend integration for live data is required)</em></p>
+            </section>
+
+            <section class="dashboard-section-card">
+                <h3><i class="fas fa-users-cog fa-fw section-icon"></i> User Management</h3>
+                <ul>
+                    <li><a href="{% url 'admin:auth_user_changelist' %}" target="_blank"><i class="fas fa-users fa-fw link-icon"></i> All Users (Core Admin)</a></li>
+                    <li><a href="{% url 'admin:auth_user_add' %}" target="_blank"><i class="fas fa-user-plus fa-fw link-icon"></i> Add New User (Core Admin)</a></li>
+                    <li><a href="{% url 'admin:auth_user_changelist' %}?is_active__exact=0" target="_blank"><i class="fas fa-user-slash fa-fw link-icon"></i> Inactive/Banned Users</a></li>
+                </ul>
+            </section>
+
+            <section class="dashboard-section-card">
+                <h3><i class="fas fa-sitemap fa-fw section-icon"></i> Site &amp; Content</h3>
+                <ul>
+                    <li><a href="#"><i class="fas fa-file-alt fa-fw link-icon"></i> Manage Site Pages</a></li>
+                    <li><a href="#"><i class="fas fa-bullhorn fa-fw link-icon"></i> Post Announcements</a></li>
+                    <li><a href="#"><i class="fas fa-tools fa-fw link-icon"></i> Global Configuration</a></li>
+
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer-minimal">
+        <p>&copy; {% now "Y" %} Pegumax Inc. Central Command. All systems operational.</p>
+    </footer>
+    <!-- Modal for Logs/Alerts -->
+    <div id="logsModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.7);">
+        <div style="background-color:var(--card-bg); margin:10% auto; padding:20px; border:1px solid var(--border-color); border-radius:10px; width:80%; max-width:800px; color:var(--text-color); position:relative;">
+            <span id="closeLogsModal" style="color:var(--text-light); float:right; font-size:28px; font-weight:bold; cursor:pointer;">&times;</span>
+            <h3 id="logsModalTitle" style="font-family:var(--secondary-font); color:var(--highlight-color); border-bottom:1px solid var(--highlight-color); padding-bottom:10px; margin-bottom:15px;">Log Viewer</h3>
+            <div id="logsModalBody" style="max-height:400px; overflow-y:auto; font-size:0.9em; line-height:1.6;">
+                <p>Loading...</p>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Log Activity</h5>
-                    <p>Unacknowledged Logs: <span id="unread-logs-count" class="badge bg-info">0</span></p>
-                    <p>Critical Errors (Unack.): <span id="critical-errors-count" class="badge bg-danger">0</span></p>
-                </div>
-            </div>
-        </div>
     </div>
 
-    <h4>Manage Logs</h4>
-    <div class="btn-group mb-3" role="group">
-        <button type="button" class="btn btn-primary" onclick="fetchLogs('recent_unacknowledged')">Recent Unacknowledged</button>
-        <button type="button" class="btn btn-warning" onclick="fetchLogs('critical_unacknowledged')">Critical Unacknowledged</button>
-        <button type="button" class="btn btn-secondary" onclick="fetchLogs('all_unacknowledged')">All Unacknowledged</button>
-        <button type="button" class="btn btn-info" onclick="fetchLogs('all')">All Logs (Recent 50)</button>
-    </div>
-    
-    <button id="acknowledge-selected-btn" class="btn btn-success mb-3" style="display:none;" onclick="acknowledgeSelectedLogs()">Acknowledge Selected</button>
+    {{ recent_logs_for_popup_json|json_script:"recent_logs_data" }}
+    {{ critical_logs_for_popup_json|json_script:"critical_logs_data" }}
 
-    <div id="logs-display-area" class="table-responsive">
-        <table class="table table-striped table-sm">
-            <thead>
-                <tr>
-                    <th><input type="checkbox" id="select-all-logs" onclick="toggleSelectAllLogs(this.checked)"></th>
-                    <th>Timestamp</th>
-                    <th>Level</th>
-                    <th>Platform</th>
-                    <th>Source</th>
-                    <th>Message</th>
-                    <th>Ack?</th>
-                </tr>
-            </thead>
-            <tbody id="logs-table-body">
-                <tr><td colspan="7">Select a log type to view.</td></tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const botActivityLogsLink = document.getElementById('botActivityLogsLink');
+        const systemAlertsLink = document.getElementById('systemAlertsLink');
+        const logsModal = document.getElementById('logsModal');
+        const logsModalTitle = document.getElementById('logsModalTitle');
+        const logsModalBody = document.getElementById('logsModalBody');
+        const closeLogsModal = document.getElementById('closeLogsModal');
+        const generalLogsBadge = document.getElementById('generalLogsBadge');
+        const criticalLogsBadge = document.getElementById('criticalLogsBadge');
 
-<script>
-    const dashboardApiUrl = "{% url 'bot_monitor:dashboard_data' %}";
-    const logsApiUrl = "{% url 'bot_monitor:get_bot_logs' %}";
-    const acknowledgeApiUrl = "{% url 'bot_monitor:acknowledge_logs' %}";
-    const commandApiUrl = "{% url 'bot_monitor:bot_command' %}";
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    const csrftoken = getCookie('csrftoken');
-
-    async function fetchDashboardData() {
-        try {
-            const response = await fetch(dashboardApiUrl);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const data = await response.json();
-
-            document.getElementById('bot-active-status').innerHTML = `Status: <span class="badge ${data.is_bot_active ? 'bg-success' : 'bg-danger'}">${data.is_bot_active ? 'Active' : 'Inactive'}</span>`;
-            document.getElementById('bot-last-heartbeat').textContent = `Last Heartbeat: ${new Date(data.last_heartbeat).toLocaleString()}`;
-            document.getElementById('bot-current-message').textContent = `Message: ${data.bot_status_message}`;
-            document.getElementById('bot-current-command').textContent = `Command: ${data.bot_command}`;
-            document.getElementById('unread-logs-count').textContent = data.unread_logs_count;
-            document.getElementById('critical-errors-count').textContent = data.critical_errors_count;
-        } catch (error) {
-            console.error("Error fetching dashboard data:", error);
-            document.getElementById('bot-active-status').innerHTML = `Status: <span class="badge bg-warning">Error Fetching</span>`;
-        }
-    }
-
-    async function fetchLogs(logType = 'recent_unacknowledged') {
-        const logsTableBody = document.getElementById('logs-table-body');
-        logsTableBody.innerHTML = '<tr><td colspan="7">Loading logs...</td></tr>';
-        document.getElementById('acknowledge-selected-btn').style.display = 'none';
-        document.getElementById('select-all-logs').checked = false;
-
-        try {
-            const response = await fetch(`${logsApiUrl}?type=${logType}&limit=50`);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const logs = await response.json();
-
-            if (logs.length === 0) {
-                logsTableBody.innerHTML = '<tr><td colspan="7">No logs found for this type.</td></tr>';
+        function formatLogs(logEntries, title) {
+            logsModalTitle.textContent = title;
+            if (!logEntries || logEntries.length === 0) {
+                logsModalBody.innerHTML = '<p>No logs found.</p>';
                 return;
             }
-
-            let rowsHtml = '';
-            logs.forEach(log => {
-                rowsHtml += `
-                    <tr>
-                        <td><input type="checkbox" class="log-checkbox" value="${log.id}" ${log.is_acknowledged ? 'disabled' : ''}></td>
-                        <td>${new Date(log.timestamp).toLocaleString()}</td>
-                        <td><span class="badge bg-${getLogLevelClass(log.log_level)}">${log.log_level}</span></td>
-                        <td>${escapeHtml(log.platform) || 'N/A'}</td>
-                        <td>${escapeHtml(log.source) || 'N/A'}</td>
-                        <td>${escapeHtml(log.message.substring(0, 150))}${log.message.length > 150 ? '...' : ''}</td>
-                        <td>${log.is_acknowledged ? 'Yes' : 'No'}</td>
-                    </tr>
-                `;
+            let html = '<ul style="list-style:none; padding:0;">';
+            logEntries.forEach(log => {
+                // log objects now come from parsed JSON
+                let botIdentifier = log.bot_id || 'System'; // Fallback if bot_id is not present
+                let platformIdentifier = log.platform || 'N/A';
+                html += `<li style="padding: 5px 0; border-bottom: 1px dashed var(--border-color);">
+                            <small style="color:var(--highlight-color);">${new Date(log.timestamp).toLocaleString()}</small>
+                            <strong style="color:var(--text-light);">[${log.log_level || 'INFO'}]</strong> <!-- Default to INFO if missing -->
+                            <strong style="color:var(--warning-color); margin-left:5px;">[Bot: ${botIdentifier}]</strong>
+                            ${log.message}
+                         </li>`;
             });
-            logsTableBody.innerHTML = rowsHtml;
-            if (logs.some(log => !log.is_acknowledged)) {
-                 document.getElementById('acknowledge-selected-btn').style.display = 'inline-block';
+            html += '</ul>';
+            logsModalBody.innerHTML = html;
+        }
+
+        if (botActivityLogsLink) {
+            botActivityLogsLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                const initialLogs = JSON.parse(document.getElementById('recent_logs_data').textContent);
+                // If not using 'safe', ensure logs are properly escaped or construct HTML carefully
+                // For a real application, you might make an AJAX call here to get fresh logs
+                // fetch("{% url 'bot_monitor:get_bot_logs' %}?limit=20")
+                // .then(response => response.json()).then(data => formatLogs(data.logs, 'Recent Bot Activity'));
+                formatLogs(initialLogs, 'Recent Bot Activity (Last 20)');
+                logsModal.style.display = 'block';
+                if(generalLogsBadge) generalLogsBadge.style.display = 'none'; // Hide badge
+                // TODO: Optionally, send an AJAX request to mark these logs as "seen" or "acknowledged" on backend
+            });
+        }
+
+        if (systemAlertsLink) {
+            systemAlertsLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                const initialCriticalLogs = JSON.parse(document.getElementById('critical_logs_data').textContent);
+                // fetch("{% url 'bot_monitor:get_bot_logs' %}?level=ERROR,CRITICAL&limit=20")
+                // .then(response => response.json()).then(data => formatLogs(data.logs, 'Critical System Alerts'));
+                formatLogs(initialCriticalLogs, 'Critical System Alerts (Last 20)');
+                logsModal.style.display = 'block';
+                if(criticalLogsBadge) criticalLogsBadge.style.display = 'none'; // Hide badge
+            });
+        }
+
+        if (closeLogsModal) {
+            closeLogsModal.addEventListener('click', function() {
+                logsModal.style.display = 'none';
+            });
+        }
+
+        window.addEventListener('click', function(event) {
+            if (event.target == logsModal) {
+                logsModal.style.display = 'none';
             }
-        } catch (error) {
-            console.error("Error fetching logs:", error);
-            logsTableBody.innerHTML = '<tr><td colspan="7">Error loading logs.</td></tr>';
-        }
-    }
-    
-    function getLogLevelClass(level) {
-        level = (level || '').toUpperCase();
-        if (level === 'ERROR' || level === 'CRITICAL') return 'danger';
-        if (level === 'WARNING') return 'warning';
-        if (level === 'INFO') return 'info';
-        return 'secondary';
-    }
-
-    function escapeHtml(unsafe) {
-        if (unsafe === null || typeof unsafe === 'undefined') return '';
-        return String(unsafe)
-             .replace(/&/g, "&amp;")
-             .replace(/</g, "&lt;")
-             .replace(/>/g, "&gt;")
-             .replace(/"/g, "&quot;")
-             .replace(/'/g, "&#039;");
-    }
-
-    function toggleSelectAllLogs(checked) {
-        document.querySelectorAll('.log-checkbox:not(:disabled)').forEach(checkbox => {
-            checkbox.checked = checked;
-        });
-    }
-
-    async function acknowledgeSelectedLogs() {
-        const selectedLogIds = Array.from(document.querySelectorAll('.log-checkbox:checked'))
-                                   .map(cb => parseInt(cb.value));
-        if (selectedLogIds.length === 0) {
-            alert("Please select logs to acknowledge.");
-            return;
-        }
-
-        try {
-            const response = await fetch(acknowledgeApiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
-                body: JSON.stringify({ log_ids: selectedLogIds })
-            });
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const result = await response.json();
-            alert(result.message);
-            fetchDashboardData(); 
-            const currentLogType = document.querySelector('.btn-group .btn.active') ? document.querySelector('.btn-group .btn.active').getAttribute('data-log-type') || 'recent_unacknowledged' : 'recent_unacknowledged';
-            fetchLogs(currentLogType);
-        } catch (error) {
-            console.error("Error acknowledging logs:", error);
-            alert("Failed to acknowledge logs.");
-        }
-    }
-
-    async function sendBotStopCommand() {
-        if (!confirm("Are you sure you want to request the bot to stop?")) return;
-        try {
-            const response = await fetch(commandApiUrl, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
-                body: JSON.stringify({ command: "STOP_REQUESTED" })
-            });
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const result = await response.json();
-            alert(result.message);
-            fetchDashboardData();
-        } catch (error) {
-            console.error("Error sending stop command:", error);
-            alert("Failed to send stop command.");
-        }
-    }
-
-    document.getElementById('stop-bot-btn').addEventListener('click', sendBotStopCommand);
-    document.querySelectorAll('.btn-group .btn').forEach(button => {
-        button.addEventListener('click', (e) => {
-            document.querySelectorAll('.btn-group .btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            // Store log type in a data attribute if needed, or pass directly
-            // fetchLogs(e.target.getAttribute('data-log-type')); 
         });
     });
-
-    fetchDashboardData();
-    fetchLogs();
-    setInterval(fetchDashboardData, 30000);
-</script>
+    </script>
 </body>
 </html>
