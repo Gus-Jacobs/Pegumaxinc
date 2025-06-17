@@ -18,21 +18,28 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # This line below should be the ONLY definition of SECRET_KEY for production.
 # The hardcoded key is only a fallback if the environment variable is not set (useful for local dev if you don't set it locally).
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-default-development-secret-key-here-make-it-long-and-random')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-default-development-secret-key-here-make-it-long-and-random-for-local-dev')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 # For clarity, it's often better to default DEBUG to True for local dev if the env var isn't set.
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['pegumaxinc.onrender.com', '127.0.0.1', 'localhost'] # Add more as needed
-if os.environ.get('DJANGO_ALLOWED_HOSTS'):
-    ALLOWED_HOSTS.extend(os.environ.get('DJANGO_ALLOWED_HOSTS').split(','))
+ALLOWED_HOSTS_STRING = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
+if ALLOWED_HOSTS_STRING:
+    ALLOWED_HOSTS = ALLOWED_HOSTS_STRING.split(',')
+else:
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost'] # Default for local development
+    if not DEBUG: # In production, if DJANGO_ALLOWED_HOSTS is not set, this is a problem.
+        print("WARNING: DJANGO_ALLOWED_HOSTS environment variable is not set. This is insecure for production.")
+        # ALLOWED_HOSTS = ['*'] # Consider this carefully if you must, but specific domains are better.
+
+# Application definition
 
 
 INSTALLED_APPS = [
@@ -45,6 +52,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main_site.apps.MainSiteConfig', # or just 'main_site'
     'django.contrib.humanize',
+    'rest_framework', # Make sure this is also present
+    'bot_monitor',
+    'whitenoise.runserver_nostatic', # For serving static files in development if DEBUG=False
 ]
 
 # STATIC_URL is defined later, this block is for WhiteNoise specific settings
@@ -54,9 +64,10 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware', # Should be high up, but after SecurityMiddleware
+    #'bot_monitor.middleware.CsrfExemptAPIMiddleware', # Add custom middleware here
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware', # Ensure this is active for production
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -87,17 +98,19 @@ WSGI_APPLICATION = 'pegumax_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        # Neon often requires SSL. dj_database_url usually handles this if
-        # ?sslmode=require is part of your DATABASE_URL.
-        # If not, you might need to explicitly set ssl_require:
-        # ssl_require=os.environ.get('DJANGO_DB_SSL_REQUIRE', 'True') == 'True'
-    )
-}
+# Default to SQLite for local development if DATABASE_URL is not set
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=os.environ.get('DJANGO_DB_SSL_REQUIRE', 'False') == 'True')
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -134,14 +147,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-# This is where Django will look for static files during development.
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles' # Directory where collectstatic will gather files
 
+# Enable WhiteNoise static file serving.
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Additional locations of static files
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'assets'), # Tell Django where your assets folder is
+    BASE_DIR / "static", # If you have a project-wide static directory
 ]
-# This is where `collectstatic` will gather all static files for production.
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 LOGIN_URL = 'login' # Name of the login URL pattern
 LOGIN_REDIRECT_URL = 'main_site:home' # Redirect after successful login
@@ -160,6 +175,23 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@yourdomain.
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Add these if not already present or uncommented at the end of your settings.py
-CSRF_TRUSTED_ORIGINS = ['https://pegumaxinc.onrender.com'] # Replace if your URL is different
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# API Key for Bot Remote Logging - Moved here for clarity
+BOT_REMOTE_LOG_API_KEY = os.environ.get('DJANGO_BOT_REMOTE_LOG_API_KEY', "VvaGooVFHFLeYd7LNUCvXqcTwBBteeAL_local_fallback")
+
+# Security settings for production (when DEBUG=False)
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'True') == 'True'
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # If behind a proxy like Nginx or Heroku/Render load balancer
+
+    # Configure CSRF_TRUSTED_ORIGINS with your production domain(s)
+    # Example: CSRF_TRUSTED_ORIGINS = ['https://your_render_app_name.onrender.com', 'https://www.yourdomain.com']
+    CSRF_TRUSTED_ORIGINS_STRING = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS')
+    if CSRF_TRUSTED_ORIGINS_STRING:
+        CSRF_TRUSTED_ORIGINS = CSRF_TRUSTED_ORIGINS_STRING.split(',')
+    else:
+        print("WARNING: DJANGO_CSRF_TRUSTED_ORIGINS is not set in production. This might cause issues with POST requests from your domain.")
