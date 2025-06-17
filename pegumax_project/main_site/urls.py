@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views # Ensure you have views.py
+from . import views # Make sure you have views.py in the same directory
 # from .views import get_login_history # Assuming this was moved or handled differently
 
 
@@ -12,13 +12,15 @@ urlpatterns = [
     path('community/', views.community_view, name='community'),
     path('store/', views.store_view, name='store'),
     path('admin-login/', views.admin_login_view, name='admin_login'), # Temporary
-    path('account/', views.account_view, name='account'), # Temporary
+    path('account/', views.account_view, name='account'),
     path('movie-word-scanner/', views.movie_word_scanner_view, name='movie_word_scanner'),
     path('signup/', views.signup_view, name='signup'),
     # Django's auth system will handle login and logout views by default
     # path('login/', views.CustomLoginView.as_view(), name='login'), # If you need a custom login view
     # path('logout/', views.CustomLogoutView.as_view(), name='logout'), # If you need a custom logout view
-    path('admin-dashboard/', views.admin_dashboard_view, name='admin_dashboard'),
+    path('admin-dashboard/', views.admin_dashboard_view, name='admin_dashboard'), # Main admin dashboard
+    path('live-bot-overview/', views.live_bot_overview_view, name='live_bot_overview'), # Overview of all bots
+    path('live-bot-mode/<str:bot_id>/', views.bot_detail_view, name='bot_detail_page'), # Detail page for a specific bot
     # New URLs for account popups
     path('account/edit-profile/', views.edit_profile_view, name='edit_profile'),
     path('account/change-password/', views.change_password_view, name='change_password_popup'), # Renamed to avoid conflict
