@@ -28,10 +28,11 @@ class BotActivityLog(models.Model):
 
     class BotStatus(models.Model):
     """Singleton model to track bot's last known activity and commands."""
+    # Indentation was missing for the class body
     last_heartbeat = models.DateTimeField(default=timezone.now)
     status_message = models.CharField(max_length=255, default="Idle") # e.g., Running, Idle, Error, Starting, Stopping
     # command can be 'NONE', 'STOP_REQUESTED'
-    command = models.CharField(max_length=50, default="NONE") 
+    command = models.CharField(max_length=50, default="NONE")
 
     def __str__(self):
         return f"Bot Status: {self.status_message} (Last heartbeat: {self.last_heartbeat.strftime('%Y-%m-%d %H:%M:%S')}, Command: {self.command})"
@@ -43,7 +44,6 @@ class BotActivityLog(models.Model):
             defaults['command'] = command_val
         obj, created = cls.objects.update_or_create(pk=1, defaults=defaults)
         return obj
-
 
     @classmethod
     def get_status(cls):
