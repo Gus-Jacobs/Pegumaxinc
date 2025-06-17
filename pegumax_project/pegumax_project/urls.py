@@ -15,12 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include # Add include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main_site.urls', namespace='main_site')),
     path('accounts/', include('django.contrib.auth.urls')), # Django's built-in auth URLs (login, logout, password reset, etc.)
+    path('dashboard/', TemplateView.as_view(template_name='admin_dashboard.html'), name='admin_dashboard'),
+    path('live-bot-mode/', TemplateView.as_view(template_name='live_bot_mode.html'), name='live_bot_mode'),
+    path('bot-api/', include('bot_monitor.urls')), # Include bot_monitor URLs
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
