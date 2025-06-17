@@ -1,0 +1,246 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Control: {{ bot_name|default:"Freelance Bot" }} - Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.webp' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --bg-color: #0d0e12; --bg-dark-1: #1a1c23; --bg-dark-2: #121418; --card-bg: #16181d;
+            --text-color: #e0e0e0; --text-light: #b0b0b0; --highlight-color: #00efff;
+            --border-color: #333740; --primary-font: 'Rajdhani', sans-serif;
+            --secondary-font: 'Orbitron', sans-serif; --danger-color: #ff4d4f;
+            --success-color: #52c41a; --warning-color: #faad14; --info-color: #1890ff;
+        }
+        body { font-family: var(--primary-font); background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        .page-header-minimal { background-color: var(--bg-dark-1); padding: 15px 0; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0, 239, 255, 0.1); }
+        .page-header-minimal .container { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        .page-header-minimal .logo-link { display: flex; align-items: center; text-decoration: none; color: var(--text-color); font-family: var(--secondary-font); font-size: 1.5em; font-weight: bold; }
+        .page-header-minimal .logo-link img { height: 40px; margin-right: 10px; filter: drop-shadow(0 0 5px var(--highlight-color)); }
+        .admin-nav-links a { color: var(--text-light); text-decoration: none; margin-left: 25px; font-size: 1em; transition: color 0.3s ease, text-shadow 0.3s ease; padding: 5px 0; border-bottom: 2px solid transparent; }
+        .admin-nav-links a:hover, .admin-nav-links a.active { color: var(--highlight-color); text-shadow: 0 0 8px var(--highlight-color); border-bottom-color: var(--highlight-color); }
+        
+        .dashboard-main { flex-grow: 1; padding: 30px 20px; max-width: 1200px; margin: 0 auto; width: 100%;}
+        .page-title-section { text-align: center; margin-bottom: 30px; }
+        .page-title-section h1 { font-family: var(--secondary-font); font-size: 2.5em; color: var(--highlight-color); text-shadow: 0 0 10px var(--highlight-color); margin-bottom: 5px;}
+        .page-title-section p { font-size: 1.1em; color: var(--text-light); margin-top: 0; }
+
+        .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .control-card { background-color: var(--card-bg); border-radius: 10px; padding: 20px; border: 1px solid var(--border-color); box-shadow: 0 3px 10px rgba(0,0,0,0.15); }
+        .control-card h3 { font-family: var(--secondary-font); font-size: 1.3em; color: var(--highlight-color); margin-top: 0; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; }
+        .control-card h3 i { margin-right: 10px; }
+
+        #botStatusCard p { margin: 5px 0; font-size: 1.1em; }
+        #botStatusCard strong { color: var(--text-light); }
+        #botStatusMessage { font-weight: bold; }
+        .status-running { color: var(--success-color); }
+        .status-idle { color: var(--text-light); }
+        .status-error { color: var(--danger-color); }
+        .status-stopped { color: var(--warning-color); }
+
+        .btn-control {
+            background-color: var(--highlight-color); color: var(--bg-dark-1); border: none; padding: 10px 15px;
+            border-radius: 5px; font-weight: bold; cursor: pointer; transition: background-color 0.3s, transform 0.2s;
+            margin-right: 10px; margin-bottom: 10px; font-family: var(--primary-font);
+        }
+        .btn-control:hover { background-color: #00cddc; transform: translateY(-2px); }
+        .btn-control.danger { background-color: var(--danger-color); color: var(--text-color); }
+        .btn-control.danger:hover { background-color: #d9363e; }
+        .btn-control.success { background-color: var(--success-color); color: var(--text-color); }
+        .btn-control.success:hover { background-color: #40a917; }
+        .btn-control.secondary { background-color: var(--text-light); color: var(--bg-dark-1); }
+        .btn-control.secondary:hover { background-color: #999999; }
+
+        #commandResponse { margin-top: 10px; font-style: italic; color: var(--text-light); }
+
+        #botLogsContainer { max-height: 400px; overflow-y: auto; background-color: var(--bg-dark-2); padding: 15px; border-radius: 5px; font-size: 0.9em; }
+        #botLogsList { list-style: none; padding: 0; margin: 0; }
+        #botLogsList li { padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
+        #botLogsList li:last-child { border-bottom: none; }
+        #botLogsList .log-timestamp { color: var(--highlight-color); margin-right: 8px; font-size: 0.85em; }
+        #botLogsList .log-level-INFO { color: var(--info-color); }
+        #botLogsList .log-level-DEBUG { color: var(--text-light); }
+        #botLogsList .log-level-WARNING { color: var(--warning-color); }
+        #botLogsList .log-level-ERROR, #botLogsList .log-level-CRITICAL { color: var(--danger-color); font-weight: bold; }
+        #botLogsList .log-level-SUCCESS { color: var(--success-color); }
+        #botLogsList .log-platform { font-weight: bold; margin-right: 5px; }
+        #botLogsList .acknowledged { opacity: 0.6; }
+
+        .site-footer-minimal { text-align: center; padding: 30px 20px; border-top: 1px solid var(--border-color); color: var(--text-light); font-size: 0.9em; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <header class="page-header-minimal">
+        <div class="container">
+            <a href="{% url 'main_site:home' %}" class="logo-link">
+                <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo"> Pegumax Inc.
+            </a>
+            <nav class="admin-nav-links">
+                <a href="{% url 'main_site:admin_dashboard' %}"><i class="fas fa-tachometer-alt fa-fw"></i> Admin Dashboard</a>
+                <a href="{% url 'main_site:live_bot_overview' %}" class="active"><i class="fas fa-wave-square fa-fw"></i> Bot Overview</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="page-title-section">
+            <h1><i class="fas fa-cogs"></i> Bot Control: {{ bot_name|default:"Freelance Bot" }}</h1>
+            <p>Detailed monitoring and remote control interface for bot ID: <strong>{{ bot_id|default:"freelance-bot" }}</strong></p>
+        </div>
+
+        <div class="control-grid">
+            <div class="control-card" id="botStatusCard">
+                <h3><i class="fas fa-heartbeat"></i> Current Status</h3>
+                <p><strong>Status:</strong> <span id="botStatusMessage" class="status-idle">Loading...</span></p>
+                <p><strong>Last Heartbeat:</strong> <span id="botLastHeartbeat">N/A</span></p>
+                <p><strong>Pending Command:</strong> <span id="botPendingCommand">N/A</span></p>
+                <button id="refreshStatusBtn" class="btn-control secondary"><i class="fas fa-sync-alt"></i> Refresh Status</button>
+            </div>
+
+            <div class="control-card" id="botCommandsCard">
+                <h3><i class="fas fa-terminal"></i> Remote Commands</h3>
+                <button id="stopBotBtn" class="btn-control danger"><i class="fas fa-stop-circle"></i> Request Stop</button>
+                <button id="startBotBtn" class="btn-control success"><i class="fas fa-play-circle"></i> Request Start</button>
+                <!-- Add more specific command buttons if needed -->
+                <p id="commandResponse"></p>
+            </div>
+        </div>
+
+        <div class="control-card" style="margin-top: 25px;">
+            <h3><i class="fas fa-clipboard-list"></i> Activity Logs</h3>
+            <button id="refreshLogsBtn" class="btn-control secondary" style="margin-bottom: 15px;"><i class="fas fa-redo"></i> Refresh Logs</button>
+            <button id="acknowledgeLogsBtn" class="btn-control" style="margin-bottom: 15px; background-color: var(--info-color); color: var(--bg-dark-1);"><i class="fas fa-check-double"></i> Acknowledge Displayed</button>
+            <div id="botLogsContainer">
+                <ul id="botLogsList">
+                    <li>Loading logs...</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer-minimal">
+        <p>&copy; {% now "Y" %} Pegumax Inc. Bot Operations Command.</p>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const botId = "{{ bot_id|default:'freelance-bot' }}"; // This will be "freelance-bot" for now
+        const statusMessageEl = document.getElementById('botStatusMessage');
+        const lastHeartbeatEl = document.getElementById('botLastHeartbeat');
+        const pendingCommandEl = document.getElementById('botPendingCommand');
+        const logsListEl = document.getElementById('botLogsList');
+        const commandResponseEl = document.getElementById('commandResponse');
+
+        const refreshStatusBtn = document.getElementById('refreshStatusBtn');
+        const stopBotBtn = document.getElementById('stopBotBtn');
+        const startBotBtn = document.getElementById('startBotBtn');
+        const refreshLogsBtn = document.getElementById('refreshLogsBtn');
+        const acknowledgeLogsBtn = document.getElementById('acknowledgeLogsBtn');
+
+        function getStatusClass(statusMsg) {
+            if (!statusMsg) return 'status-idle';
+            statusMsg = statusMsg.toLowerCase();
+            if (statusMsg.includes('running') || statusMsg.includes('active')) return 'status-running';
+            if (statusMsg.includes('error')) return 'status-error';
+            if (statusMsg.includes('stopped') || statusMsg.includes('shutting down')) return 'status-stopped';
+            return 'status-idle';
+        }
+
+        async function fetchBotStatus() {
+            try {
+                const response = await fetch("{% url 'bot_monitor:bot_status' %}"); // Assumes one bot for now
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                statusMessageEl.textContent = data.status_message || 'N/A';
+                statusMessageEl.className = getStatusClass(data.status_message);
+                lastHeartbeatEl.textContent = data.last_heartbeat ? new Date(data.last_heartbeat).toLocaleString() : 'N/A';
+                pendingCommandEl.textContent = data.command || 'NONE';
+            } catch (error) {
+                console.error('Error fetching bot status:', error);
+                statusMessageEl.textContent = 'Error loading status.';
+                statusMessageEl.className = 'status-error';
+            }
+        }
+
+        async function fetchBotLogs() {
+            try {
+                const response = await fetch("{% url 'bot_monitor:get_bot_logs' %}?limit=100");
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                logsListEl.innerHTML = '';
+                if (data.logs && data.logs.length > 0) {
+                    data.logs.forEach(log => {
+                        const li = document.createElement('li');
+                        li.className = log.is_acknowledged ? 'acknowledged' : '';
+                        li.innerHTML = `<span class="log-timestamp">${new Date(log.timestamp).toLocaleString()}</span>
+                                        <span class="log-level-${log.log_level || 'INFO'}">[${log.log_level || 'INFO'}]</span>
+                                        ${log.platform ? `<span class="log-platform">${log.platform}:</span>` : ''}
+                                        <span>${log.message}</span>
+                                        <small class="log-id" style="display:none;">${log.id}</small>`;
+                        logsListEl.appendChild(li);
+                    });
+                } else {
+                    logsListEl.innerHTML = '<li>No logs found.</li>';
+                }
+            } catch (error) {
+                console.error('Error fetching bot logs:', error);
+                logsListEl.innerHTML = '<li>Error loading logs.</li>';
+            }
+        }
+
+        async function sendBotCommand(command) {
+            commandResponseEl.textContent = 'Sending command...';
+            try {
+                const response = await fetch("{% url 'bot_monitor:bot_command' %}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                    body: JSON.stringify({ command: command })
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                commandResponseEl.textContent = `Server: ${data.message || 'OK'}. New status: ${data.new_status || 'Unknown'}`;
+                fetchBotStatus();
+            } catch (error) {
+                console.error('Error sending command:', error);
+                commandResponseEl.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function acknowledgeLogs() {
+            const logItems = logsListEl.querySelectorAll('li:not(.acknowledged) .log-id');
+            const logIdsToAck = Array.from(logItems).map(el => el.textContent.trim()).filter(id => id);
+            if (logIdsToAck.length === 0) { alert("No new logs to acknowledge."); return; }
+            try {
+                const response = await fetch("{% url 'bot_monitor:acknowledge_logs' %}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                    body: JSON.stringify({ log_ids: logIdsToAck })
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                alert(data.message || "Logs acknowledged.");
+                fetchBotLogs();
+            } catch (error) {
+                console.error('Error acknowledging logs:', error);
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        if(refreshStatusBtn) refreshStatusBtn.addEventListener('click', fetchBotStatus);
+        if(stopBotBtn) stopBotBtn.addEventListener('click', () => sendBotCommand('STOP_REQUESTED'));
+        if(startBotBtn) startBotBtn.addEventListener('click', () => sendBotCommand('START_REQUESTED'));
+        if(refreshLogsBtn) refreshLogsBtn.addEventListener('click', fetchBotLogs);
+        if(acknowledgeLogsBtn) acknowledgeLogsBtn.addEventListener('click', acknowledgeLogs);
+
+        fetchBotStatus();
+        fetchBotLogs();
+        setInterval(fetchBotStatus, 15000); // Refresh status every 15 seconds
+        setInterval(fetchBotLogs, 30000);   // Refresh logs every 30 seconds
+    });
+    </script>
+</body>
+</html>
