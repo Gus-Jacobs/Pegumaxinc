@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone # Import timezone
 
 class BotActivityLog(models.Model):
     LOG_LEVEL_CHOICES = [
@@ -26,9 +27,10 @@ class BotActivityLog(models.Model):
     class Meta:
         ordering = ['-timestamp']
 
-    class BotStatus(models.Model):
+# BotStatus should be a top-level class, not nested under BotActivityLog.Meta
+class BotStatus(models.Model):
     """Singleton model to track bot's last known activity and commands."""
-    # Indentation was missing for the class body
+    # Ensure the following lines are indented correctly under BotStatus
     last_heartbeat = models.DateTimeField(default=timezone.now)
     status_message = models.CharField(max_length=255, default="Idle") # e.g., Running, Idle, Error, Starting, Stopping
     # command can be 'NONE', 'STOP_REQUESTED'
