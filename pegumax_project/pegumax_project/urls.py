@@ -18,14 +18,15 @@ from django.contrib import admin
 from django.urls import path, include # Add include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import TemplateView
+# from django.views.generic import TemplateView # We'll use custom views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main_site.urls', namespace='main_site')),
     path('accounts/', include('django.contrib.auth.urls')), # Django's built-in auth URLs (login, logout, password reset, etc.)
-    path('dashboard/', TemplateView.as_view(template_name='admin_dashboard.html'), name='admin_dashboard'),
-    path('live-bot-mode/', TemplateView.as_view(template_name='live_bot_mode.html'), name='live_bot_mode'),
-    path('bot-api/', include('bot_monitor.urls')), # Include bot_monitor URLs
+    # Dashboard and bot monitoring URLs will be included via main_site.urls
+    # Example: path('dashboard/', include('main_site.dashboard_urls')), # if you create a separate dashboard_urls.py
+    # For now, we assume main_site.urls will define them.
+    path('bot-api/', include('bot_monitor.urls')), # API for bot communication
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
