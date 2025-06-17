@@ -240,7 +240,7 @@ def live_bot_overview_view(request):
             # Add other stats here once BotStatus model is updated and bot reports them
             'jobs_scraped_today': "N/A", # Placeholder
             'tasks_completed_today': "N/A", # Placeholder
-+        })
+        })
 
     context = {
         'bots': bots_data,
