@@ -160,8 +160,7 @@
                 <h3><i class="fas fa-microchip fa-fw section-icon"></i> Bot Operations</h3>
                 <p>Real-time status and performance of automated systems.</p>
                 <ul>
-                    <li><a href="#"><i class="fas fa-tv fa-fw link-icon"></i> Live Bot Mode (Link Disabled)</a></li>
-                    {# <li><a href="{% url 'main_site:live_bot_mode' %}"><i class="fas fa-tv fa-fw link-icon"></i> Live Bot Mode</a></li> #}
+                    <li><a href="{% url 'main_site:live_bot_mode' %}"><i class="fas fa-tv fa-fw link-icon"></i> Live Bot Mode</a></li>
                     <li><a href="#" id="botActivityLogsLink"><i class="fas fa-history fa-fw link-icon"></i> Bot Activity Logs
                         {% if unacknowledged_general_logs_count > 0 %}
                             <span class="notification-badge" id="generalLogsBadge">{{ unacknowledged_general_logs_count }}</span>
@@ -179,12 +178,9 @@
             <section class="dashboard-section-card">
                 <h3><i class="fas fa-users-cog fa-fw section-icon"></i> User Management</h3>
                 <ul>
-                    <li><a href="#" target="_blank"><i class="fas fa-users fa-fw link-icon"></i> All Users (Core Admin - Link Disabled)</a></li>
-                    <li><a href="#" target="_blank"><i class="fas fa-user-plus fa-fw link-icon"></i> Add New User (Core Admin - Link Disabled)</a></li>
-                    <li><a href="#" target="_blank"><i class="fas fa-user-slash fa-fw link-icon"></i> Inactive/Banned Users (Link Disabled)</a></li>
-                    {# <li><a href="{% url 'admin:auth_user_changelist' %}" target="_blank"><i class="fas fa-users fa-fw link-icon"></i> All Users (Core Admin)</a></li> #}
-                    {# <li><a href="{% url 'admin:auth_user_add' %}" target="_blank"><i class="fas fa-user-plus fa-fw link-icon"></i> Add New User (Core Admin)</a></li> #}
-                    {# <li><a href="{% url 'admin:auth_user_changelist' %}?is_active__exact=0" target="_blank"><i class="fas fa-user-slash fa-fw link-icon"></i> Inactive/Banned Users</a></li> #}
+                    <li><a href="{% url 'admin:auth_user_changelist' %}" target="_blank"><i class="fas fa-users fa-fw link-icon"></i> All Users (Core Admin)</a></li>
+                    <li><a href="{% url 'admin:auth_user_add' %}" target="_blank"><i class="fas fa-user-plus fa-fw link-icon"></i> Add New User (Core Admin)</a></li>
+                    <li><a href="{% url 'admin:auth_user_changelist' %}?is_active__exact=0" target="_blank"><i class="fas fa-user-slash fa-fw link-icon"></i> Inactive/Banned Users</a></li>
                 </ul>
             </section>
 
