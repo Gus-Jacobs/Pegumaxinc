@@ -7,9 +7,9 @@ from pathlib import Path
 
 def main():
     """Run administrative tasks."""
-    # Determine the absolute path to the directory containing this manage.py file
+    # Determine the absolute path to the directory containing this manage.py file.
     MANAGE_PY_DIR = Path(__file__).resolve().parent
-    # The overall project root (containing 'core' and 'pegumax_project' Django app) is one level up
+    # The overall project root directory (containing both the Django project and the 'core' directory) is one level up.
     PROJECT_ROOT = MANAGE_PY_DIR.parent
 
     # Add the project root to sys.path if it's not already there
