@@ -17,8 +17,8 @@ from django.db.utils import ProgrammingError
 def is_admin(user):
     return user.is_authenticated and user.is_staff
 
-@login_required
-@user_passes_test(is_admin)
+# @login_required # Typically, home_view is public
+# @user_passes_test(is_admin) # And not restricted to admins
 def home_view(request):
     return render(request, 'index.html')
 
@@ -184,7 +184,7 @@ def admin_dashboard_view(request):
                 
         # Recent Logs for Popup
         # Ensure all these fields ('bot_id', 'platform', 'is_acknowledged') exist in your BotActivityLog model
-        log_fields = ['timestamp', 'log_level', 'message', 'bot_id', 'platform']
+        log_fields = ['timestamp', 'log_level', 'message', 'bot_id', 'platform'] # Assuming BotActivityLog will have 'bot_id'
         context['recent_logs_for_popup_json'] = list(
             BotActivityLog.objects.order_by('-timestamp').values(*log_fields)[:20]
         )
