@@ -181,43 +181,47 @@ def admin_dashboard_view(request):
         context['dashboard_error_message'] = f"Error fetching user count: {type(e_user).__name__} - {e_user}"
         print(f"ERROR in admin_dashboard_view (User count): {context['dashboard_error_message']}")
 
-    # STEP 2: (Keep commented out initially) Try fetching BotStatus data
-    # try:
-    #     context['total_configured_bots_count'] = BotStatus.objects.count()
-    #     bot_status_instance = BotStatus.objects.first()
-    #     if bot_status_instance:
-    #         status_msg = getattr(bot_status_instance, 'status_message', '')
-    #         if isinstance(status_msg, str) and "running" in status_msg.lower():
-    #             context['active_bots_count'] = 1
-    # except Exception as e_status:
-    #     context['dashboard_error_message'] = f"Error fetching BotStatus: {type(e_status).__name__} - {e_status}"
-    #     print(f"ERROR in admin_dashboard_view (BotStatus): {context['dashboard_error_message']}")
+    # STEP 2: Try fetching BotStatus data
+    try:
+        context['total_configured_bots_count'] = BotStatus.objects.count()
+        bot_status_instance = BotStatus.objects.first() # Assumes BotStatus is a singleton or you want the first one
+        if bot_status_instance:
+            status_msg = getattr(bot_status_instance, 'status_message', '')
+            if isinstance(status_msg, str) and "running" in status_msg.lower():
+                context['active_bots_count'] = 1
+        context['dashboard_error_message'] = "Successfully fetched user and BotStatus count. BotActivityLog data is still disabled."
+    except Exception as e_status:
+        context['dashboard_error_message'] = f"Error fetching BotStatus: {type(e_status).__name__} - {e_status}"
+        print(f"ERROR in admin_dashboard_view (BotStatus): {context['dashboard_error_message']}")
 
-    # STEP 3: (Keep commented out initially) Try fetching BotActivityLog data
-    # try:
-    #     log_fields = ['timestamp', 'log_level', 'message', 'bot_id', 'platform']
-    #     context['recent_logs_for_popup_json'] = list(
-    #         BotActivityLog.objects.order_by('-timestamp').values(*log_fields)[:5] # Reduced limit
-    #     )
-    #     context['critical_logs_for_popup_json'] = list(
-    #         BotActivityLog.objects.filter(log_level__in=['ERROR', 'CRITICAL'])
-    #         .order_by('-timestamp').values(*log_fields)[:5] # Reduced limit
-    #     )
-    #     context['unacknowledged_general_logs_count'] = min(
-    #         BotActivityLog.objects.filter(is_acknowledged=False).count(), 5 # Reduced limit
-    #     )
-    #     context['unacknowledged_critical_logs_count'] = min(
-    #         BotActivityLog.objects.filter(is_acknowledged=False, log_level__in=['ERROR', 'CRITICAL']).count(), 5 # Reduced limit
-    #     )
-    # except ProgrammingError as db_error: # Specifically catch schema errors
-    #     error_msg = f"Database schema error (BotActivityLog): {type(db_error).__name__} - {db_error}. Check model fields and migrations."
-    #     print(f"ERROR in admin_dashboard_view: {error_msg}")
-    #     context['dashboard_error_message'] = error_msg # This line was duplicated
-    # except Exception as e: # General catch-all for other errors during data fetching
-        # print(f"ERROR in admin_dashboard_view: {error_msg} - {db_error}") # This line had incorrect variables
-        # error_msg = f"An unexpected error occurred: {type(e).__name__} - {e}"
-        # print(f"ERROR in admin_dashboard_view: {error_msg}")
-        # context['dashboard_error_message'] = error_msg
+    # STEP 3: Try fetching BotActivityLog data
+    try:
+        log_fields = ['timestamp', 'log_level', 'message', 'bot_id', 'platform']
+        # Using a slightly larger limit for actual display, e.g., 20
+        context['recent_logs_for_popup_json'] = list(
+            BotActivityLog.objects.order_by('-timestamp').values(*log_fields)[:20]
+        )
+        context['critical_logs_for_popup_json'] = list(
+            BotActivityLog.objects.filter(log_level__in=['ERROR', 'CRITICAL'])
+            .order_by('-timestamp').values(*log_fields)[:20]
+        )
+        context['unacknowledged_general_logs_count'] = min(
+            BotActivityLog.objects.filter(is_acknowledged=False).count(), 20 # Cap at 20 for display
+        )
+        context['unacknowledged_critical_logs_count'] = min(
+            BotActivityLog.objects.filter(is_acknowledged=False, log_level__in=['ERROR', 'CRITICAL']).count(), 20
+        )
+        # If all steps so far are successful, update the message
+        if not any(err_key in context['dashboard_error_message'].lower() for err_key in ["error", "failed"]):
+             context['dashboard_error_message'] = "All dashboard data fetched successfully."
+
+    except ProgrammingError as db_error: # Specifically catch schema errors for BotActivityLog
+        error_msg = f"Database schema error (BotActivityLog): {type(db_error).__name__} - {db_error}. Check model fields (e.g. bot_id, platform, is_acknowledged) and migrations."
+        print(f"ERROR in admin_dashboard_view (BotActivityLog - Schema): {error_msg}")
+        context['dashboard_error_message'] = error_msg
+    except Exception as e_logs: # General catch-all for other errors during BotActivityLog fetching
+        context['dashboard_error_message'] = f"Error fetching BotActivityLog data: {type(e_logs).__name__} - {e_logs}"
+        print(f"ERROR in admin_dashboard_view (BotActivityLog): {context['dashboard_error_message']}")
  
     return render(request, 'main_site/admin_dashboard.html', context)
 
