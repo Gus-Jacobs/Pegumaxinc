@@ -28,5 +28,5 @@ urlpatterns = [
     # Dashboard and bot monitoring URLs will be included via main_site.urls
     # Example: path('dashboard/', include('main_site.dashboard_urls')), # if you create a separate dashboard_urls.py
     # For now, we assume main_site.urls will define them.
-    path('bot-api/', include('bot_monitor.urls')), # API for bot communication
+    path('bot-api/', include('bot_monitor.urls', namespace='bot_monitor')), # API for bot communication
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
