@@ -132,13 +132,12 @@
 <body>
     <header class="page-header-minimal">
         <div class="container">
-            {# <a href="{% url 'main_site:home' %}" class="logo-link"> #}
-            <a href="/" class="logo-link"> {# Fallback to root if url tag is an issue #}
+            <a href="{% url 'main_site:home' %}" class="logo-link">
                 <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo"> Pegumax Inc.
             </a>
             <nav class="admin-nav-links">
-                <a href="#"><i class="fas fa-user-circle fa-fw"></i> User Account (Link Disabled)</a>
-                <a href="#"><i class="fas fa-cogs fa-fw"></i> Core Admin (Link Disabled)</a>
+                <a href="{% url 'main_site:account' %}"><i class="fas fa-user-circle fa-fw"></i> User Account</a>
+                <a href="{% url 'admin:index' %}" target="_blank"><i class="fas fa-cogs fa-fw"></i> Core Admin</a>
             </nav>
         </div>
     </header>
