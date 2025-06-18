@@ -4,11 +4,19 @@ from .views import (
     AcknowledgeLogsView, BotCommandView
 )
 
+from . import views # Import the views module
+# Or, if you prefer to import specific views:
+# from .views import (
+# receive_logs_view,
+# bot_command_view,
+#     # ... other views
+# )
+
 app_name = 'bot_monitor' # This line is crucial for namespacing
 
 
 urlpatterns = [
-    path('receive-logs/', views.receive_logs_view, name='receive_logs'),
+    path('receive-logs/', LogReceiverView.as_view(), name='receive_logs'),
     path('dashboard-data/', DashboardDataView.as_view(), name='dashboard_data'),
     path('get-logs/', BotLogDataView.as_view(), name='get_bot_logs'),
     path('acknowledge-logs/', AcknowledgeLogsView.as_view(), name='acknowledge_logs'),
