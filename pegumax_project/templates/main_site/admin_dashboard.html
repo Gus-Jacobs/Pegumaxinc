@@ -1,4 +1,9 @@
 {% load static %}
+{% if dashboard_error_message %}
+    <div style="color: red; background-color: #ffebee; border: 1px solid red; padding: 15px; margin-bottom: 20px;">
+        <strong>DEBUG INFO:</strong> {{ dashboard_error_message }}
+    </div>
+{% endif %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
