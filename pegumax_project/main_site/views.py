@@ -162,13 +162,6 @@ def contact_page_view(request):
 @user_passes_test(is_admin)
 def admin_dashboard_view(request):
     context = {
-        'total_users_count': total_users_count,
-        'total_configured_bots_count': total_configured_bots_count, # For the card you mentioned
-        'active_bots_count': active_bots_count,
-        'recent_logs_for_popup_json': recent_logs_list, # Pass as JSON-ready list
-        'critical_logs_for_popup_json': critical_logs_list, # Pass as JSON-ready list
-        'unacknowledged_general_logs_count': min(unacknowledged_general_logs_count, 20), # Cap at 20 for display
-        'unacknowledged_critical_logs_count': min(unacknowledged_critical_logs_count, 20), # Cap at 20
         'total_users_count': 0,
         'total_configured_bots_count': 0,
         'active_bots_count': 0,
@@ -177,9 +170,8 @@ def admin_dashboard_view(request):
         'unacknowledged_general_logs_count': 0,
         'unacknowledged_critical_logs_count': 0,
         'dashboard_error_message': None  # For displaying errors in the template
-
     }
-     try:
+    try:
         context['total_users_count'] = User.objects.count()
         
         # Bot Status
@@ -219,7 +211,6 @@ def admin_dashboard_view(request):
         error_msg = f"An unexpected error occurred: {type(e).__name__} - {e}"
         print(f"ERROR in admin_dashboard_view: {error_msg}")
         context['dashboard_error_message'] = error_msg
-        
  
     return render(request, 'main_site/admin_dashboard.html', context)
 
