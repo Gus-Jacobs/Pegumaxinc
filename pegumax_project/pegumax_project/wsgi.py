@@ -23,7 +23,6 @@ PROJECT_ROOT = DJANGO_APP_DIR.parent  # Project root (contains 'core' and 'pegum
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pegumax_project.settings')
 
 application = get_wsgi_application()
