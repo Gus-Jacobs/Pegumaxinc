@@ -13,15 +13,22 @@ from pathlib import Path
 
 from django.core.wsgi import get_wsgi_application
 
-# Add the parent directory of the Django project ('pegumax_project') to sys.path.
-# This directory is the root of your overall project and contains the 'core' module.
-# wsgi.py is in /path/to/FreelanceBot/pegumax_project/pegumax_project/wsgi.py
-# Path(__file__).resolve().parent is /path/to/FreelanceBot/pegumax_project/pegumax_project/
-# Path(__file__).resolve().parent.parent is /path/to/FreelanceBot/pegumax_project/
-# Path(__file__).resolve().parent.parent.parent is /path/to/FreelanceBot/
-PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-if str(PROJECT_ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT_DIR))
+# Determine the absolute path to the directory containing this wsgi.py file
+WSGI_DIR = Path(__file__).resolve().parent
+# The 'pegumax_project' Django app directory is one level up from wsgi.py
+DJANGO_APP_DIR = WSGI_DIR.parent
+# The overall project root (containing 'core' and 'pegumax_project' Django app) is one level up from the Django app dir
+PROJECT_ROOT = DJANGO_APP_DIR.parent
+
+# Add the project root to sys.path if it's not already there
+# This allows Python to find the 'core' module
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+# For debugging on Render, you can temporarily print the path:
+# print(f"WSGI - Added to sys.path: {str(PROJECT_ROOT)}")
+# print(f"WSGI - Current sys.path: {sys.path}")
+
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pegumax_project.settings')
