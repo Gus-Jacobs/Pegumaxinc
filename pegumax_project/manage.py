@@ -12,7 +12,8 @@ def main():
     # Path(__file__).resolve().parent is /path/to/FreelanceBot/pegumax_project/
     # Path(__file__).resolve().parent.parent is /path/to/FreelanceBot/
     PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent
-    sys.path.insert(0, str(PROJECT_ROOT_DIR))
+    if str(PROJECT_ROOT_DIR) not in sys.path:
+        sys.path.insert(0, str(PROJECT_ROOT_DIR))
 
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pegumax_project.settings') # pegumax_project.settings refers to the inner settings.py
     try:
