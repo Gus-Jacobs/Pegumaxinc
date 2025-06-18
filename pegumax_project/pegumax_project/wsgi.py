@@ -23,15 +23,10 @@ PROJECT_ROOT = DJANGO_APP_DIR.parent  # Project root (contains 'core' and 'pegum
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-# Add the project root to sys.path if it's not already there
-# This allows Python to find the 'core' module
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-
-# For debugging on Render, you can temporarily print the path:
-# print(f"WSGI - Added to sys.path: {str(PROJECT_ROOT)}")
-# print(f"WSGI - Current sys.path: {sys.path}")
-
+# --- BEGIN RENDER DEBUG PRINTS ---
+print(f"WSGI.PY: Calculated PROJECT_ROOT: {str(PROJECT_ROOT)}")
+print(f"WSGI.PY: Current sys.path: {sys.path}")
+# --- END RENDER DEBUG PRINTS ---
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pegumax_project.settings')
