@@ -11,6 +11,56 @@ from django.utils.decorators import method_decorator # Ensure this is imported
 from django.conf import settings
 from django.utils import timezone # For timedelta
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import json
+from .models import BotActivityLog # Ensure this model is correctly imported
+from core.logger import bot_logger # Assuming your core logger for server-side logging
+
+@csrf_exempt # Exempt this view from CSRF verification
+@require_POST # Ensure only POST requests are accepted
+def receive_logs_view(request):
+    """
+    Receives log data from the bot and saves it to the BotActivityLog model.
+    """
+    try:
+        logs_data = json.loads(request.body)
+        if not isinstance(logs_data, list): # Handle single log entry or list
+            logs_data = [logs_data]
+
+        log_entries_created_count = 0
+        for log_entry_data in logs_data:
+            # Basic validation and default values
+            log_level = log_entry_data.get('log_level', 'INFO').upper()
+            if log_level not in [choice[0] for choice in BotActivityLog.LOG_LEVEL_CHOICES]:
+                log_level = 'INFO' # Default to INFO if invalid level
+
+            message = log_entry_data.get('message', 'No message provided')
+            
+            BotActivityLog.objects.create(
+                log_level=log_level,
+                message=message,
+                platform=log_entry_data.get('platform'),
+                bot_id=log_entry_data.get('bot_id'),
+                source=log_entry_data.get('source'),
+                # timestamp is auto_now_add=True
+                # is_acknowledged defaults to False
+            )
+            log_entries_created_count += 1
+
+        bot_logger.info(f"Successfully received and saved {log_entries_created_count} logs from bot via API.")
+        return JsonResponse({'status': 'success', 'received_count': log_entries_created_count}, status=201)
+
+    except json.JSONDecodeError:
+        bot_logger.error("Failed to decode JSON from log receiver request body.")
+        return JsonResponse({'error': 'Invalid JSON payload'}, status=400)
+    except Exception as e:
+        bot_logger.error(f"Error processing received logs: {e}", exc_info=True)
+        return JsonResponse({'error': 'Internal server error while processing logs'}, status=500)
+
+
+
 # Simple API Key Permission
 class HasBotAPIKey(BasePermission):
     def has_permission(self, request, view):
