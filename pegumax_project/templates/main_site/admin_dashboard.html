@@ -160,7 +160,8 @@
                 <h3><i class="fas fa-microchip fa-fw section-icon"></i> Bot Operations</h3>
                 <p>Real-time status and performance of automated systems.</p>
                 <ul>
-                    <li><a href="{% url 'main_site:live_bot_mode' %}"><i class="fas fa-tv fa-fw link-icon"></i> Live Bot Mode</a></li>
+                    <li><a href="#"><i class="fas fa-tv fa-fw link-icon"></i> Live Bot Mode (Link Disabled)</a></li>
+                    {# <li><a href="{% url 'main_site:live_bot_mode' %}"><i class="fas fa-tv fa-fw link-icon"></i> Live Bot Mode</a></li> #}
                     <li><a href="#" id="botActivityLogsLink"><i class="fas fa-history fa-fw link-icon"></i> Bot Activity Logs
                         {% if unacknowledged_general_logs_count > 0 %}
                             <span class="notification-badge" id="generalLogsBadge">{{ unacknowledged_general_logs_count }}</span>
