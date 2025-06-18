@@ -173,8 +173,14 @@ def admin_dashboard_view(request):
         'dashboard_error_message': "Data fetching is minimal for debugging." # Default message
     }
 
-    # ABSOLUTE MINIMAL: Try rendering the template with no database calls from this view.
-    context['dashboard_error_message'] = "Attempting to render admin_dashboard.html with no data fetching."
+    # STEP 1: Try fetching only User count
+    try:
+        context['total_users_count'] = User.objects.count()
+        context['dashboard_error_message'] = "Successfully fetched user count. Other data is still disabled."
+    except Exception as e_user:
+        context['dashboard_error_message'] = f"Error fetching user count: {type(e_user).__name__} - {e_user}"
+        print(f"ERROR in admin_dashboard_view (User count): {context['dashboard_error_message']}")
+
     # STEP 2: (Keep commented out initially) Try fetching BotStatus data
     # try:
     #     context['total_configured_bots_count'] = BotStatus.objects.count()
