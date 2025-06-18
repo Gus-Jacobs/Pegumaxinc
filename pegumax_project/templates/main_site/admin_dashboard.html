@@ -251,8 +251,9 @@
         </div>
     </div>
 
-    {{ recent_logs_for_popup_json|json_script:"recent-logs-data" }}
-    {{ critical_logs_for_popup_json|json_script:"critical-logs-data" }}
+    {# {{ recent_logs_for_popup_json|json_script:"recent_logs_data" }} #}
+    {# {{ critical_logs_for_popup_json|json_script:"critical_logs_data" }} #}
+
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
