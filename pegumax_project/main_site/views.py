@@ -161,36 +161,6 @@ def contact_page_view(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard_view(request):
-    # Total configured bots (assuming each BotStatus entry is a configured bot)
-    total_configured_bots_count = BotStatus.objects.count()
-
-    # For popups - initial data (can be fetched via AJAX too)
-    # For now, let's count unacknowledged logs for notifications
-    # Convert QuerySets to list of dicts for JSON serialization
-    recent_logs_list = list(BotActivityLog.objects.order_by('-timestamp').values(
-        'timestamp', 'log_level', 'message', 'bot_id', 'platform' # Added platform
-    )[:20])
-    critical_logs_list = list(BotActivityLog.objects.filter(log_level__in=['ERROR', 'CRITICAL']).order_by('-timestamp').values(
-        'timestamp', 'log_level', 'message', 'bot_id', 'platform' # Added platform
-    )[:20])
-
-    # Notification counts (example: unacknowledged logs)
-    # You'd need to refine this logic, perhaps based on logs since last admin login or a specific timeframe
-    # For simplicity, count unacknowledged logs.
-    unacknowledged_general_logs_count = BotActivityLog.objects.filter(is_acknowledged=False).count()
-    unacknowledged_critical_logs_count = BotActivityLog.objects.filter(is_acknowledged=False, log_level__in=['ERROR', 'CRITICAL']).count()
-
-    # Get current running status for the single bot (if only one)
-    # This is for the "Active Bots" card which you wanted to show total bots,
-    # but the original template had "Active Bots". Let's provide both.
-    active_bots_count = 0
-    bot_status_instance = BotStatus.objects.first()
-    if bot_status_instance: # Check if an instance exists
-        if hasattr(bot_status_instance, 'status_message') and isinstance(bot_status_instance.status_message, str) and \
-           "running" in bot_status_instance.status_message.lower():
-            active_bots_count = 1
-        
-    total_users_count = User.objects.count()
     context = {
         'total_users_count': total_users_count,
         'total_configured_bots_count': total_configured_bots_count, # For the card you mentioned
@@ -199,8 +169,58 @@ def admin_dashboard_view(request):
         'critical_logs_for_popup_json': critical_logs_list, # Pass as JSON-ready list
         'unacknowledged_general_logs_count': min(unacknowledged_general_logs_count, 20), # Cap at 20 for display
         'unacknowledged_critical_logs_count': min(unacknowledged_critical_logs_count, 20), # Cap at 20
+        'total_users_count': 0,
+        'total_configured_bots_count': 0,
+        'active_bots_count': 0,
+        'recent_logs_for_popup_json': [],
+        'critical_logs_for_popup_json': [],
+        'unacknowledged_general_logs_count': 0,
+        'unacknowledged_critical_logs_count': 0,
+        'dashboard_error_message': None  # For displaying errors in the template
 
     }
+     try:
+        context['total_users_count'] = User.objects.count()
+        
+        # Bot Status
+        context['total_configured_bots_count'] = BotStatus.objects.count() 
+        bot_status_instance = BotStatus.objects.first()
+        if bot_status_instance:
+            status_msg = getattr(bot_status_instance, 'status_message', '')
+            if isinstance(status_msg, str) and "running" in status_msg.lower():
+                context['active_bots_count'] = 1
+                
+        # Recent Logs for Popup
+        # Ensure all these fields ('bot_id', 'platform', 'is_acknowledged') exist in your BotActivityLog model
+        log_fields = ['timestamp', 'log_level', 'message', 'bot_id', 'platform']
+        context['recent_logs_for_popup_json'] = list(
+            BotActivityLog.objects.order_by('-timestamp').values(*log_fields)[:20]
+        )
+        
+        # Critical Logs for Popup
+        context['critical_logs_for_popup_json'] = list(
+            BotActivityLog.objects.filter(log_level__in=['ERROR', 'CRITICAL'])
+            .order_by('-timestamp').values(*log_fields)[:20]
+        )
+
+        # Unacknowledged Logs Count
+        context['unacknowledged_general_logs_count'] = min(
+            BotActivityLog.objects.filter(is_acknowledged=False).count(), 20
+        )
+        context['unacknowledged_critical_logs_count'] = min(
+            BotActivityLog.objects.filter(is_acknowledged=False, log_level__in=['ERROR', 'CRITICAL']).count(), 20
+        )
+
+    except ProgrammingError as db_error:
+        error_msg = f"Database schema error: {type(db_error).__name__}. Check bot_monitor model fields (e.g., bot_id, platform, is_acknowledged) and migrations."
+        print(f"ERROR in admin_dashboard_view: {error_msg} - {db_error}")
+        context['dashboard_error_message'] = error_msg
+    except Exception as e:
+        error_msg = f"An unexpected error occurred: {type(e).__name__} - {e}"
+        print(f"ERROR in admin_dashboard_view: {error_msg}")
+        context['dashboard_error_message'] = error_msg
+        
+ 
     return render(request, 'main_site/admin_dashboard.html', context)
 
 @login_required
