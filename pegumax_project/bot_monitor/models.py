@@ -14,6 +14,7 @@ class BotActivityLog(models.Model):
     platform = models.CharField(max_length=50, blank=True, null=True) # e.g., Freelancer, Upwork, System
     log_level = models.CharField(max_length=10, choices=LOG_LEVEL_CHOICES, default='INFO')
     message = models.TextField()
+    bot_id = models.CharField(max_length=100, db_index=True, null=True, blank=True) # Link to the bot instance
     source = models.CharField(max_length=100, blank=True, null=True) # e.g., main_loop, scraper, task_handler
 
     # New fields for dashboard interaction
@@ -30,6 +31,7 @@ class BotActivityLog(models.Model):
 # BotStatus should be a top-level class, not nested under BotActivityLog.Meta
 class BotStatus(models.Model):
     """Singleton model to track bot's last known activity and commands."""
+    bot_id = models.CharField(max_length=100, unique=True, default="freelance-bot-main") # Added for clarity if you plan multiple bots
     # Ensure the following lines are indented correctly under BotStatus
     last_heartbeat = models.DateTimeField(default=timezone.now)
     status_message = models.CharField(max_length=255, default="Idle") # e.g., Running, Idle, Error, Starting, Stopping
@@ -37,17 +39,18 @@ class BotStatus(models.Model):
     command = models.CharField(max_length=50, default="NONE")
 
     def __str__(self):
-        return f"Bot Status: {self.status_message} (Last heartbeat: {self.last_heartbeat.strftime('%Y-%m-%d %H:%M:%S')}, Command: {self.command})"
+        return f"Bot ID: {self.bot_id} - Status: {self.status_message} (Heartbeat: {self.last_heartbeat.strftime('%Y-%m-%d %H:%M:%S')}, Command: {self.command})"
 
     @classmethod
-    def update_status(cls, status_msg="Running", command_val=None):
+    def update_status(cls, bot_id_val="freelance-bot-main", status_msg="Running", command_val=None):
         defaults = {'last_heartbeat': timezone.now(), 'status_message': status_msg}
         if command_val is not None: # Only update command if a value is provided
             defaults['command'] = command_val
-        obj, created = cls.objects.update_or_create(pk=1, defaults=defaults)
+        # Use bot_id as the unique key instead of pk=1 if you plan for multiple bot status entries
+        obj, created = cls.objects.update_or_create(bot_id=bot_id_val, defaults=defaults)
         return obj
 
     @classmethod
-    def get_status(cls):
-        obj, created = cls.objects.get_or_create(pk=1) # Ensure it always exists
+    def get_status(cls, bot_id_val="freelance-bot-main"):
+        obj, created = cls.objects.get_or_create(bot_id=bot_id_val) # Ensure it always exists for the given bot_id
         return obj
