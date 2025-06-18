@@ -7,13 +7,18 @@ from pathlib import Path
 
 def main():
     """Run administrative tasks."""
-    # Add the parent directory of 'pegumax_project' (which contains 'core') to sys.path
-    # This script (manage.py) is in /path/to/FreelanceBot/pegumax_project/
-    # Path(__file__).resolve().parent is /path/to/FreelanceBot/pegumax_project/
-    # Path(__file__).resolve().parent.parent is /path/to/FreelanceBot/
-    PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent
-    if str(PROJECT_ROOT_DIR) not in sys.path:
-        sys.path.insert(0, str(PROJECT_ROOT_DIR))
+    # Determine the absolute path to the directory containing this manage.py file
+    MANAGE_PY_DIR = Path(__file__).resolve().parent
+    # The overall project root (containing 'core' and 'pegumax_project' Django app) is one level up
+    PROJECT_ROOT = MANAGE_PY_DIR.parent
+
+    # Add the project root to sys.path if it's not already there
+    if str(PROJECT_ROOT) not in sys.path:
+        sys.path.insert(0, str(PROJECT_ROOT))
+
+    # For debugging, you can temporarily print the path:
+    # print(f"MANAGE.PY - Added to sys.path: {str(PROJECT_ROOT)}")
+    # print(f"MANAGE.PY - Current sys.path: {sys.path}")
 
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pegumax_project.settings') # pegumax_project.settings refers to the inner settings.py
     try:
