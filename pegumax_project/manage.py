@@ -16,10 +16,6 @@ def main():
     if str(PROJECT_ROOT) not in sys.path:
         sys.path.insert(0, str(PROJECT_ROOT))
 
-    # --- BEGIN RENDER DEBUG PRINTS ---
-    print(f"MANAGE.PY: Calculated PROJECT_ROOT: {str(PROJECT_ROOT)}")
-    print(f"MANAGE.PY: Current sys.path: {sys.path}")
-    # --- END RENDER DEBUG PRINTS ---
 
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pegumax_project.settings') # pegumax_project.settings refers to the inner settings.py
     try:
