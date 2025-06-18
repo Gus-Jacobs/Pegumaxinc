@@ -184,12 +184,10 @@ def admin_dashboard_view(request):
     # STEP 2: Try fetching BotStatus data
     try:
         context['total_configured_bots_count'] = BotStatus.objects.count()
-        bot_status_instance = BotStatus.objects.first() # Assumes BotStatus is a singleton or you want the first one
-        if bot_status_instance:
-            status_msg = getattr(bot_status_instance, 'status_message', '')
-            if isinstance(status_msg, str) and "running" in status_msg.lower():
-                context['active_bots_count'] = 1
-        context['dashboard_error_message'] = "Successfully fetched user and BotStatus count. BotActivityLog data is still disabled."
+        # Correctly count active bots by checking their status_message
+        context['active_bots_count'] = BotStatus.objects.filter(status_message__icontains="running").count()
+        # Update error message if this step was successful and previous was too
+        context['dashboard_error_message'] = "Successfully fetched user, BotStatus count, and active bots. BotActivityLog data is still disabled."
     except Exception as e_status:
         context['dashboard_error_message'] = f"Error fetching BotStatus: {type(e_status).__name__} - {e_status}"
         print(f"ERROR in admin_dashboard_view (BotStatus): {context['dashboard_error_message']}")
