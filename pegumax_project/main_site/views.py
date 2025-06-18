@@ -173,14 +173,8 @@ def admin_dashboard_view(request):
         'dashboard_error_message': "Data fetching is minimal for debugging." # Default message
     }
 
-    # STEP 1: Try fetching only User count
-    try:
-        context['total_users_count'] = User.objects.count()
-    except Exception as e_user:
-        context['dashboard_error_message'] = f"Error fetching user count: {type(e_user).__name__} - {e_user}"
-        print(f"ERROR in admin_dashboard_view (User count): {context['dashboard_error_message']}")
-        # Allow rendering with the error message for now
-
+    # ABSOLUTE MINIMAL: Try rendering the template with no database calls from this view.
+    context['dashboard_error_message'] = "Attempting to render admin_dashboard.html with no data fetching."
     # STEP 2: (Keep commented out initially) Try fetching BotStatus data
     # try:
     #     context['total_configured_bots_count'] = BotStatus.objects.count()
@@ -212,12 +206,12 @@ def admin_dashboard_view(request):
     # except ProgrammingError as db_error: # Specifically catch schema errors
     #     error_msg = f"Database schema error (BotActivityLog): {type(db_error).__name__} - {db_error}. Check model fields and migrations."
     #     print(f"ERROR in admin_dashboard_view: {error_msg}")
-    #     context['dashboard_error_message'] = error_msg
-    except Exception as e: # General catch-all for other errors during data fetching
-        print(f"ERROR in admin_dashboard_view: {error_msg} - {db_error}")
-        error_msg = f"An unexpected error occurred: {type(e).__name__} - {e}"
-        print(f"ERROR in admin_dashboard_view: {error_msg}")
-        context['dashboard_error_message'] = error_msg
+    #     context['dashboard_error_message'] = error_msg # This line was duplicated
+    # except Exception as e: # General catch-all for other errors during data fetching
+        # print(f"ERROR in admin_dashboard_view: {error_msg} - {db_error}") # This line had incorrect variables
+        # error_msg = f"An unexpected error occurred: {type(e).__name__} - {e}"
+        # print(f"ERROR in admin_dashboard_view: {error_msg}")
+        # context['dashboard_error_message'] = error_msg
  
     return render(request, 'main_site/admin_dashboard.html', context)
 
