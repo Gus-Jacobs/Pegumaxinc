@@ -14,11 +14,14 @@ from pathlib import Path
 from django.core.wsgi import get_wsgi_application
 
 # Determine the absolute path to the directory containing this wsgi.py file
-WSGI_DIR = Path(__file__).resolve().parent
-# The 'pegumax_project' Django app directory is one level up from wsgi.py
-DJANGO_APP_DIR = WSGI_DIR.parent
-# The overall project root (containing 'core' and 'pegumax_project' Django app) is one level up from the Django app dir
-PROJECT_ROOT = DJANGO_APP_DIR.parent
+WSGI_DIR = Path(__file__).resolve().parent  # Directory containing wsgi.py
+DJANGO_APP_DIR = WSGI_DIR.parent  # Django app directory ('pegumax_project')
+PROJECT_ROOT = DJANGO_APP_DIR.parent  # Project root (contains 'core' and 'pegumax_project')
+
+# Add the project root to sys.path if it's not already there
+# This allows Python to find the 'core' module
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 # Add the project root to sys.path if it's not already there
 # This allows Python to find the 'core' module
