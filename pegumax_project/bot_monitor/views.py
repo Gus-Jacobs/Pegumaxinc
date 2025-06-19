@@ -25,6 +25,8 @@ class LogReceiverView(APIView):
     # csrf_exempt = True # This is not a standard DRF attribute for exemption.
     # Instead, ensure CsrfViewMiddleware is correctly configured and @method_decorator(csrf_exempt) on dispatch is used.
 
+    authentication_classes = [] # Explicitly disable authentication
+    permission_classes = [] # Explicitly disable permission checks
     @method_decorator(csrf_exempt) # Keep this decorator on dispatch
     def dispatch(self, *args, **kwargs): # It's generally better to apply csrf_exempt to dispatch
         return super().dispatch(*args, **kwargs)
@@ -39,6 +41,8 @@ class LogReceiverView(APIView):
                 return Response({"error": "Expected a list or a single log entry object."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = BotActivityLogCreateSerializer(data=log_data_list, many=True)
+        authentication_classes = [] # Explicitly disable authentication
+        permission_classes = [] # Explicitly disable permission checks
 
         if serializer.is_valid():
             serializer.save()
@@ -112,6 +116,8 @@ class AcknowledgeLogsView(APIView):
 class BotCommandView(APIView): # For bot to send heartbeats and receive commands
     permission_classes = [HasBotAPIKey] # Bot uses API key
 
+    authentication_classes = [] # Explicitly disable authentication
+    permission_classes = [] # Explicitly disable permission checks
     @method_decorator(csrf_exempt) # Apply csrf_exempt to the dispatch method
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
