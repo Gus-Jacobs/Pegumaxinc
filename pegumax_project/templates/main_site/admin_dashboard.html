@@ -308,7 +308,7 @@
                     formatLogs(initialLogs, 'Recent Bot Activity (Last 20)');
                     logsModal.style.display = 'flex';
                     if(generalLogsBadge) generalLogsBadge.style.display = 'none';
-                else{
+                else {
                     if(generalLogsBadge) generalLogsBadge.style.display = 'none'; // Ensure its none when error out
                 }
                 } catch (err) {
@@ -327,7 +327,7 @@
                     formatLogs(initialCriticalLogs, 'Critical System Alerts (Last 20)');
                     logsModal.style.display = 'flex';
                     if(criticalLogsBadge) criticalLogsBadge.style.display = 'none';
-                    else{
+                else{
                     if(criticalLogsBadge) criticalLogsBadge.style.display = 'none'; // Ensure its none when error out
                 }
                 } catch (err) {
