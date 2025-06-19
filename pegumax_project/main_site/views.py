@@ -209,10 +209,12 @@ def admin_dashboard_view(request):
         context['unacknowledged_critical_logs_count'] = min(
             BotActivityLog.objects.filter(is_acknowledged=False, log_level__in=['ERROR', 'CRITICAL']).count(), 20
         )
-        # If all steps so far are successful, update the message
-        if not any(err_key in context['dashboard_error_message'].lower() for err_key in ["error", "failed"]):
+        # Check if any previous step reported an error before declaring full success
+        if "Error" not in context['dashboard_error_message'] and "failed" not in context['dashboard_error_message'].lower() \
+           and "schema error" not in context['dashboard_error_message'].lower():
              context['dashboard_error_message'] = "All dashboard data fetched successfully."
-
+        # else, the error message from a previous step will remain.
+        
     except ProgrammingError as db_error: # Specifically catch schema errors for BotActivityLog
         error_msg = f"Database schema error (BotActivityLog): {type(db_error).__name__} - {db_error}. Check model fields (e.g. bot_id, platform, is_acknowledged) and migrations."
         print(f"ERROR in admin_dashboard_view (BotActivityLog - Schema): {error_msg}")
