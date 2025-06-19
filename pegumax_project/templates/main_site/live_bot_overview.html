@@ -106,12 +106,7 @@
     </footer>
 
     <script>
-        // Placeholder data - replace with actual data fetching (e.g., via WebSocket or periodic AJAX)
-        const mockBotsData = [
-            { id: 'BOT-001-ALPHA', status: 'online', uptime: '72h 15m', tasksCompleted: 1203, currentTask: 'Data Scraping - Site X', income: 150.75, errors: 0, activity: [{time: '10:35', msg: 'Task #1203 completed.'}, {time: '10:30', msg: 'Initiated new task.'}] },
-            { id: 'BOT-002-BETA', status: 'warning', uptime: '12h 05m', tasksCompleted: 88, currentTask: 'Image Processing - Batch 7', income: 22.50, errors: 1, activity: [{time: '10:32', msg: 'Encountered timeout on image_xyz.jpg', type: 'error'}, {time: '10:20', msg: 'Processing batch 7.'}] },
-            { id: 'BOT-003-GAMMA', status: 'offline', uptime: '0h 0m', tasksCompleted: 0, currentTask: 'Idle', income: 0, errors: 0, activity: [{time: '09:50', msg: 'System shutdown initiated.'}] },
-        ];
+        const botsDataFromDjango = JSON.parse(document.getElementById('bots-data-json').textContent || '[]');
 
         function renderBotCards(bots) {
             const container = document.getElementById('botsGridContainer');
@@ -119,30 +114,116 @@
                 container.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">No active bots found or data stream unavailable.</p>';
                 return;
             }
+
+            // Determine status class for the indicator and button
+            function getStatusDetails(statusMessage) {
+                const lowerStatus = statusMessage.toLowerCase();
+                if (lowerStatus.includes("running") || lowerStatus.includes("acquiring") || lowerStatus.includes("management")) {
+                    return { class: 'online', buttonClass: 'status-online', buttonText: 'Stop Bot', buttonAction: 'STOP_REQUESTED' };
+                } else if (lowerStatus.includes("error")) {
+                    return { class: 'warning', buttonClass: 'status-warning', buttonText: 'Restart Bot', buttonAction: 'RESTART_REQUESTED' };
+                } else { // Idle, Stopped, Sleeping
+                    return { class: 'offline', buttonClass: 'status-offline', buttonText: 'Start Bot', buttonAction: 'START_REQUESTED' };
+                }
+            }
+
             container.innerHTML = bots.map(bot => `
-                <div class="bot-card">
-                    <div class="bot-card-header">
-                        <h3><i class="fas fa-robot"></i> ${bot.id}</h3>
-                        <span class="status-indicator ${bot.status}"></span>
+                const statusDetails = getStatusDetails(bot.status_message); // This line is inside the template literal, causing a syntax error
+                const lastHeartbeat = bot.last_heartbeat ? new Date(bot.last_heartbeat).toLocaleString() : 'N/A';
+                
+                // Placeholder for uptime calculation if you have a 'started_at' field
+                const uptime = 'N/A'; // Calculate if possible
+
+                return `
+                <div class="bot-card" id="bot-card-${bot.id}">
+                    <div class="bot-card-header"> 
+                        <h3><i class="fas fa-robot"></i> ${bot.name || bot.id}</h3>
+                        <span class="status-indicator ${statusDetails.class}"></span>
                     </div>
                     <div class="bot-info-grid">
-                        <div><strong>Status:</strong> <span style="text-transform: capitalize; color: var(--${bot.status === 'online' ? 'success' : bot.status === 'warning' ? 'warning' : 'danger'}-color);">${bot.status}</span></div>
-                        <div><strong>Uptime:</strong> <span>${bot.uptime}</span></div>
-                        <div><strong>Tasks Done:</strong> <span>${bot.tasksCompleted}</span></div>
-                        <div><strong>Income:</strong> <span class="bot-income">$${bot.income.toFixed(2)}</span></div>
-                        <div><strong>Errors:</strong> <span class="bot-errors">${bot.errors}</span></div>
-                        <div style="grid-column: 1 / -1;"><strong>Current Task:</strong> <span>${bot.currentTask}</span></div>
+                        <div><strong>Status:</strong> <span style="text-transform: capitalize; color: var(--${statusDetails.class === 'online' ? 'success' : statusDetails.class === 'warning' ? 'warning' : 'danger'}-color);">${bot.status_message}</span></div>
+                        <div><strong>Heartbeat:</strong> <span>${lastHeartbeat}</span></div>
+                        <div><strong>Uptime:</strong> <span>${uptime}</span></div>
+                        <div><strong>Tasks Done Today:</strong> <span>${bot.tasks_completed_today || 'N/A'}</span></div>
+                        <div><strong>Total Earnings:</strong> <span class="bot-income">$${bot.total_earnings || '0.00'}</span></div>
+                        <div><strong>Jobs Scraped Today:</strong> <span>${bot.jobs_scraped_today || 'N/A'}</span></div>
+                        <div style="grid-column: 1 / -1;"><strong>Latest Activity:</strong> <span>${bot.latest_task || 'No recent activity'}</span></div>
                     </div>
                     <div class="bot-activity-log">
-                        ${bot.activity.map(log => `<p><span class="log-time">${log.time}</span> <span class="${log.type === 'error' ? 'log-error' : ''}">${log.msg}</span></p>`).join('')}
+                        <!-- Activity log for this bot could be fetched separately or included if small -->
+                        <p><span class="log-time">Recent:</span> ${bot.latest_task || 'No recent activity'}</p>
                     </div>
+                    <button class="action-button ${statusDetails.buttonClass}" data-bot-id="${bot.id}" data-action="${statusDetails.buttonAction}">
+                        <i class="fas fa-${statusDetails.buttonAction === 'STOP_REQUESTED' ? 'stop-circle' : statusDetails.buttonAction === 'START_REQUESTED' ? 'play-circle' : 'redo'}"></i>
+                        ${statusDetails.buttonText}
+                    </button>
                 </div>
-            `).join('');
+            `).join(''); // The map function should return the HTML string directly
+
+            // Add event listeners for the new buttons
+            addBotControlListeners();
         }
         // Initial render (replace with actual data fetching logic)
         // renderBotCards(mockBotsData); 
         // To simulate fetching, you might do:
         // setTimeout(() => renderBotCards(mockBotsData), 1000);
+        renderBotCards(botsDataFromDjango);
+
+        function addBotControlListeners() {
+            document.querySelectorAll('.bot-card .action-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const botId = this.dataset.botId;
+                    const action = this.dataset.action;
+                    sendBotCommand(botId, action);
+                });
+            });
+        }
+
+        async function sendBotCommand(botId, command) {
+            // This URL should point to your BotCommandView's PUT method or a dedicated command endpoint
+            const commandUrl = "{% url 'bot_monitor:bot_command' %}"; // Assumes BotCommandView handles PUT for commands
+            
+            try {
+                const response = await fetch(commandUrl, { // Using PUT as per BotCommandView
+                    method: 'PUT', 
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'), // Make sure getCookie is defined
+                        // If your PUT endpoint for commands also uses API Key auth (not recommended for admin actions)
+                        // 'X-Bot-API-Key': 'YOUR_BOT_API_KEY_IF_NEEDED_FOR_PUT' 
+                    },
+                    body: JSON.stringify({ bot_id: botId, command: command })
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(`Command '${command}' sent to bot ${botId}. Response: ${result.message}`);
+                    // Optionally, refresh bot status or update card dynamically
+                    // For now, a page reload or periodic refresh might be simpler
+                    // location.reload(); // Or update card state via JS
+                } else {
+                    alert(`Error sending command: ${result.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error sending bot command:', error);
+                alert('Failed to send command. Check console.');
+            }
+        }
+        // Ensure getCookie function is available if not already defined globally
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
 </body>
 </html>
+{{ bots_data_json|json_script:"bots-data-json" }}
