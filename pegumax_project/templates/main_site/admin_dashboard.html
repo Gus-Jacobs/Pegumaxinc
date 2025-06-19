@@ -194,9 +194,8 @@
 
         <div class="stats-grid">
             <div class="stat-card"><i class="fas fa-users"></i> <span class="stat-value" id="total-users">{{ total_users_count|default:"0" }}</span> <span class="stat-label">Registered Users</span></div>
-            <div class="stat-card"><i class="fas fa-robot"></i> <span class="stat-value" id="total-bots">{{ total_configured_bots_count|default:"0" }}</span> <span class="stat-label">Configured Bots</span></div>
-            <!-- <div class="stat-card"><i class="fas fa-power-off"></i> <span class="stat-value" id="active-bots" style="color: {% if active_bots_count > 0 %}var(--success-color){% else %}var(--warning-color){% endif %};">{{ active_bots_count|default:"0" }}</span> <span class="stat-label">Active Bots</span></div> -->
-            <div class="stat-card"><i class="fas fa-server"></i> <span class="stat-value" id="server-status" style="color: var(--success-color);">Nominal</span> <span class="stat-label">System Status</span></div>
+            <div class="stat-card"><i class="fas fa-robot"></i> <span class="stat-value" id="total-bots">{{ total_configured_bots_count|default:"0" }}</span> <span class="stat-label">Configured Bots</span></div> <!-- Changed label slightly for clarity -->
+            <div class="stat-card"><i class="fas fa-power-off"></i> <span class="stat-value" id="active-bots" style="color: {% if active_bots_count > 0 %}var(--success-color){% else %}var(--warning-color){% endif %};">{{ active_bots_count|default:"0" }}</span> <span class="stat-label">Active Bots</span></div>            <div class="stat-card"><i class="fas fa-server"></i> <span class="stat-value" id="server-status" style="color: var(--success-color);">Nominal</span> <span class="stat-label">System Status</span></div>
         </div>
 
         <div class="dashboard-sections-grid">
