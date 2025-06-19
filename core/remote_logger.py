@@ -8,7 +8,8 @@ class RemoteLogger:
     def __init__(self, config):
         self.config = config
         self.log_buffer = deque(maxlen=100) # Store up to 100 summary logs before flushing
-        self.remote_log_url = self.config.get("django_log_receiver_url") # e.g., "https://your-django-app.onrender.com/bot-api/receive-logs/"
+        base_api_url = self.config.get("django_api_base_url") # e.g., "https://your-app.onrender.com/bot-api/"
+        self.remote_log_url = f"{base_api_url.rstrip('/')}/receive-logs/" if base_api_url else None
         self.remote_log_api_key = self.config.get("django_log_api_key")
         self.flush_interval_seconds = self.config.get("remote_log_flush_interval_seconds", 3 * 60 * 60) # Default 3 hours
         self.min_buffer_flush_size = self.config.get("remote_log_min_buffer_flush_size", 20) # Flush if buffer has this many items
