@@ -21,7 +21,7 @@ class TaskHandler:
         self.queue_manager = queue_manager
         self.scraper = scraper_instance # Needs the scraper to fetch full details/attachments
 
-    def prepare_awarded_job(self, job_data_db: dict):
+    async def prepare_awarded_job(self, job_data_db: dict):
         """
         Prepares a job folder, downloads attachments, and saves description
         for a job marked "awarded_to_me".
@@ -46,7 +46,7 @@ class TaskHandler:
 
             # Fetch full job details (including description and attachments)
             # This requires a new method in FreelancerScraper
-            full_job_details = self.scraper.get_full_job_details(job_url) # Placeholder
+            full_job_details = await self.scraper.get_full_job_details(job_url)
 
             if not full_job_details:
                 bot_logger.error(f"Could not fetch full details for awarded job {job_id} from {job_url}")
@@ -66,7 +66,7 @@ class TaskHandler:
                 attachment_url = attachment.get('url')
                 if attachment_url:
                     # This requires a download method in the scraper
-                    self.scraper.download_file(attachment_url, os.path.join(raw_files_path, attachment_name))
+                    await self.scraper.download_file(attachment_url, os.path.join(raw_files_path, attachment_name))
             
             self.queue_manager.update_job_status(job_id, "Queued") # New status: "Queued" for AI processing
             bot_logger.info(f"Job {job_id} ('{job_title}') prepared and status set to Queued.")
