@@ -1,5 +1,6 @@
 import time
 from core.logger import bot_logger
+import asyncio # For potential async operations if scraper methods become async
 
 class PlatformManager:
     def __init__(self, scraper_instances: list, config):
@@ -39,7 +40,7 @@ class PlatformManager:
                 self.platform_states[platform_name]['cooldown_until_next_new_job_scrape'] = 0
 
 
-    def get_platform_for_new_work_acquisition(self) -> object | None:
+    async def get_platform_for_new_work_acquisition(self) -> object | None:
         """
         Selects the next platform to attempt scraping new jobs and submitting new bids.
         Rotates through platforms, prioritizing those with known available bids and not in cooldown.
@@ -59,7 +60,7 @@ class PlatformManager:
                 continue
 
             # Perform a live check for bid availability
-            has_bids = scraper_instance.are_bids_available()
+            has_bids = await scraper_instance.are_bids_available() # Now async
             self._update_bid_status_cache(platform_name, has_bids) # Update cache
 
             if has_bids:
