@@ -32,7 +32,7 @@ class RemoteLogger:
 
     def _flush_buffer(self):
         with self.lock:
-            if not self.log_buffer:
+            if not self.log_buffer: # Avoid trying to send an empty list
                 return
             logs_to_send = list(self.log_buffer)
             self.log_buffer.clear()
