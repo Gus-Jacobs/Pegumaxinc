@@ -44,7 +44,7 @@ class RemoteLogger:
 
         headers = {"X-Bot-API-Key": self.remote_log_api_key, "Content-Type": "application/json"}
         try:
-            response = requests.post(self.remote_log_url, json=logs_to_send, headers=headers, timeout=30)
+            response = requests.post(self.remote_log_url, json=logs_to_send, headers=headers, timeout=60) # Increased timeout
             if response.status_code == 201:
                 bot_logger.info(f"Successfully sent {len(logs_to_send)} summary logs to remote server.")
             else:
