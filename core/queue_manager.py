@@ -10,6 +10,27 @@ DB_FILE = os.path.join(DB_DIR, "job_queue.db")
 if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
 
+# Define Job States
+class JobState:
+    NEW = "new"
+    SCRAPED = "scraped"
+    FILTERED_OUT = "filtered_out"
+    PROPOSED = "proposed"
+    VIEWED_BY_CLIENT = "viewed_by_client"
+    CHAT_INITIATED = "chat_initiated"
+    BID_RATED = "bid_rated"
+    AWARDED_TO_ME = "awarded_to_me"
+    AWARDED_OTHER = "awarded_other"
+    REJECTED_BY_CLIENT = "rejected_by_client"
+    NO_REPLY = "no_reply"
+    QUEUED_FOR_AI = "queued_for_ai"
+    AI_IN_PROGRESS = "ai_in_progress"
+    AWAITING_UPLOAD = "awaiting_upload"
+    COMPLETED = "completed"
+    FAILED_AI = "failed_ai"
+    ERROR = "error"
+    REVIEW_REQUIRED = "review_required"
+
 class QueueManager:
     def __init__(self, db_path=DB_FILE):
         self.db_path = db_path
@@ -30,7 +51,7 @@ class QueueManager:
                     url TEXT,
                     client_name TEXT,
                     budget TEXT,
-                    status TEXT DEFAULT 'new', -- new, scraped, filtered, proposed, replied, no_reply, error, completed
+                    status TEXT DEFAULT '{JobState.NEW}', -- Use new job state
                     platform TEXT DEFAULT 'freelancer',
                     scraped_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     proposed_at TIMESTAMP,
@@ -53,10 +74,10 @@ class QueueManager:
             conn = self._connect()
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO job_queue (job_id, title, url, client_name, budget, platform, status)
-                VALUES (?, ?, ?, ?, ?, ?, 'scraped')
+                INSERT INTO job_queue (job_id, title, url, client_name, budget, platform, status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (job_data['job_id'], job_data['title'], job_data['url'],
-                  job_data.get('client_name'), job_data.get('budget'), job_data.get('platform', 'freelancer')))
+                  job_data.get('client_name'), job_data.get('budget'), job_data.get('platform', 'freelancer'), JobState.SCRAPED))
             conn.commit()
             bot_logger.info(f"Added job {job_data['job_id']} to queue.")
             return cursor.lastrowid
@@ -76,7 +97,7 @@ class QueueManager:
             conn = self._connect()
             cursor = conn.cursor()
             timestamp_field = ""
-            if status == 'proposed':
+            if status == JobState.PROPOSED:
                 timestamp_field = ", proposed_at = CURRENT_TIMESTAMP"
 
             query = f"""
@@ -147,14 +168,13 @@ class QueueManager:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM job_queue WHERE url = ?", (url,))
             job = cursor.fetchone()
-            if job:
-                cursor.execute("SELECT * FROM job_queue WHERE status = ? ORDER BY scraped_at ASC LIMIT ?", (status, limit))
-                columns = [col[0] for col in cursor.description]
-                return dict(zip(columns, job))
-            return None
+            if not job:
+                return None
+            columns = [col[0] for col in cursor.description]
+            return dict(zip(columns, job))
         except sqlite3.Error as e:
             bot_logger.error(f"Database error fetching job by url {url}: {e}")
-            return []
+            return None # Return None on error, consistent with no job found
         finally:
             if conn:
                 conn.close()
@@ -166,10 +186,12 @@ class QueueManager:
             cursor = conn.cursor()
             cursor.execute("""
                 SELECT * FROM job_queue 
-                WHERE status NOT IN ('no_reply', 'completed', 'error', 'filtered_out') 
+                WHERE status NOT IN (?, ?, ?, ?, ?, ?) 
                 ORDER BY scraped_at ASC 
                 LIMIT ?
-            """, (limit,))
+            """, (JobState.NO_REPLY, JobState.COMPLETED, JobState.ERROR, 
+                  JobState.FILTERED_OUT, JobState.FAILED_AI, JobState.AWARDED_OTHER, 
+                  limit))
             jobs = cursor.fetchall()
             columns = [col[0] for col in cursor.description]
             return [dict(zip(columns, row)) for row in jobs]
@@ -185,7 +207,8 @@ class QueueManager:
         try:
             conn = self._connect()
             cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM job_queue WHERE status NOT IN ('no_reply', 'completed', 'error', 'filtered_out')")
+            cursor.execute("SELECT COUNT(*) FROM job_queue WHERE status NOT IN (?, ?, ?, ?, ?, ?)",
+                           (JobState.NO_REPLY, JobState.COMPLETED, JobState.ERROR, JobState.FILTERED_OUT, JobState.FAILED_AI, JobState.AWARDED_OTHER))
             return cursor.fetchone()[0]
         except sqlite3.Error as e:
             bot_logger.error(f"Database error getting active job count: {e}")
