@@ -121,6 +121,8 @@
             font-size: 0.7em;
             margin-left: 8px;
             vertical-align: super;
+            min-width: 18px; /* Ensure circle for single digit */
+            line-height: 18px; /* Vertically center text */
         }
         .site-footer-minimal { text-align: center; padding: 25px 20px; border-top: 1px solid var(--border-color); color: var(--text-light); font-size: 0.9em; margin-top: 30px; }
 
@@ -345,17 +347,21 @@
                 e.preventDefault();
                 try {
                     const initialLogs = JSON.parse(document.getElementById('recent-logs-data').textContent);
-                    const logIdsToAcknowledge = initialLogs.filter(log => !log.is_acknowledged).map(log => log.id); // Assuming logs have an 'id' and 'is_acknowledged'
+                    // Get IDs of logs that are currently unacknowledged to send to server
+                    const logIdsToAcknowledge = initialLogs.filter(log => !log.is_acknowledged && log.id !== undefined).map(log => log.id);
                     formatLogs(initialLogs, 'Recent Bot Activity (Last 20)');
                     logsModal.style.display = 'flex';
-                    if(generalLogsBadge) generalLogsBadge.style.display = 'none';
-                    acknowledgeLogsOnServer(logIdsToAcknowledge.filter(id => id !== undefined)); // Filter out undefined IDs
-                else{
-                    if(generalLogsBadge) generalLogsBadge.style.display = 'none'; // Ensure its none when error out
-                }
+                    if (generalLogsBadge) {
+                        generalLogsBadge.style.display = 'none';
+                    }
+                    acknowledgeLogsOnServer(logIdsToAcknowledge);
+
                 } catch (err) {
                     logsModalBody.innerHTML = '<p>Error loading recent logs. Data might be malformed.</p>';
                     console.error("Error parsing recent-logs-data:", err);
+                    if (generalLogsBadge) { // Still hide badge if data is bad but link was clicked
+                        generalLogsBadge.style.display = 'none';
+                    }
                     logsModal.style.display = 'flex';
                 }
             });
@@ -366,17 +372,19 @@
                 e.preventDefault();
                 try {
                     const initialCriticalLogs = JSON.parse(document.getElementById('critical-logs-data').textContent);
-                    const logIdsToAcknowledge = initialCriticalLogs.filter(log => !log.is_acknowledged).map(log => log.id);
+                    const logIdsToAcknowledge = initialCriticalLogs.filter(log => !log.is_acknowledged && log.id !== undefined).map(log => log.id);
                     formatLogs(initialCriticalLogs, 'Critical System Alerts (Last 20)');
                     logsModal.style.display = 'flex';
-                    if(criticalLogsBadge) criticalLogsBadge.style.display = 'none';
-                    acknowledgeLogsOnServer(logIdsToAcknowledge.filter(id => id !== undefined));
-                else {
-                    if(criticalLogsBadge) criticalLogsBadge.style.display = 'none'; // Ensure its none when error out
-                }
+                    if (criticalLogsBadge) {
+                        criticalLogsBadge.style.display = 'none';
+                    }
+                    acknowledgeLogsOnServer(logIdsToAcknowledge);
                 } catch (err) {
                     logsModalBody.innerHTML = '<p>Error loading critical logs. Data might be malformed.</p>';
                     console.error("Error parsing critical-logs-data:", err);
+                    if (criticalLogsBadge) { // Still hide badge if data is bad but link was clicked
+                        criticalLogsBadge.style.display = 'none';
+                    }
                     logsModal.style.display = 'flex';
                 }
             });
