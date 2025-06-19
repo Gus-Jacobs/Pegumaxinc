@@ -14,7 +14,7 @@ class JobSubmitter:
         self.proposal_writer = proposal_writer
         self.config = config
 
-    def process_job_for_submission(self, job_data: dict, scraper_instance): # Add scraper_instance parameter
+    async def process_job_for_submission(self, job_data: dict, scraper_instance): # Add scraper_instance parameter, make async
         """
         Generates a proposal for a job and attempts to submit it.
         Updates job status in the queue based on the outcome.
@@ -66,7 +66,7 @@ class JobSubmitter:
             return False
 
         # 2. Submit proposal using the scraper
-        submission_successful = scraper_instance.submit_proposal(job_data, proposal_text)
+        submission_successful = await scraper_instance.submit_proposal(job_data, proposal_text)
 
         # Status is updated within scraper.submit_proposal (to 'proposed' or 'error')
         return submission_successful
