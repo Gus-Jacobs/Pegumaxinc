@@ -197,7 +197,7 @@ def admin_dashboard_view(request):
 
     # STEP 3: Try fetching BotActivityLog data
     try:
-        log_fields = ['timestamp', 'log_level', 'message', 'bot_id', 'platform']
+        log_fields = ['id', 'timestamp', 'log_level', 'message', 'bot_id', 'platform', 'is_acknowledged'] # Added 'id' and 'is_acknowledged'
         # Using a slightly larger limit for actual display, e.g., 20
         context['recent_logs_for_popup_json'] = list(
             BotActivityLog.objects.order_by('-timestamp').values(*log_fields)[:20]
