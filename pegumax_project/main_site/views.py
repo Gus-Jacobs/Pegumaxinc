@@ -12,6 +12,7 @@ from django.core.mail import send_mail
 # Add any other necessary imports, e.g., models from bot_monitor
 from bot_monitor.models import BotStatus, BotActivityLog # Assuming these are your models
 # Duplicate imports removed
+from django.utils import timezone # Ensure timezone is imported
 from django.db.utils import ProgrammingError
 
 def is_admin(user):
@@ -184,8 +185,10 @@ def admin_dashboard_view(request):
     # STEP 2: Try fetching BotStatus data
     try:
         context['total_configured_bots_count'] = BotStatus.objects.count()
-        # Correctly count active bots by checking their status_message
-        context['active_bots_count'] = BotStatus.objects.filter(status_message__icontains="running").count()
+        # Consider a bot active if its last heartbeat was within the last 5 minutes
+        active_threshold = timezone.now() - timezone.timedelta(minutes=5)
+        context['active_bots_count'] = BotStatus.objects.filter(last_heartbeat__gte=active_threshold).count()
+
         # Update error message if this step was successful and previous was too
         context['dashboard_error_message'] = "Successfully fetched user, BotStatus count, and active bots. BotActivityLog data is still disabled."
     except Exception as e_status:
