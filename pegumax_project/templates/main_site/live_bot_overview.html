@@ -20,7 +20,15 @@
         .page-header-minimal .container { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; padding: 0 20px; }
         .page-header-minimal .logo-link { display: flex; align-items: center; text-decoration: none; color: var(--text-color); font-family: var(--secondary-font); font-size: 1.5em; font-weight: bold; }
         .page-header-minimal .logo-link img { height: 40px; margin-right: 10px; filter: drop-shadow(0 0 5px var(--highlight-color)); }
-        .admin-nav-links a { color: var(--text-light); text-decoration: none; margin-left: 25px; font-size: 1em; transition: color 0.3s ease, text-shadow 0.3s ease; padding: 5px 0; border-bottom: 2px solid transparent; }
+        .admin-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px; /* Use gap for spacing */
+            flex-wrap: wrap; /* Allow links to wrap */
+        }
+        .admin-nav-links a {
+            color: var(--text-light); text-decoration: none; /* margin-left: 25px; Removed fixed margin */
+            font-size: 1em; transition: color 0.3s ease, text-shadow 0.3s ease, border-bottom-color 0.3s ease; padding: 5px 0; border-bottom: 2px solid transparent; }
         .admin-nav-links a:hover, .admin-nav-links a.active { color: var(--highlight-color); text-shadow: 0 0 8px var(--highlight-color); border-bottom-color: var(--highlight-color); }
         .dashboard-main { flex-grow: 1; padding: 30px 20px; }
         .bot-monitor-header { text-align: center; margin-bottom: 40px; }
