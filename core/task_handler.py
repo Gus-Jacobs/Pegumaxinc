@@ -2,6 +2,7 @@ import os
 import json
 import re
 from core.logger import bot_logger
+from core.queue_manager import JobState # Import JobState
 from platform_modules.freelancer_scraper import FreelancerScraper # To fetch full job details/attachments
 
 PROJECTS_BASE_DIR = "projects"
@@ -67,8 +68,8 @@ class TaskHandler:
                 if attachment_url:
                     # This requires a download method in the scraper
                     await self.scraper.download_file(attachment_url, os.path.join(raw_files_path, attachment_name))
-            
-            self.queue_manager.update_job_status(job_id, "Queued") # New status: "Queued" for AI processing
+            # Update to new JobState
+            self.queue_manager.update_job_status(job_id, JobState.QUEUED_FOR_AI)
             bot_logger.info(f"Job {job_id} ('{job_title}') prepared and status set to Queued.")
             return True
         except Exception as e:
