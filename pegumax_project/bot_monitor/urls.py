@@ -4,13 +4,6 @@ from .views import (
     AcknowledgeLogsView, BotCommandView
 )
 
-from . import views # Import the views module
-# Or, if you prefer to import specific views:
-# from .views import (
-# receive_logs_view,
-# bot_command_view,
-#     # ... other views
-# )
 
 app_name = 'bot_monitor' # This line is crucial for namespacing
 
