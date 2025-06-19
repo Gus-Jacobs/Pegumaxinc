@@ -25,7 +25,7 @@ class LogReceiverView(APIView):
     # csrf_exempt = True # This is not a standard DRF attribute for exemption.
     # Instead, ensure CsrfViewMiddleware is correctly configured and @method_decorator(csrf_exempt) on dispatch is used.
 
-    authentication_classes = [] # Explicitly disable authentication
+    authentication_classes = []  # Explicitly disable authentication
     permission_classes = [] # Explicitly disable permission checks
     @method_decorator(csrf_exempt) # Keep this decorator on dispatch
     def dispatch(self, *args, **kwargs): # It's generally better to apply csrf_exempt to dispatch
