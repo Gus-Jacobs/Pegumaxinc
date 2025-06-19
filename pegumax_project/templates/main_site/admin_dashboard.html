@@ -266,6 +266,45 @@
         const generalLogsBadge = document.getElementById('generalLogsBadge');
         const criticalLogsBadge = document.getElementById('criticalLogsBadge');
 
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        async function acknowledgeLogsOnServer(logIds) {
+            if (!logIds || logIds.length === 0) return;
+            // The URL for acknowledging logs should come from bot_monitor.urls
+            const acknowledgeUrl = "{% url 'bot_monitor:acknowledge_logs' %}"; 
+            try {
+                const response = await fetch(acknowledgeUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ log_ids: logIds })
+                });
+                if (response.ok) {
+                    console.log('Logs acknowledged successfully on server.');
+                } else {
+                    console.error('Failed to acknowledge logs on server:', await response.text());
+                }
+            } catch (error) {
+                console.error('Error sending acknowledgement request:', error);
+            }
+        }
+
         function formatLogs(logEntries, title) {
             logsModalTitle.textContent = title;
             if (!logEntries || logEntries.length === 0) {
@@ -274,6 +313,7 @@
             }
             let html = '<ul>';
             logEntries.forEach(log => {
+                // Ensure log.id is available if you plan to acknowledge individual logs
                 let botIdentifier = log.bot_id || 'System'; // Fallback if bot_id is not present
                 let platformIdentifier = log.platform || 'N/A';
                 let logLevelClass = 'log-level-' + (log.log_level || 'INFO').toUpperCase();
@@ -305,10 +345,12 @@
                 e.preventDefault();
                 try {
                     const initialLogs = JSON.parse(document.getElementById('recent-logs-data').textContent);
+                    const logIdsToAcknowledge = initialLogs.filter(log => !log.is_acknowledged).map(log => log.id); // Assuming logs have an 'id' and 'is_acknowledged'
                     formatLogs(initialLogs, 'Recent Bot Activity (Last 20)');
                     logsModal.style.display = 'flex';
                     if(generalLogsBadge) generalLogsBadge.style.display = 'none';
-                else {
+                    acknowledgeLogsOnServer(logIdsToAcknowledge.filter(id => id !== undefined)); // Filter out undefined IDs
+                else{
                     if(generalLogsBadge) generalLogsBadge.style.display = 'none'; // Ensure its none when error out
                 }
                 } catch (err) {
@@ -324,10 +366,12 @@
                 e.preventDefault();
                 try {
                     const initialCriticalLogs = JSON.parse(document.getElementById('critical-logs-data').textContent);
+                    const logIdsToAcknowledge = initialCriticalLogs.filter(log => !log.is_acknowledged).map(log => log.id);
                     formatLogs(initialCriticalLogs, 'Critical System Alerts (Last 20)');
                     logsModal.style.display = 'flex';
                     if(criticalLogsBadge) criticalLogsBadge.style.display = 'none';
-                else{
+                    acknowledgeLogsOnServer(logIdsToAcknowledge.filter(id => id !== undefined));
+                else {
                     if(criticalLogsBadge) criticalLogsBadge.style.display = 'none'; // Ensure its none when error out
                 }
                 } catch (err) {
