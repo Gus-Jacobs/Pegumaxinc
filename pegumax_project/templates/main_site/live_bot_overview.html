@@ -115,20 +115,8 @@
                 return;
             }
 
-            // Determine status class for the indicator and button
-            function getStatusDetails(statusMessage) {
-                const lowerStatus = statusMessage.toLowerCase();
-                if (lowerStatus.includes("running") || lowerStatus.includes("acquiring") || lowerStatus.includes("management")) {
-                    return { class: 'online', buttonClass: 'status-online', buttonText: 'Stop Bot', buttonAction: 'STOP_REQUESTED' };
-                } else if (lowerStatus.includes("error")) {
-                    return { class: 'warning', buttonClass: 'status-warning', buttonText: 'Restart Bot', buttonAction: 'RESTART_REQUESTED' };
-                } else { // Idle, Stopped, Sleeping
-                    return { class: 'offline', buttonClass: 'status-offline', buttonText: 'Start Bot', buttonAction: 'START_REQUESTED' };
-                }
-            }
-
-            container.innerHTML = bots.map(bot => `
-                const statusDetails = getStatusDetails(bot.status_message); // This line is inside the template literal, causing a syntax error
+            container.innerHTML = bots.map(bot => {
+                const statusDetails = getStatusDetails(bot.status_message); 
                 const lastHeartbeat = bot.last_heartbeat ? new Date(bot.last_heartbeat).toLocaleString() : 'N/A';
                 
                 // Placeholder for uptime calculation if you have a 'started_at' field
@@ -158,7 +146,7 @@
                         ${statusDetails.buttonText}
                     </button>
                 </div>
-            `).join(''); // The map function should return the HTML string directly
+            `}).join('');
 
             // Add event listeners for the new buttons
             addBotControlListeners();
@@ -167,6 +155,18 @@
         // renderBotCards(mockBotsData); 
         // To simulate fetching, you might do:
         // setTimeout(() => renderBotCards(mockBotsData), 1000);
+        
+        // Moved getStatusDetails outside renderBotCards to be in its scope
+        function getStatusDetails(statusMessage) {
+            const lowerStatus = statusMessage.toLowerCase();
+            if (lowerStatus.includes("running") || lowerStatus.includes("acquiring") || lowerStatus.includes("management") || lowerStatus.includes("cycle start") || lowerStatus.includes("cycle complete")) {
+                return { class: 'online', buttonClass: 'status-online', buttonText: 'Stop Bot', buttonAction: 'STOP_REQUESTED' };
+            } else if (lowerStatus.includes("error")) {
+                return { class: 'warning', buttonClass: 'status-warning', buttonText: 'Restart Bot', buttonAction: 'RESTART_REQUESTED' };
+            } else { // Idle, Stopped, Sleeping
+                return { class: 'offline', buttonClass: 'status-offline', buttonText: 'Start Bot', buttonAction: 'START_REQUESTED' };
+            }
+        }
         renderBotCards(botsDataFromDjango);
 
         function addBotControlListeners() {
