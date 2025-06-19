@@ -45,7 +45,7 @@ class BotStatus(models.Model):
     def update_status(cls, bot_id_val="freelance-bot-main", status_msg="Running", command_val=None):
         defaults = {'last_heartbeat': timezone.now(), 'status_message': status_msg}
         if command_val is not None: # Only update command if a value is provided
-            defaults['command'] = command_val
+            defaults['command'] = command_val # Set new command
         # Use bot_id as the unique key instead of pk=1 if you plan for multiple bot status entries
         obj, created = cls.objects.update_or_create(bot_id=bot_id_val, defaults=defaults)
         return obj
