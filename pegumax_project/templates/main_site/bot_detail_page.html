@@ -58,6 +58,12 @@
         #commandResponse { margin-top: 10px; font-style: italic; color: var(--text-light); }
 
         #botLogsContainer { max-height: 400px; overflow-y: auto; background-color: var(--bg-dark-2); padding: 15px; border-radius: 5px; font-size: 0.9em; }
+        .stats-container p { margin: 10px 0; font-size: 1.1em; }
+        .stats-container strong { color: var(--text-light); min-width: 180px; display: inline-block; }
+        .stats-container span { font-weight: bold; color: var(--highlight-color); }
+        .uptime-value { color: var(--success-color); }
+
+
         #botLogsList { list-style: none; padding: 0; margin: 0; }
         #botLogsList li { padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
         #botLogsList li:last-child { border-bottom: none; }
@@ -111,6 +117,15 @@
         </div>
 
         <div class="control-card" style="margin-top: 25px;">
+            <h3><i class="fas fa-chart-bar"></i> Bot Statistics</h3>
+            <div class="stats-container">
+                <p><strong>Uptime:</strong> <span id="botUptime" class="uptime-value">Calculating...</span></p>
+                <p><strong>Proposals Sent Today:</strong> <span id="proposalsSent">N/A</span></p>
+                <p><strong>Total Earnings:</strong> <span id="totalEarnings">N/A</span></p>
+            </div>
+        </div>
+
+        <div class="control-card" style="margin-top: 25px;">
             <h3><i class="fas fa-clipboard-list"></i> Activity Logs</h3>
             <button id="refreshLogsBtn" class="btn-control secondary" style="margin-bottom: 15px;"><i class="fas fa-redo"></i> Refresh Logs</button>
             <button id="acknowledgeLogsBtn" class="btn-control" style="margin-bottom: 15px; background-color: var(--info-color); color: var(--bg-dark-1);"><i class="fas fa-check-double"></i> Acknowledge Displayed</button>
@@ -133,6 +148,9 @@
         const lastHeartbeatEl = document.getElementById('botLastHeartbeat');
         const pendingCommandEl = document.getElementById('botPendingCommand');
         const logsListEl = document.getElementById('botLogsList');
+        const uptimeEl = document.getElementById('botUptime');
+        const proposalsSentEl = document.getElementById('proposalsSent');
+        const totalEarningsEl = document.getElementById('totalEarnings');
         const commandResponseEl = document.getElementById('commandResponse');
 
         const refreshStatusBtn = document.getElementById('refreshStatusBtn');
@@ -150,6 +168,21 @@
             return 'status-idle';
         }
 
+        function calculateUptime(startTime) {
+            if (!startTime) return 'N/A';
+            const start = new Date(startTime);
+            const now = new Date();
+            let diff = (now.getTime() - start.getTime()) / 1000; // difference in seconds
+
+            const days = Math.floor(diff / 86400);
+            diff -= days * 86400;
+            const hours = Math.floor(diff / 3600) % 24;
+            diff -= hours * 3600;
+            const minutes = Math.floor(diff / 60) % 60;
+
+            return `${days}d ${hours}h ${minutes}m`;
+        }
+
         async function fetchBotStatus() {
             try {
                 // Fetch status for the specific bot_id
@@ -164,6 +197,10 @@
                     statusMessageEl.className = getStatusClass(botStatus.status_message);
                     lastHeartbeatEl.textContent = botStatus.last_heartbeat ? new Date(botStatus.last_heartbeat).toLocaleString() : 'N/A';
                     // The bot's command is not directly in LiveBotStatusDataView, it's in BotStatus.get_status()
+                    // Update stats
+                    uptimeEl.textContent = calculateUptime(botStatus.bot_started_at);
+                    proposalsSentEl.textContent = botStatus.proposals_sent_today || '0';
+                    totalEarningsEl.textContent = `$${parseFloat(botStatus.total_earnings || 0).toFixed(2)}`;
                     // For now, pendingCommandEl will remain N/A unless you fetch it separately or add it to LiveBotStatusDataView
                     // pendingCommandEl.textContent = botStatus.command || 'NONE'; // This field is not in LiveBotStatusDataView response
                 } else {
