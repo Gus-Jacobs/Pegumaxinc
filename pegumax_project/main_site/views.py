@@ -198,7 +198,7 @@ def admin_dashboard_view(request):
 
     # STEP 3: Try fetching BotActivityLog data
     try:
-        log_fields = ['timestamp', 'log_level', 'message', 'bot_id', 'platform']
+        log_fields = ['id', 'timestamp', 'log_level', 'message', 'bot_id', 'platform', 'is_acknowledged'] # Added 'id' and 'is_acknowledged'
         # Using a slightly larger limit for actual display, e.g., 20
         context['recent_logs_for_popup_json'] = list(
             BotActivityLog.objects.order_by('-timestamp').values(*log_fields)[:20]
@@ -266,9 +266,10 @@ def live_bot_overview_view(request):
             'jobs_scraped_today': "N/A", # Placeholder
             'tasks_completed_today': "N/A", # Placeholder
         })
+    # This context dictionary will be passed to the template.
     context = {
         'bots': bots_data,
-        'bots_data_json': json.dumps(bots_data, default=str) # Ensure bots_data_json is in the context
+        'bots_data_json': json.dumps(bots_data, default=str) # Serialize the list of bot data to a JSON string
     }
     return render(request, 'main_site/live_bot_overview.html', context)
 
