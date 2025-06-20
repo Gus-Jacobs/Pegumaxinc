@@ -269,7 +269,7 @@ def live_bot_overview_view(request):
     # This context dictionary will be passed to the template.
     context = {
         'bots': bots_data,
-        'bots_data_json': json.dumps(bots_data, default=str) # Serialize the list of bot data to a JSON string
+        'bots_data_json': bots_data # Pass the Python list directly, json_script will handle serialization
     }
     print(f"DEBUG: bots_data_json being sent to template: {context['bots_data_json']}")
     return render(request, 'main_site/live_bot_overview.html', context)
