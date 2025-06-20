@@ -179,7 +179,7 @@ class BotCommandView(APIView): # For bot to send heartbeats and receive commands
         # You'd typically have a separate endpoint or different permission for admin.
         # This is a conceptual example; secure this properly.
         command = request.data.get("command") # e.g., "STOP_REQUESTED", "NONE"
-        if command in ["STOP_REQUESTED", "NONE"]: # Add other valid commands
+        if command in ["STOP_REQUESTED", "START_REQUESTED", "RESTART_REQUESTED", "NONE"]: # Accept all valid commands from the frontend
             BotStatus.update_status(command_val=command) # Only update command
             return Response({"message": f"Command '{command}' sent to bot."}, status=status.HTTP_200_OK)
         return Response({"error": "Invalid command."}, status=status.HTTP_400_BAD_REQUEST)
