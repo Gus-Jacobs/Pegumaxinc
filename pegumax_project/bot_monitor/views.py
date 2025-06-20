@@ -78,23 +78,12 @@ class BotLogDataView(APIView): # Renamed from BotLogView to avoid conflict if an
     # permission_classes = [IsAdminUser] # TODO: Add appropriate permissions
 
     def get(self, request, format=None):
-        log_type = request.query_params.get('type', 'recent_unacknowledged') # recent_unacknowledged, critical_unacknowledged, all
+        bot_id_filter = request.query_params.get('bot_id', None)
         limit = int(request.query_params.get('limit', 50))
 
         queryset = BotActivityLog.objects.all()
-
-        if log_type == 'critical_unacknowledged':
-            queryset = queryset.filter(
-                log_level__in=['ERROR', 'CRITICAL'],
-                is_acknowledged=False,
-                timestamp__gte=timezone.now() - timezone.timedelta(days=3)
-            )
-        elif log_type == 'all_unacknowledged':
-            queryset = queryset.filter(is_acknowledged=False)
-        elif log_type == 'all': # All logs, acknowledged or not
-            pass # No additional filters needed beyond default ordering
-        else: # 'recent_unacknowledged' or default
-            queryset = queryset.filter(is_acknowledged=False)
+        if bot_id_filter:
+            queryset = queryset.filter(bot_id=bot_id_filter)
         
         serializer = BotActivityLogDisplaySerializer(queryset.order_by('-timestamp')[:limit], many=True)
         return Response(serializer.data)
