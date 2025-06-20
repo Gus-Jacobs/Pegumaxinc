@@ -121,16 +121,16 @@
         .dashboard-section-card ul li a:hover i.link-icon { transform: scale(1.1) rotate(-5deg); }
         
         .notification-badge {
-            display: inline-flex; /* Use flexbox for centering */
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             background-color: var(--danger-color);
             color: white;
             border-radius: 50%;
+            width: 20px; /* Fixed width for perfect circle */
+            height: 20px; /* Fixed height for perfect circle */
             font-size: 0.75em; /* Slightly larger font */
             font-weight: bold;
-            height: 20px; /* Fixed height */
-            min-width: 20px; /* Fixed width */
             margin-left: 8px;
             padding: 0 4px; /* Padding for numbers > 9 */
             transform: translateY(-5px); /* Superscript effect */
