@@ -46,7 +46,7 @@
         }
         .page-header-minimal .logo-link { display: flex; align-items: center; text-decoration: none; color: var(--text-color); font-family: var(--secondary-font); font-size: 1.5em; font-weight: bold; }
         .page-header-minimal .logo-link img { height: 40px; margin-right: 10px; filter: drop-shadow(0 0 5px var(--highlight-color)); }
-        .admin-nav-links a { color: var(--text-light); text-decoration: none; margin-left: 25px; font-size: 1em; transition: color 0.3s ease, text-shadow 0.3s ease, border-bottom-color 0.3s ease; padding: 5px 0; border-bottom: 2px solid transparent; }
+        .admin-nav-links a { color: var(--text-light); text-decoration: none; /* margin-left removed for gap */ font-size: 1em; transition: color 0.3s ease, text-shadow 0.3s ease, border-bottom-color 0.3s ease; padding: 5px 0; border-bottom: 2px solid transparent; }
         .admin-nav-links a:hover, .admin-nav-links a.active { color: var(--highlight-color); text-shadow: 0 0 8px var(--highlight-color); border-bottom-color: var(--highlight-color); }
         .dashboard-main { flex-grow: 1; padding: 30px 20px; }
         .admin-dashboard-header { text-align: center; margin-bottom: 40px; }
@@ -121,18 +121,16 @@
         .dashboard-section-card ul li a:hover i.link-icon { transform: scale(1.1) rotate(-5deg); }
         
         .notification-badge {
-            display: inline-flex; /* Use flexbox for centering */
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             background-color: var(--danger-color);
             color: white;
             border-radius: 50%;
-            font-size: 0.75em; /* Slightly larger font */
-            font-weight: bold;
-            height: 20px; /* Fixed height */
-            min-width: 20px; /* Fixed width */
+            width: 20px; /* Fixed width for a perfect circle */
+            height: 20px; /* Fixed height for a perfect circle */
+            font-size: 0.7em;
             margin-left: 8px;
-            padding: 0 4px; /* Padding for numbers > 9 */
             transform: translateY(-5px); /* Superscript effect */
         }
         .site-footer-minimal { text-align: center; padding: 25px 20px; border-top: 1px solid var(--border-color); color: var(--text-light); font-size: 0.9em; margin-top: 30px; }
@@ -161,7 +159,7 @@
         .modal-title-custom {
             font-family:var(--secondary-font); color:var(--highlight-color); 
             border-bottom:1px solid var(--highlight-color); padding-bottom:12px; margin-bottom:20px; /* Keep existing styles */
-            font-size: 1.6em;
+            font-size: 1.6em; /* Keep existing styles */
             display: flex; justify-content: space-between; align-items: center; /* Use flexbox */
         }
         /* Specific style for the clear all button within the modal title */
