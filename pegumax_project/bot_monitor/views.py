@@ -98,16 +98,16 @@ class AcknowledgeLogsView(APIView):
         if not isinstance(log_ids, list):
             return Response({'error': 'log_ids must be a list'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if acknowledge_all: # This flag comes from the "Clear All" button
+        if acknowledge_all:
             updated_count = BotActivityLog.objects.filter(is_acknowledged=False).update(
                 is_acknowledged=True, 
                 acknowledged_at=timezone.now()
             )
         else:
             updated_count = BotActivityLog.objects.filter(id__in=log_ids, is_acknowledged=False).update(
-                is_acknowledged=True, 
-                acknowledged_at=timezone.now()
-            )
+            is_acknowledged=True, 
+            acknowledged_at=timezone.now()
+        )
         return Response({'message': f'{updated_count} logs acknowledged.'}, status=status.HTTP_200_OK)
 
 class LiveBotStatusDataView(APIView):
@@ -156,17 +156,33 @@ class BotCommandView(APIView): # For bot to send heartbeats and receive commands
         return super().dispatch(*args, **kwargs)
 
     def post(self, request, format=None): # Bot sends its status
+        bot_id = request.data.get("bot_id", "freelance-bot-main")
         status_message = request.data.get("status_message", "Unknown")
-        BotStatus.update_status(status_msg=status_message) # Update heartbeat and status
         
-        # Check for commands from dashboard
-        current_bot_status = BotStatus.get_status()
-        command_to_bot = current_bot_status.command
+        # Use get_or_create to handle the bot status object
+        bot_status, created = BotStatus.objects.get_or_create(bot_id=bot_id)
         
-        if command_to_bot == "STOP_REQUESTED":
-            # Optionally reset command after bot acknowledges it, or bot can report it's stopping
-            # BotStatus.update_status(status_msg="Stopping", command_val="NONE") # Example reset
-            pass
+        # Update status and heartbeat
+        bot_status.status_message = status_message
+        bot_status.last_heartbeat = timezone.now()
+        
+        # Update optional stats if the bot sends them
+        if 'proposals_sent_today' in request.data:
+            bot_status.proposals_sent_today = request.data['proposals_sent_today']
+        if 'jobs_scraped_today' in request.data:
+            bot_status.jobs_scraped_today = request.data['jobs_scraped_today']
+        if 'total_earnings' in request.data:
+            bot_status.total_earnings = request.data['total_earnings']
+            
+        # Get the command to send back to the bot
+        command_to_bot = bot_status.command
+        
+        # If the bot is about to receive a command, reset it in the DB immediately.
+        # This makes the command a "fire-once" instruction.
+        if command_to_bot != "NONE":
+            bot_status.command = "NONE"
+        
+        bot_status.save()
 
         return Response({"message": "Heartbeat received.", "command": command_to_bot}, status=status.HTTP_200_OK)
 
@@ -178,6 +194,10 @@ class BotCommandView(APIView): # For bot to send heartbeats and receive commands
         # This is a conceptual example; secure this properly.
         command = request.data.get("command") # e.g., "STOP_REQUESTED", "NONE"
         if command in ["STOP_REQUESTED", "START_REQUESTED", "RESTART_REQUESTED", "NONE"]: # Accept all valid commands from the frontend
-            BotStatus.update_status(command_val=command) # Only update command
-            return Response({"message": f"Command '{command}' sent to bot."}, status=status.HTTP_200_OK)
+            bot_id = request.data.get("bot_id", "freelance-bot-main")
+            # Use get_or_create to be safe
+            bot_status, created = BotStatus.objects.get_or_create(bot_id=bot_id)
+            bot_status.command = command
+            bot_status.save()
+            return Response({"message": f"Command '{command}' sent to bot '{bot_id}'."}, status=status.HTTP_200_OK)
         return Response({"error": "Invalid command."}, status=status.HTTP_400_BAD_REQUEST)
