@@ -38,6 +38,12 @@
             box-shadow: 0 2px 10px rgba(0, 239, 255, 0.1);
         }
         .page-header-minimal .container { display: flex; justify-content: space-between; align-items: center; max-width: 1300px; margin: 0 auto; padding: 0 20px; }
+        .admin-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px; /* Use gap for spacing */
+            flex-wrap: wrap; /* Allow links to wrap on smaller screens */
+        }
         .page-header-minimal .logo-link { display: flex; align-items: center; text-decoration: none; color: var(--text-color); font-family: var(--secondary-font); font-size: 1.5em; font-weight: bold; }
         .page-header-minimal .logo-link img { height: 40px; margin-right: 10px; filter: drop-shadow(0 0 5px var(--highlight-color)); }
         .admin-nav-links a { color: var(--text-light); text-decoration: none; margin-left: 25px; font-size: 1em; transition: color 0.3s ease, text-shadow 0.3s ease, border-bottom-color 0.3s ease; padding: 5px 0; border-bottom: 2px solid transparent; }
@@ -113,16 +119,21 @@
         .dashboard-section-card ul li a:hover { color: var(--highlight-color); background-color: rgba(0, 239, 255, 0.05); padding-left: 15px; }
         .dashboard-section-card ul li a i.link-icon { margin-right: 10px; color: var(--highlight-color); width: 20px; text-align: center; transition: transform 0.3s ease; }
         .dashboard-section-card ul li a:hover i.link-icon { transform: scale(1.1) rotate(-5deg); }
+        
         .notification-badge {
+            display: inline-flex; /* Use flexbox for centering */
+            align-items: center;
+            justify-content: center;
             background-color: var(--danger-color);
             color: white;
             border-radius: 50%;
-            padding: 2px 6px;
-            font-size: 0.7em;
+            font-size: 0.75em; /* Slightly larger font */
+            font-weight: bold;
+            height: 20px; /* Fixed height */
+            min-width: 20px; /* Fixed width */
             margin-left: 8px;
-            vertical-align: super;
-            min-width: 18px; /* Ensure circle for single digit */
-            line-height: 18px; /* Vertically center text */
+            padding: 0 4px; /* Padding for numbers > 9 */
+            transform: translateY(-5px); /* Superscript effect */
         }
         .site-footer-minimal { text-align: center; padding: 25px 20px; border-top: 1px solid var(--border-color); color: var(--text-light); font-size: 0.9em; margin-top: 30px; }
 
@@ -151,6 +162,11 @@
             font-family:var(--secondary-font); color:var(--highlight-color); 
             border-bottom:1px solid var(--highlight-color); padding-bottom:12px; margin-bottom:20px;
             font-size: 1.6em;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-title-custom .btn-clear-all {
+            font-size: 0.5em; padding: 5px 10px; font-family: var(--primary-font);
+            background-color: var(--border-color); color: var(--text-light); border: 1px solid var(--text-light); border-radius: 5px; cursor: pointer;
         }
         .modal-body-custom {
             max-height:50vh; overflow-y:auto; 
@@ -247,7 +263,10 @@
     <div id="logsModal" class="modal-overlay">
         <div class="modal-content-custom">
             <span id="closeLogsModal" class="modal-close-btn">&times;</span>
-            <h3 id="logsModalTitle" class="modal-title-custom">Log Viewer</h3>
+            <div id="logsModalTitle" class="modal-title-custom">
+                <span>Log Viewer</span>
+                <button id="clearAllLogsBtn" class="btn-clear-all" style="display:none;">Clear All</button>
+            </div>
             <div id="logsModalBody" class="modal-body-custom">
                 <p>Loading...</p>
             </div>
@@ -265,6 +284,7 @@
         const logsModalTitle = document.getElementById('logsModalTitle');
         const logsModalBody = document.getElementById('logsModalBody');
         const closeLogsModal = document.getElementById('closeLogsModal');
+        const clearAllLogsBtn = document.getElementById('clearAllLogsBtn');
         const generalLogsBadge = document.getElementById('generalLogsBadge');
         const criticalLogsBadge = document.getElementById('criticalLogsBadge');
 
@@ -308,7 +328,7 @@
         }
 
         function formatLogs(logEntries, title) {
-            logsModalTitle.textContent = title;
+            logsModalTitle.querySelector('span').textContent = title;
             if (!logEntries || logEntries.length === 0) {
                 logsModalBody.innerHTML = '<p style="text-align:center; color: var(--text-light);">No logs found.</p>';
                 return;
@@ -351,6 +371,7 @@
                     const logIdsToAcknowledge = initialLogs.filter(log => !log.is_acknowledged && log.id !== undefined).map(log => log.id);
                     formatLogs(initialLogs, 'Recent Bot Activity (Last 20)');
                     logsModal.style.display = 'flex';
+                    clearAllLogsBtn.style.display = 'inline-block';
                     if (generalLogsBadge) {
                         generalLogsBadge.style.display = 'none';
                     }
@@ -375,6 +396,7 @@
                     const logIdsToAcknowledge = initialCriticalLogs.filter(log => !log.is_acknowledged && log.id !== undefined).map(log => log.id);
                     formatLogs(initialCriticalLogs, 'Critical System Alerts (Last 20)');
                     logsModal.style.display = 'flex';
+                    clearAllLogsBtn.style.display = 'inline-block';
                     if (criticalLogsBadge) {
                         criticalLogsBadge.style.display = 'none';
                     }
@@ -392,15 +414,39 @@
 
         if (closeLogsModal) {
             closeLogsModal.addEventListener('click', function() {
+                clearAllLogsBtn.style.display = 'none';
                 logsModal.style.display = 'none';
             });
         }
 
         window.addEventListener('click', function(event) {
             if (event.target == logsModal) {
+                clearAllLogsBtn.style.display = 'none';
                 logsModal.style.display = 'none';
             }
         });
+
+        if (clearAllLogsBtn) {
+            clearAllLogsBtn.addEventListener('click', async function() {
+                if (!confirm("Are you sure you want to acknowledge ALL logs? This cannot be undone.")) return;
+                
+                // We need a new endpoint for this. Let's assume it's /bot-api/acknowledge-all-logs/
+                const acknowledgeAllUrl = "{% url 'bot_monitor:acknowledge_logs' %}"; // We can reuse the same view with a special flag
+                try {
+                    const response = await fetch(acknowledgeAllUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                        body: JSON.stringify({ acknowledge_all: true }) // Send a flag to the backend
+                    });
+                    if (response.ok) {
+                        alert("All logs have been acknowledged.");
+                        location.reload(); // Easiest way to update the UI
+                    } else {
+                        alert("Failed to acknowledge all logs.");
+                    }
+                } catch (error) { console.error("Error acknowledging all logs:", error); }
+            });
+        }
 
         // Update active bots count color dynamically
         const activeBotsSpan = document.getElementById('active-bots');
