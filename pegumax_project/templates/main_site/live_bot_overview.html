@@ -131,6 +131,7 @@
     {{ bots_data_json|json_script:"bots-data-json" }}
 
     <script>
+    document.addEventListener('DOMContentLoaded', function() {
         const botsDataFromDjango = JSON.parse(document.getElementById('bots-data-json').textContent || '[]');
 
         function renderBotCards(bots) {
@@ -243,6 +244,7 @@
             }
             return cookieValue;
         }
+    });
     </script>
 </body>
 </html>
