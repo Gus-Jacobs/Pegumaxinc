@@ -128,8 +128,6 @@
         <p>&copy; {% now "Y" %} Pegumax Inc. Bot Operations Command.</p>
     </footer>
 
-    {{ bots_data_json|json_script:"bots-data-json" }}
-
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const botsDataFromDjango = JSON.parse(document.getElementById('bots-data-json').textContent || '[]');
@@ -246,5 +244,6 @@
         }
     });
     </script>
+    {{ bots_data_json|json_script:"bots-data-json" }}
 </body>
 </html>
