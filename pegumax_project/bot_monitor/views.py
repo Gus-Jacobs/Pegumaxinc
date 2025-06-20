@@ -127,11 +127,12 @@ class LiveBotStatusDataView(APIView):
                 'status_message': bot_status.status_message,
                 'last_heartbeat': bot_status.last_heartbeat.isoformat(), # Use ISO format for JS
                 'is_online': is_online,
+                'bot_started_at': bot_status.bot_started_at.isoformat() if bot_status.bot_started_at else None,
                 'latest_task': latest_activity.message if latest_activity else "No recent activity",
-                'total_earnings': getattr(bot_status, 'total_earnings', "0.00"),
+                'total_earnings': str(bot_status.total_earnings), # Convert Decimal to string
                 # Add any other stats needed by the card
-                'jobs_scraped_today': "N/A",
-                'tasks_completed_today': "N/A",
+                'jobs_scraped_today': bot_status.jobs_scraped_today,
+                'proposals_sent_today': bot_status.proposals_sent_today,
             })
         
         return Response(bots_data)
@@ -147,24 +148,12 @@ class BotCommandView(APIView): # For bot to send heartbeats and receive commands
         return super().dispatch(*args, **kwargs)
 
     def post(self, request, format=None): # Bot sends its status
-        bot_id = request.data.get("bot_id", "freelance-bot-main")
         status_message = request.data.get("status_message", "Unknown")
-        
-        # Update status and heartbeat
-        bot_status, created = BotStatus.objects.get_or_create(bot_id=bot_id)
-        bot_status.status_message = status_message
-        bot_status.last_heartbeat = timezone.now()
-
-        # Update optional stats if provided by the bot
-        if 'proposals_sent_today' in request.data:
-            bot_status.proposals_sent_today = request.data['proposals_sent_today']
-        if 'jobs_scraped_today' in request.data:
-            bot_status.jobs_scraped_today = request.data['jobs_scraped_today']
-
-        bot_status.save()
+        BotStatus.update_status(status_msg=status_message) # Update heartbeat and status
         
         # Check for commands from dashboard
-        command_to_bot = bot_status.command
+        current_bot_status = BotStatus.get_status()
+        command_to_bot = current_bot_status.command
         
         if command_to_bot == "STOP_REQUESTED":
             # Optionally reset command after bot acknowledges it, or bot can report it's stopping
