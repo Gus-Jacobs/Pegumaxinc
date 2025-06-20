@@ -271,6 +271,7 @@ def live_bot_overview_view(request):
         'bots': bots_data,
         'bots_data_json': json.dumps(bots_data, default=str) # Serialize the list of bot data to a JSON string
     }
+    print(f"DEBUG: bots_data_json being sent to template: {context['bots_data_json']}")
     return render(request, 'main_site/live_bot_overview.html', context)
 
 @login_required
