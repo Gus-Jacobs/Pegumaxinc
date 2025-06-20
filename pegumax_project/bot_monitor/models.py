@@ -36,6 +36,10 @@ class BotStatus(models.Model):
     last_heartbeat = models.DateTimeField(default=timezone.now)
     status_message = models.CharField(max_length=255, default="Idle") # e.g., Running, Idle, Error, Starting, Stopping
     # command can be 'NONE', 'STOP_REQUESTED'
+    bot_started_at = models.DateTimeField(default=timezone.now)
+    total_earnings = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    jobs_scraped_today = models.IntegerField(default=0)
+    proposals_sent_today = models.IntegerField(default=0)
     command = models.CharField(max_length=50, default="NONE")
 
     def __str__(self):
@@ -43,11 +47,18 @@ class BotStatus(models.Model):
 
     @classmethod
     def update_status(cls, bot_id_val="freelance-bot-main", status_msg="Running", command_val=None):
-        defaults = {'last_heartbeat': timezone.now(), 'status_message': status_msg}
+        obj, created = cls.objects.get_or_create(bot_id=bot_id_val)
+        
+        # If the bot is just starting, reset the start time
+        if created or obj.status_message in ["Idle", "Stopped"]:
+            obj.bot_started_at = timezone.now()
+
+        obj.last_heartbeat = timezone.now()
+        obj.status_message = status_msg
         if command_val is not None: # Only update command if a value is provided
-            defaults['command'] = command_val # Set new command
-        # Use bot_id as the unique key instead of pk=1 if you plan for multiple bot status entries
-        obj, created = cls.objects.update_or_create(bot_id=bot_id_val, defaults=defaults)
+            obj.command = command_val # Set new command
+        
+        obj.save()
         return obj
 
     @classmethod
