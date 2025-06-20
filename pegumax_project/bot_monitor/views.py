@@ -93,10 +93,18 @@ class AcknowledgeLogsView(APIView):
 
     def post(self, request, format=None):
         log_ids = request.data.get('log_ids', [])
+        acknowledge_all = request.data.get('acknowledge_all', False)
+
         if not isinstance(log_ids, list):
             return Response({'error': 'log_ids must be a list'}, status=status.HTTP_400_BAD_REQUEST)
         
-        updated_count = BotActivityLog.objects.filter(id__in=log_ids, is_acknowledged=False).update(
+        if acknowledge_all:
+            updated_count = BotActivityLog.objects.filter(is_acknowledged=False).update(
+                is_acknowledged=True, 
+                acknowledged_at=timezone.now()
+            )
+        else:
+            updated_count = BotActivityLog.objects.filter(id__in=log_ids, is_acknowledged=False).update(
             is_acknowledged=True, 
             acknowledged_at=timezone.now()
         )
