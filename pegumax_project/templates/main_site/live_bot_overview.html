@@ -35,6 +35,25 @@
         .bot-monitor-header h1 { font-family: var(--secondary-font); font-size: 2.8em; color: var(--highlight-color); text-shadow: 0 0 10px var(--highlight-color); margin-bottom: 5px;}
         .bot-monitor-header p { font-size: 1.2em; color: var(--text-light); margin-top: 0; }
 
+        /* Animation for active bot icon */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .bot-card.online .fa-robot {
+            animation: spin 4s linear infinite;
+        }
+
+        /* Animation for warning status indicator */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 8px var(--warning-color); }
+            50% { box-shadow: 0 0 18px var(--warning-color), 0 0 10px var(--warning-color) inset; }
+            100% { box-shadow: 0 0 8px var(--warning-color); }
+        }
+        .status-indicator.warning {
+            animation: pulse 1.5s infinite;
+        }
+
         .bots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; }
         .bot-card {
             background-color: var(--card-bg);
@@ -42,10 +61,19 @@
             padding: 20px;
             border: 1px solid var(--border-color);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .bot-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            flex-grow: 1;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .bot-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0, 239, 255, 0.15), 0 0 0 1px var(--highlight-color); }
-        .bot-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+        .bot-card-link:hover { transform: translateY(-5px); }
+        .bot-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .bot-card-header h3 { font-family: var(--secondary-font); font-size: 1.3em; color: var(--text-color); margin: 0; }
         .bot-card-header .status-indicator { width: 12px; height: 12px; border-radius: 50%; }
         .bot-card-header .status-indicator.online { background-color: var(--success-color); box-shadow: 0 0 8px var(--success-color); }
@@ -53,20 +81,15 @@
         .bot-card-header .status-indicator.warning { background-color: var(--warning-color); box-shadow: 0 0 8px var(--warning-color); }
 
         .bot-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; font-size: 0.95em;}
-        .bot-info-grid div strong { color: var(--text-light); }
-        .bot-info-grid div span { color: var(--text-color); font-weight: 500; }
+        .bot-card-body .bot-stat { margin-bottom: 15px; }
+        .bot-card-body .bot-stat strong { color: var(--text-light); display: block; font-size: 0.9em; margin-bottom: 4px; }
+        .bot-card-body .bot-stat span { color: var(--text-color); font-weight: 500; font-size: 1.1em; }
         .bot-income { color: var(--success-color); font-weight: bold; }
-        .bot-errors { color: var(--danger-color); font-weight: bold; }
-
-        .bot-activity-log { margin-top: 15px; max-height: 150px; overflow-y: auto; background-color: var(--bg-dark-2); padding: 10px; border-radius: 5px; font-size: 0.85em; }
-        .bot-activity-log p { margin: 0 0 5px 0; color: var(--text-light); border-bottom: 1px dashed var(--border-color); padding-bottom: 3px; }
-        .bot-activity-log p:last-child { border-bottom: none; }
-        .bot-activity-log .log-time { color: var(--highlight-color); margin-right: 8px; }
-        .bot-activity-log .log-error { color: var(--danger-color); }
         
         .bot-card .action-button {
             display: block; width: 100%; text-align: center; padding: 10px;
-            border: none; border-radius: 0 0 8px 8px; /* Rounded bottom corners if card has rounded top */
+            border: none; 
+            border-radius: 6px;
             font-weight: bold; cursor: pointer; text-decoration: none;
             transition: background-color 0.3s ease; margin-top: 15px;
         }
@@ -105,6 +128,8 @@
         <p>&copy; {% now "Y" %} Pegumax Inc. Bot Operations Command.</p>
     </footer>
 
+    {{ bots_data_json|json_script:"bots-data-json" }}
+
     <script>
         const botsDataFromDjango = JSON.parse(document.getElementById('bots-data-json').textContent || '[]');
 
@@ -116,31 +141,26 @@
             }
 
             container.innerHTML = bots.map(bot => {
-                const statusDetails = getStatusDetails(bot.status_message); 
-                const lastHeartbeat = bot.last_heartbeat ? new Date(bot.last_heartbeat).toLocaleString() : 'N/A';
-                
-                // Placeholder for uptime calculation if you have a 'started_at' field
-                const uptime = 'N/A'; // Calculate if possible
+                const statusDetails = getStatusDetails(bot.status_message);
 
                 return `
-                <div class="bot-card" id="bot-card-${bot.id}">
-                    <div class="bot-card-header"> 
-                        <h3><i class="fas fa-robot"></i> ${bot.name || bot.id}</h3>
-                        <span class="status-indicator ${statusDetails.class}"></span>
-                    </div>
-                    <div class="bot-info-grid">
-                        <div><strong>Status:</strong> <span style="text-transform: capitalize; color: var(--${statusDetails.class === 'online' ? 'success' : statusDetails.class === 'warning' ? 'warning' : 'danger'}-color);">${bot.status_message}</span></div>
-                        <div><strong>Heartbeat:</strong> <span>${lastHeartbeat}</span></div>
-                        <div><strong>Uptime:</strong> <span>${uptime}</span></div>
-                        <div><strong>Tasks Done Today:</strong> <span>${bot.tasks_completed_today || 'N/A'}</span></div>
-                        <div><strong>Total Earnings:</strong> <span class="bot-income">$${bot.total_earnings || '0.00'}</span></div>
-                        <div><strong>Jobs Scraped Today:</strong> <span>${bot.jobs_scraped_today || 'N/A'}</span></div>
-                        <div style="grid-column: 1 / -1;"><strong>Latest Activity:</strong> <span>${bot.latest_task || 'No recent activity'}</span></div>
-                    </div>
-                    <div class="bot-activity-log">
-                        <!-- Activity log for this bot could be fetched separately or included if small -->
-                        <p><span class="log-time">Recent:</span> ${bot.latest_task || 'No recent activity'}</p>
-                    </div>
+                <div class="bot-card ${statusDetails.class}" id="bot-card-${bot.id}">
+                    <a href="/admin-dashboard/live-bot-mode/${bot.id}/" class="bot-card-link">
+                        <div class="bot-card-header"> 
+                            <h3><i class="fas fa-robot"></i> ${bot.name || bot.id}</h3>
+                            <span class="status-indicator ${statusDetails.class}"></span>
+                        </div>
+                        <div class="bot-card-body">
+                            <div class="bot-stat">
+                                <strong>Current Task:</strong>
+                                <span>${bot.status_message}</span>
+                            </div>
+                            <div class="bot-stat">
+                                <strong>Total Earnings:</strong>
+                                <span class="bot-income">$${bot.total_earnings || '0.00'}</span>
+                            </div>
+                        </div>
+                    </a>
                     <button class="action-button ${statusDetails.buttonClass}" data-bot-id="${bot.id}" data-action="${statusDetails.buttonAction}">
                         <i class="fas fa-${statusDetails.buttonAction === 'STOP_REQUESTED' ? 'stop-circle' : statusDetails.buttonAction === 'START_REQUESTED' ? 'play-circle' : 'redo'}"></i>
                         ${statusDetails.buttonText}
@@ -156,7 +176,7 @@
         // To simulate fetching, you might do:
         // setTimeout(() => renderBotCards(mockBotsData), 1000);
         
-        // Moved getStatusDetails outside renderBotCards to be in its scope
+        // Helper function to determine status classes and button text
         function getStatusDetails(statusMessage) {
             const lowerStatus = statusMessage.toLowerCase();
             if (lowerStatus.includes("running") || lowerStatus.includes("acquiring") || lowerStatus.includes("management") || lowerStatus.includes("cycle start") || lowerStatus.includes("cycle complete")) {
@@ -226,4 +246,3 @@
     </script>
 </body>
 </html>
-{{ bots_data_json|json_script:"bots-data-json" }}
