@@ -1,10 +1,10 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bot Control: {{ bot_name|default:"Freelance Bot" }} - Pegumax Inc.</title>
+    {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" type="image/webp" href="{% static 'img/favicon.webp' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -128,7 +128,7 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const botId = "{{ bot_id|default:'freelance-bot' }}"; // This will be "freelance-bot" for now
+        const botId = "{{ bot_id|default:'freelance-bot-main' }}"; // This will be "freelance-bot-main" for now
         const statusMessageEl = document.getElementById('botStatusMessage');
         const lastHeartbeatEl = document.getElementById('botLastHeartbeat');
         const pendingCommandEl = document.getElementById('botPendingCommand');
@@ -144,7 +144,7 @@
         function getStatusClass(statusMsg) {
             if (!statusMsg) return 'status-idle';
             statusMsg = statusMsg.toLowerCase();
-            if (statusMsg.includes('running') || statusMsg.includes('active')) return 'status-running';
+            if (statusMsg.includes('running') || statusMsg.includes('active') || statusMsg.includes('acquiring') || statusMsg.includes('management')) return 'status-running';
             if (statusMsg.includes('error')) return 'status-error';
             if (statusMsg.includes('stopped') || statusMsg.includes('shutting down')) return 'status-stopped';
             return 'status-idle';
@@ -152,13 +152,24 @@
 
         async function fetchBotStatus() {
             try {
-                const response = await fetch("{% url 'bot_monitor:bot_status' %}"); // Assumes one bot for now
+                // Fetch status for the specific bot_id
+                const response = await fetch(`{% url 'bot_monitor:live_bot_status_data' %}?bot_id=${botId}`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
-                statusMessageEl.textContent = data.status_message || 'N/A';
-                statusMessageEl.className = getStatusClass(data.status_message);
-                lastHeartbeatEl.textContent = data.last_heartbeat ? new Date(data.last_heartbeat).toLocaleString() : 'N/A';
-                pendingCommandEl.textContent = data.command || 'NONE';
+                // The API returns a list, so we need to get the first item
+                const botStatus = data.length > 0 ? data[0] : null;
+
+                if (botStatus) {
+                    statusMessageEl.textContent = botStatus.status_message || 'N/A';
+                    statusMessageEl.className = getStatusClass(botStatus.status_message);
+                    lastHeartbeatEl.textContent = botStatus.last_heartbeat ? new Date(botStatus.last_heartbeat).toLocaleString() : 'N/A';
+                    // The bot's command is not directly in LiveBotStatusDataView, it's in BotStatus.get_status()
+                    // For now, pendingCommandEl will remain N/A unless you fetch it separately or add it to LiveBotStatusDataView
+                    // pendingCommandEl.textContent = botStatus.command || 'NONE'; // This field is not in LiveBotStatusDataView response
+                } else {
+                    statusMessageEl.textContent = 'Bot not found.';
+                    statusMessageEl.className = 'status-error';
+                }
             } catch (error) {
                 console.error('Error fetching bot status:', error);
                 statusMessageEl.textContent = 'Error loading status.';
@@ -168,23 +179,24 @@
 
         async function fetchBotLogs() {
             try {
-                const response = await fetch("{% url 'bot_monitor:get_bot_logs' %}?limit=100");
+                // Filter logs by the specific bot_id for this page
+                const response = await fetch(`{% url 'bot_monitor:get_bot_logs' %}?bot_id=${botId}&limit=100`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.json();
+                const logs = await response.json();
                 logsListEl.innerHTML = '';
-                if (data.logs && data.logs.length > 0) {
-                    data.logs.forEach(log => {
+                if (logs && logs.length > 0) {
+                    logs.forEach(log => {
                         const li = document.createElement('li');
                         li.className = log.is_acknowledged ? 'acknowledged' : '';
                         li.innerHTML = `<span class="log-timestamp">${new Date(log.timestamp).toLocaleString()}</span>
-                                        <span class="log-level-${log.log_level || 'INFO'}">[${log.log_level || 'INFO'}]</span>
+                                        <strong class="log-level-${log.log_level || 'INFO'}">[${log.log_level || 'INFO'}]</strong>
                                         ${log.platform ? `<span class="log-platform">${log.platform}:</span>` : ''}
                                         <span>${log.message}</span>
                                         <small class="log-id" style="display:none;">${log.id}</small>`;
                         logsListEl.appendChild(li);
                     });
                 } else {
-                    logsListEl.innerHTML = '<li>No logs found.</li>';
+                    logsListEl.innerHTML = '<li>No logs found for this bot.</li>';
                 }
             } catch (error) {
                 console.error('Error fetching bot logs:', error);
@@ -196,14 +208,14 @@
             commandResponseEl.textContent = 'Sending command...';
             try {
                 const response = await fetch("{% url 'bot_monitor:bot_command' %}", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-                    body: JSON.stringify({ command: command })
+                    method: 'PUT', // Use PUT for sending commands from admin dashboard
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({ bot_id: botId, command: command })
                 });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
-                commandResponseEl.textContent = `Server: ${data.message || 'OK'}. New status: ${data.new_status || 'Unknown'}`;
-                fetchBotStatus();
+                if (!response.ok) throw new Error(data.error || `HTTP error! status: ${response.status}`);
+                commandResponseEl.textContent = `Server: ${data.message || 'OK'}`;
+                setTimeout(fetchBotStatus, 500); // Refresh status shortly after command
             } catch (error) {
                 console.error('Error sending command:', error);
                 commandResponseEl.textContent = `Error: ${error.message}`;
@@ -217,17 +229,33 @@
             try {
                 const response = await fetch("{% url 'bot_monitor:acknowledge_logs' %}", {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
                     body: JSON.stringify({ log_ids: logIdsToAck })
                 });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 alert(data.message || "Logs acknowledged.");
-                fetchBotLogs();
+                fetchBotLogs(); // Refresh logs after acknowledging
             } catch (error) {
                 console.error('Error acknowledging logs:', error);
                 alert(`Error: ${error.message}`);
             }
+        }
+
+        // Helper to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
 
         if(refreshStatusBtn) refreshStatusBtn.addEventListener('click', fetchBotStatus);
@@ -236,8 +264,10 @@
         if(refreshLogsBtn) refreshLogsBtn.addEventListener('click', fetchBotLogs);
         if(acknowledgeLogsBtn) acknowledgeLogsBtn.addEventListener('click', acknowledgeLogs);
 
+        // Initial data fetch
         fetchBotStatus();
         fetchBotLogs();
+        // Set up polling
         setInterval(fetchBotStatus, 15000); // Refresh status every 15 seconds
         setInterval(fetchBotLogs, 30000);   // Refresh logs every 30 seconds
     });
