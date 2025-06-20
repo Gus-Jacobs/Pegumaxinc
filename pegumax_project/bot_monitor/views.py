@@ -98,16 +98,16 @@ class AcknowledgeLogsView(APIView):
         if not isinstance(log_ids, list):
             return Response({'error': 'log_ids must be a list'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if acknowledge_all:
+        if acknowledge_all: # This flag comes from the "Clear All" button
             updated_count = BotActivityLog.objects.filter(is_acknowledged=False).update(
                 is_acknowledged=True, 
                 acknowledged_at=timezone.now()
             )
         else:
             updated_count = BotActivityLog.objects.filter(id__in=log_ids, is_acknowledged=False).update(
-            is_acknowledged=True, 
-            acknowledged_at=timezone.now()
-        )
+                is_acknowledged=True, 
+                acknowledged_at=timezone.now()
+            )
         return Response({'message': f'{updated_count} logs acknowledged.'}, status=status.HTTP_200_OK)
 
 class LiveBotStatusDataView(APIView):
