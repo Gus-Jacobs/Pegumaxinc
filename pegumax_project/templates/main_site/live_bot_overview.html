@@ -130,8 +130,9 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const botsDataFromDjango = JSON.parse(document.getElementById('bots-data-json').textContent || '[]');
+        const botsDataFromDjango = JSON.parse(document.getElementById('bots-data-json').textContent);
         console.log('botsDataFromDjango:', botsDataFromDjango, 'Type:', typeof botsDataFromDjango, 'Is Array:', Array.isArray(botsDataFromDjango));
+
 
         function renderBotCards(bots) {
             const container = document.getElementById('botsGridContainer');
@@ -142,7 +143,7 @@
 
             container.innerHTML = bots.map(bot => {
                 const statusDetails = getStatusDetails(bot.status_message);
-
+                
                 return `
                 <div class="bot-card ${statusDetails.class}" id="bot-card-${bot.id}">
                     <a href="/admin-dashboard/live-bot-mode/${bot.id}/" class="bot-card-link">
@@ -171,14 +172,11 @@
             // Add event listeners for the new buttons
             addBotControlListeners();
         }
-        // Initial render (replace with actual data fetching logic)
-        // renderBotCards(mockBotsData); 
-        // To simulate fetching, you might do:
-        // setTimeout(() => renderBotCards(mockBotsData), 1000);
         
         // Helper function to determine status classes and button text
         function getStatusDetails(statusMessage) {
             const lowerStatus = statusMessage.toLowerCase();
+            // More specific checks for online status
             if (lowerStatus.includes("running") || lowerStatus.includes("acquiring") || lowerStatus.includes("management") || lowerStatus.includes("cycle start") || lowerStatus.includes("cycle complete")) {
                 return { class: 'online', buttonClass: 'status-online', buttonText: 'Stop Bot', buttonAction: 'STOP_REQUESTED' };
             } else if (lowerStatus.includes("error")) {
@@ -187,7 +185,6 @@
                 return { class: 'offline', buttonClass: 'status-offline', buttonText: 'Start Bot', buttonAction: 'START_REQUESTED' };
             }
         }
-        renderBotCards(botsDataFromDjango);
 
         function addBotControlListeners() {
             document.querySelectorAll('.bot-card .action-button').forEach(button => {
@@ -243,6 +240,25 @@
             }
             return cookieValue;
         }
+
+        async function fetchAndUpdateBotStatus() {
+            try {
+                const response = await fetch("{% url 'bot_monitor:live_bot_status_data' %}");
+                if (!response.ok) {
+                    console.error("Failed to fetch live bot status:", response.statusText);
+                    return;
+                }
+                const liveBotsData = await response.json();
+                renderBotCards(liveBotsData);
+            } catch (error) {
+                console.error("Error during bot status fetch:", error);
+            }
+        }
+
+        // Initial render with data from the page load
+        renderBotCards(botsDataFromDjango);
+        // Start polling for live updates every 5 seconds
+        setInterval(fetchAndUpdateBotStatus, 5000);
     });
     </script>
     {{ bots_data_json|json_script:"bots-data-json" }}
