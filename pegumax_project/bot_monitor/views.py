@@ -127,9 +127,9 @@ class LiveBotStatusDataView(APIView):
                 'status_message': bot_status.status_message,
                 'last_heartbeat': bot_status.last_heartbeat.isoformat(), # Use ISO format for JS
                 'is_online': is_online,
-                'bot_started_at': bot_status.bot_started_at.isoformat() if bot_status.bot_started_at else None,
+                'bot_started_at': bot_status.bot_started_at.isoformat() if bot_status.bot_started_at else None, # Ensure this field exists in model
                 'latest_task': latest_activity.message if latest_activity else "No recent activity",
-                'total_earnings': str(bot_status.total_earnings), # Convert Decimal to string
+                'total_earnings': str(bot_status.total_earnings), # Ensure this field exists in model
                 # Add any other stats needed by the card
                 'jobs_scraped_today': bot_status.jobs_scraped_today,
                 'proposals_sent_today': bot_status.proposals_sent_today,
