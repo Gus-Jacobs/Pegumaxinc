@@ -121,16 +121,16 @@
         .dashboard-section-card ul li a:hover i.link-icon { transform: scale(1.1) rotate(-5deg); }
         
         .notification-badge {
-            display: inline-flex;
+            display: inline-flex; /* Use flexbox for centering */
             align-items: center;
             justify-content: center;
             background-color: var(--danger-color);
             color: white;
             border-radius: 50%;
-            width: 20px; /* Fixed width for perfect circle */
-            height: 20px; /* Fixed height for perfect circle */
             font-size: 0.75em; /* Slightly larger font */
             font-weight: bold;
+            height: 20px; /* Fixed height */
+            min-width: 20px; /* Fixed width */
             margin-left: 8px;
             padding: 0 4px; /* Padding for numbers > 9 */
             transform: translateY(-5px); /* Superscript effect */
@@ -160,10 +160,11 @@
         .modal-close-btn:hover { color: var(--highlight-color); }
         .modal-title-custom {
             font-family:var(--secondary-font); color:var(--highlight-color); 
-            border-bottom:1px solid var(--highlight-color); padding-bottom:12px; margin-bottom:20px;
+            border-bottom:1px solid var(--highlight-color); padding-bottom:12px; margin-bottom:20px; /* Keep existing styles */
             font-size: 1.6em;
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex; justify-content: space-between; align-items: center; /* Use flexbox */
         }
+        /* Specific style for the clear all button within the modal title */
         .modal-title-custom .btn-clear-all {
             font-size: 0.5em; padding: 5px 10px; font-family: var(--primary-font);
             background-color: var(--border-color); color: var(--text-light); border: 1px solid var(--text-light); border-radius: 5px; cursor: pointer;
