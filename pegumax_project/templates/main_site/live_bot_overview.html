@@ -131,6 +131,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const botsDataFromDjango = JSON.parse(document.getElementById('bots-data-json').textContent || '[]');
+        console.log('botsDataFromDjango:', botsDataFromDjango, 'Type:', typeof botsDataFromDjango, 'Is Array:', Array.isArray(botsDataFromDjango));
 
         function renderBotCards(bots) {
             const container = document.getElementById('botsGridContainer');
