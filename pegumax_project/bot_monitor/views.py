@@ -113,6 +113,41 @@ class AcknowledgeLogsView(APIView):
         )
         return Response({'message': f'{updated_count} logs acknowledged.'}, status=status.HTTP_200_OK)
 
+class LiveBotStatusDataView(APIView):
+    """
+    A dedicated API endpoint to provide live status data for all bots,
+    formatted specifically for the live_bot_overview.html page.
+    """
+    # permission_classes = [IsAdminUser] # TODO: Secure this for admin users
+
+    def get(self, request, format=None):
+        bots_data = []
+        all_bot_statuses = BotStatus.objects.all()
+
+        for bot_status in all_bot_statuses:
+            latest_activity = BotActivityLog.objects.filter(bot_id=bot_status.bot_id).order_by('-timestamp').first()
+            
+            # This logic is duplicated from live_bot_overview_view, which is fine for now.
+            # It could be refactored into a helper function later.
+            active_threshold = timezone.now() - timezone.timedelta(minutes=5)
+            is_online = bot_status.last_heartbeat >= active_threshold
+            
+            bots_data.append({
+                'id': bot_status.bot_id,
+                'name': getattr(bot_status, 'name', bot_status.bot_id),
+                'status_message': bot_status.status_message,
+                'last_heartbeat': bot_status.last_heartbeat.isoformat(), # Use ISO format for JS
+                'is_online': is_online,
+                'latest_task': latest_activity.message if latest_activity else "No recent activity",
+                'total_earnings': getattr(bot_status, 'total_earnings', "0.00"),
+                # Add any other stats needed by the card
+                'jobs_scraped_today': "N/A",
+                'tasks_completed_today': "N/A",
+            })
+        
+        return Response(bots_data)
+
+
 class BotCommandView(APIView): # For bot to send heartbeats and receive commands
     permission_classes = [HasBotAPIKey] # Bot uses API key
 
