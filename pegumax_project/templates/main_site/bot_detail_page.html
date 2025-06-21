@@ -22,6 +22,12 @@
         .page-header-minimal .logo-link { display: flex; align-items: center; text-decoration: none; color: var(--text-color); font-family: var(--secondary-font); font-size: 1.5em; font-weight: bold; }
         .page-header-minimal .logo-link img { height: 40px; margin-right: 10px; filter: drop-shadow(0 0 5px var(--highlight-color)); }
         .admin-nav-links a { color: var(--text-light); text-decoration: none; margin-left: 25px; font-size: 1em; transition: color 0.3s ease, text-shadow 0.3s ease; padding: 5px 0; border-bottom: 2px solid transparent; }
+        .admin-nav-links { /* Added for responsiveness */
+            display: flex;
+            align-items: center;
+            gap: 20px; /* Use gap for spacing */
+            flex-wrap: wrap; /* Allow links to wrap on smaller screens */
+        }
         .admin-nav-links a:hover, .admin-nav-links a.active { color: var(--highlight-color); text-shadow: 0 0 8px var(--highlight-color); border-bottom-color: var(--highlight-color); }
         
         .dashboard-main { flex-grow: 1; padding: 30px 20px; max-width: 1200px; margin: 0 auto; width: 100%;}
@@ -186,7 +192,7 @@
         async function fetchBotStatus() {
             try {
                 // Fetch status for the specific bot_id
-                const response = await fetch(`{% url 'bot_monitor:live_bot_status_data' %}?bot_id=${botId}`); // This endpoint should return a list
+                const response = await fetch(`{% url 'bot_monitor:live_bot_status_data' %}?bot_id=${botId}`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 // The API returns a list, so we need to get the first item
@@ -196,7 +202,7 @@
                     statusMessageEl.textContent = botStatus.status_message || 'N/A';
                     statusMessageEl.className = getStatusClass(botStatus.status_message);
                     lastHeartbeatEl.textContent = botStatus.last_heartbeat ? new Date(botStatus.last_heartbeat).toLocaleString() : 'N/A';
-                    pendingCommandEl.textContent = botStatus.command || 'NONE'; // Now included in LiveBotStatusDataView
+                    // The bot's command is not directly in LiveBotStatusDataView, it's in BotStatus.get_status()
                     // Update stats
                     uptimeEl.textContent = calculateUptime(botStatus.bot_started_at);
                     proposalsSentEl.textContent = botStatus.proposals_sent_today || '0';
@@ -217,7 +223,7 @@
         async function fetchBotLogs() {
             try {
                 // Filter logs by the specific bot_id for this page
-                const response = await fetch(`{% url 'bot_monitor:get_bot_logs' %}?bot_id=${botId}&limit=500`); // Increased limit
+                const response = await fetch(`{% url 'bot_monitor:get_bot_logs' %}?bot_id=${botId}&limit=100`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const logs = await response.json();
                 logsListEl.innerHTML = '';
