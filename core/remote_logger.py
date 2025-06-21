@@ -40,17 +40,31 @@ class RemoteLogger:
         
         if not self.remote_log_url or not self.remote_log_api_key:
             bot_logger.warning("Remote log URL or API key not configured. Cannot send logs.")
+            # Put logs back in the buffer if config is missing
+            with self.lock:
+                self.log_buffer.extendleft(logs_to_send)
             return
 
         headers = {"X-Bot-API-Key": self.remote_log_api_key, "Content-Type": "application/json"}
-        try:
-            response = requests.post(self.remote_log_url, json=logs_to_send, headers=headers, timeout=60) # Increased timeout
-            if response.status_code == 201:
+        
+        for attempt in range(3):
+            try:
+                response = requests.post(self.remote_log_url, json=logs_to_send, headers=headers, timeout=30)
+                if response.status_code in [502, 503, 504]:
+                     raise requests.RequestException(f"Server returned status {response.status_code}, likely waking up.")
+                
+                response.raise_for_status() # Raises for 4xx/5xx responses not caught above
                 bot_logger.info(f"Successfully sent {len(logs_to_send)} summary logs to remote server.")
-            else:
-                bot_logger.error(f"Failed to send logs to remote server. Status: {response.status_code}, Response: {response.text}")
-        except requests.RequestException as e:
-            bot_logger.error(f"Error sending logs to remote server: {e}")
+                return # Success, logs are sent and not added back
+            except requests.RequestException as e:
+                bot_logger.warning(f"Failed to send logs (attempt {attempt + 1}/3): {e}")
+                if attempt < 2:
+                    time.sleep(5) # Wait before retrying
+        
+        # If all retries fail, put the logs back into the buffer
+        bot_logger.error(f"All attempts to send {len(logs_to_send)} logs failed. Returning them to the buffer.")
+        with self.lock:
+            self.log_buffer.extendleft(logs_to_send) # Add back to the front of the queue
 
     def _flush_buffer_thread(self):
         # Run flush in a separate thread to avoid blocking main operations
