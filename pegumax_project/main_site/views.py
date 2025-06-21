@@ -198,20 +198,20 @@ def admin_dashboard_view(request):
 
     # STEP 3: Try fetching BotActivityLog data
     try:
-        log_fields = ['id', 'timestamp', 'log_level', 'message', 'bot_id', 'platform', 'is_acknowledged'] # Added 'id' and 'is_acknowledged'
-        # Using a slightly larger limit for actual display, e.g., 20
+        log_fields = ['id', 'timestamp', 'log_level', 'message', 'bot_id', 'platform', 'is_acknowledged']
+        # Fetch only unacknowledged logs for the initial popup display
         context['recent_logs_for_popup_json'] = list(
-            BotActivityLog.objects.order_by('-timestamp').values(*log_fields)[:20]
+            BotActivityLog.objects.filter(is_acknowledged=False).order_by('-timestamp').values(*log_fields)[:20]
         )
         context['critical_logs_for_popup_json'] = list(
-            BotActivityLog.objects.filter(log_level__in=['ERROR', 'CRITICAL'])
+            BotActivityLog.objects.filter(log_level__in=['ERROR', 'CRITICAL'], is_acknowledged=False)
             .order_by('-timestamp').values(*log_fields)[:20]
         )
-        context['unacknowledged_general_logs_count'] = min(
-            BotActivityLog.objects.filter(is_acknowledged=False).count(), 20 # Cap at 20 for display
-        )
-        context['unacknowledged_critical_logs_count'] = min(
-            BotActivityLog.objects.filter(is_acknowledged=False, log_level__in=['ERROR', 'CRITICAL']).count(), 20
+        # Get actual counts of unacknowledged logs for badges (no arbitrary cap)
+        context['unacknowledged_general_logs_count'] = BotActivityLog.objects.filter(is_acknowledged=False).count()
+        context['unacknowledged_critical_logs_count'] = BotActivityLog.objects.filter(
+            is_acknowledged=False, 
+            log_level__in=['ERROR', 'CRITICAL']
         )
         # Check if any previous step reported an error before declaring full success
         if "Error" not in context['dashboard_error_message'] and "failed" not in context['dashboard_error_message'].lower() \
