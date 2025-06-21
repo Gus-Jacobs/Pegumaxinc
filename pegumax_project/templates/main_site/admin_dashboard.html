@@ -159,7 +159,7 @@
         .modal-title-custom {
             font-family:var(--secondary-font); color:var(--highlight-color); 
             border-bottom:1px solid var(--highlight-color); padding-bottom:12px; margin-bottom:20px; /* Keep existing styles */
-            font-size: 1.6em; /* Keep existing styles */
+            font-size: 1.6em;
             display: flex; justify-content: space-between; align-items: center; /* Use flexbox */
         }
         /* Specific style for the clear all button within the modal title */
@@ -368,7 +368,7 @@
                     const initialLogs = JSON.parse(document.getElementById('recent-logs-data').textContent);
                     // Get IDs of logs that are currently unacknowledged to send to server
                     const logIdsToAcknowledge = initialLogs.filter(log => !log.is_acknowledged && log.id !== undefined).map(log => log.id);
-                    formatLogs(initialLogs, 'Recent Bot Activity (Last 20)');
+                    formatLogs(initialLogs, 'Recent Bot Activity');
                     logsModal.style.display = 'flex';
                     clearAllLogsBtn.style.display = 'inline-block';
                     if (generalLogsBadge) {
@@ -393,7 +393,7 @@
                 try {
                     const initialCriticalLogs = JSON.parse(document.getElementById('critical-logs-data').textContent);
                     const logIdsToAcknowledge = initialCriticalLogs.filter(log => !log.is_acknowledged && log.id !== undefined).map(log => log.id);
-                    formatLogs(initialCriticalLogs, 'Critical System Alerts (Last 20)');
+                    formatLogs(initialCriticalLogs, 'Critical System Alerts');
                     logsModal.style.display = 'flex';
                     clearAllLogsBtn.style.display = 'inline-block';
                     if (criticalLogsBadge) {
@@ -431,7 +431,8 @@
                 
                 // We need a new endpoint for this. Let's assume it's /bot-api/acknowledge-all-logs/
                 const acknowledgeAllUrl = "{% url 'bot_monitor:acknowledge_logs' %}"; // We can reuse the same view with a special flag
-                try { // Send a flag to the backend
+                logsModalBody.innerHTML = '<p style="text-align:center; color: var(--text-light);">Clearing logs...</p>'; // Immediate feedback
+                try {
                     const response = await fetch(acknowledgeAllUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
@@ -439,13 +440,35 @@
                     });
                     if (response.ok) {
                         alert("All logs have been acknowledged.");
-                        location.reload(); // Easiest way to update the UI
+                        fetchLogsForModal('all_unacknowledged'); // Re-fetch only unacknowledged logs, which should now be empty
                     } else {
                         alert("Failed to acknowledge all logs.");
                     }
                 } catch (error) { console.error("Error acknowledging all logs:", error); }
             });
         }
+
+        // New function to fetch logs for modal based on type
+        async function fetchLogsForModal(type) {
+            let url = "{% url 'bot_monitor:get_bot_logs' %}";
+            let title = "Log Viewer";
+            if (type === 'recent_unacknowledged') {
+                url += "?acknowledged_status=false&limit=20";
+                title = "Recent Bot Activity";
+            } else if (type === 'critical_unacknowledged') {
+                url += "?log_level_in=ERROR,CRITICAL&acknowledged_status=false&limit=20";
+                title = "Critical System Alerts";
+            } else if (type === 'all_unacknowledged') { // For clear all
+                url += "?acknowledged_status=false&limit=500"; // Fetch more if clearing all
+                title = "All Unacknowledged Logs";
+            }
+            try {
+                const response = await fetch(url);
+                const logs = await response.json();
+                formatLogs(logs, title);
+            } catch (error) { console.error("Error fetching logs for modal:", error); logsModalBody.innerHTML = '<p style="text-align:center; color: var(--danger-color);">Error loading logs.</p>'; }
+        }
+
 
         // Update active bots count color dynamically
         const activeBotsSpan = document.getElementById('active-bots');
