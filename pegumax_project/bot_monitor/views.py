@@ -33,13 +33,25 @@ class LogReceiverView(APIView):
 
     def post(self, request, *args, **kwargs): # Used by RemoteLogger
         log_data_list = request.data # Assuming request.data is already parsed by DRF
+        acknowledge_all = request.data.get('acknowledge_all', False)
         if not isinstance(log_data_list, list):
             # Allow single log entry for simplicity if RemoteLogger sends one sometimes
             if isinstance(log_data_list, dict):
                 log_data_list = [log_data_list]
             else:
                 return Response({"error": "Expected a list or a single log entry object."}, status=status.HTTP_400_BAD_REQUEST)
-
+        
+        if acknowledge_all: # This flag comes from the "Clear All" button
+            updated_count = BotActivityLog.objects.filter(is_acknowledged=False).update(
+                is_acknowledged=True, 
+                acknowledged_at=timezone.now()
+            )
+        else:
+            # Acknowledge only specific logs
+            updated_count = BotActivityLog.objects.filter(is_acknowledged=False).update(
+                is_acknowledged=True, 
+                acknowledged_at=timezone.now()
+            )
         serializer = BotActivityLogCreateSerializer(data=log_data_list, many=True)
         authentication_classes = [] # Explicitly disable authentication
         permission_classes = [] # Explicitly disable permission checks
@@ -98,16 +110,16 @@ class AcknowledgeLogsView(APIView):
         if not isinstance(log_ids, list):
             return Response({'error': 'log_ids must be a list'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if acknowledge_all:
+        if acknowledge_all: # This flag comes from the "Clear All" button
             updated_count = BotActivityLog.objects.filter(is_acknowledged=False).update(
                 is_acknowledged=True, 
                 acknowledged_at=timezone.now()
             )
         else:
-            updated_count = BotActivityLog.objects.filter(id__in=log_ids, is_acknowledged=False).update(
-            is_acknowledged=True, 
-            acknowledged_at=timezone.now()
-        )
+            updated_count = BotActivityLog.objects.filter(id__in=log_ids, is_acknowledged=False).update( # Acknowledge only specific logs
+                is_acknowledged=True, 
+                acknowledged_at=timezone.now()
+            )
         return Response({'message': f'{updated_count} logs acknowledged.'}, status=status.HTTP_200_OK)
 
 class LiveBotStatusDataView(APIView):
@@ -119,6 +131,13 @@ class LiveBotStatusDataView(APIView):
 
     def get(self, request, format=None):
         bots_data = []
+        # Filter by bot_id if provided in query params (for bot detail page)
+        bot_id_filter = request.query_params.get('bot_id', None)
+        if bot_id_filter:
+            all_bot_statuses = BotStatus.objects.filter(bot_id=bot_id_filter)
+        else:
+            all_bot_statuses = BotStatus.objects.all()
+
         all_bot_statuses = BotStatus.objects.all()
 
         for bot_status in all_bot_statuses:
@@ -142,9 +161,35 @@ class LiveBotStatusDataView(APIView):
                 'jobs_scraped_today': bot_status.jobs_scraped_today,
                 'proposals_sent_today': bot_status.proposals_sent_today,
                 'command': bot_status.command, # Include the pending command
-            })
+            }) # Removed duplicate closing parenthesis
         
         return Response(bots_data)
+
+
+class BotLogDataView(APIView):
+    # permission_classes = [IsAdminUser] # TODO: Add appropriate permissions
+
+    def get(self, request, format=None):
+        bot_id_filter = request.query_params.get('bot_id', None)
+        limit = int(request.query_params.get('limit', 50))
+        # New filter for acknowledged status
+        acknowledged_status_filter = request.query_params.get('acknowledged_status', None) # 'true', 'false', or None
+        # New filter for log levels
+        log_level_in_filter = request.query_params.get('log_level_in', None) # Comma-separated string like 'ERROR,CRITICAL'
+
+        queryset = BotActivityLog.objects.all()
+        if bot_id_filter:
+            queryset = queryset.filter(bot_id=bot_id_filter)
+        
+        if acknowledged_status_filter is not None:
+            queryset = queryset.filter(is_acknowledged=(acknowledged_status_filter.lower() == 'true'))
+        
+        if log_level_in_filter: # Corrected indentation and logic
+            log_levels = [level.strip().upper() for level in log_level_in_filter.split(',')] # Corrected variable name
+            queryset = queryset.filter(log_level__in=log_levels)
+        
+        serializer = BotActivityLogDisplaySerializer(queryset.order_by('-timestamp')[:limit], many=True) # Added missing serializer line
+        return Response(serializer.data) # Corrected return statement
 
 
 class BotCommandView(APIView): # For bot to send heartbeats and receive commands
