@@ -81,7 +81,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.template.context_processors.messages',
+                'django.contrib.messages.context_processors.messages', # <--- This is the line required by admin
             ],
         },
     },
@@ -182,7 +182,7 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # If behind a proxy like Nginx or Heroku/Render load balancer
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # If behind a proxy like Nginx or Render load balancer
 
     # Configure CSRF_TRUSTED_ORIGINS with your production domain(s)
     # Example: CSRF_TRUSTED_ORIGINS = ['https://your_render_app_name.onrender.com', 'https://www.yourdomain.com']
