@@ -157,6 +157,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
     # BASE_DIR / "static", # Remove or comment out if not used
     BASE_DIR / "assets",   # Add path to your project-level assets directory
+    BASE_DIR / "frontend/student-suite",   # Add path to your project-level assets directory
 
 ]
 
