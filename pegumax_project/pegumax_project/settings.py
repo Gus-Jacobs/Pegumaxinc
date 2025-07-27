@@ -45,18 +45,23 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles', # <--- THIS IS CRUCIAL FOR 'collectstatic'
+    'django.contrib.staticfiles', # Crucial for 'collectstatic' and Django's static file serving
     'main_site.apps.MainSiteConfig', # or just 'main_site'
     'django.contrib.humanize',
     'rest_framework',
     'bot_monitor',
-    'whitenoise.runserver_nostatic', # For serving static files in development if DEBUG=False
+    # 'whitenoise.runserver_nostatic' is generally only needed if you want
+    # WhiteNoise to serve static files when DEBUG=False in local development.
+    # If DEBUG=True, Django's built-in static file server works.
+    # You can keep it, but it's not strictly necessary for production or typical local debug.
+    'whitenoise.runserver_nostatic',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Should be high up, but after SecurityMiddleware
-    #'bot_monitor.middleware.CsrfExemptAPIMiddleware', # Add custom middleware here if active
+    # WhiteNoiseMiddleware should be placed directly after SecurityMiddleware for security headers to apply first.
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # 'bot_monitor.middleware.CsrfExemptAPIMiddleware', # Add custom middleware here if active
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware', # Ensure this is active for production
@@ -70,13 +75,13 @@ ROOT_URLCONF = 'pegumax_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], # Correct, using Pathlib
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.messages',
             ],
         },
     },
@@ -141,10 +146,12 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Additional locations of static files
 STATICFILES_DIRS = [
-    # If you have a 'static' folder directly under your project root for general static files:
-    # BASE_DIR / "static",
-    BASE_DIR / "assets", # Add path to your project-level assets directory if used
-    BASE_DIR / "frontend" / "student-suite-web", # CRITICAL: Corrected path for Flutter app
+    BASE_DIR / "assets", # Add path to your project-level assets directory if used (e.g., global CSS/JS)
+    # CRITICAL FIX: Use the tuple form for the Flutter app's static files.
+    # This tells collectstatic to take the contents of 'BASE_DIR / "frontend" / "student-suite-web"'
+    # and place them into 'STATIC_ROOT / "frontend" / "student-suite-web/"',
+    # preserving the desired subdirectory structure under /static/.
+    ('frontend/student-suite-web', BASE_DIR / "frontend" / "student-suite-web"),
 ]
 
 LOGIN_URL = 'login' # Name of the login URL pattern
