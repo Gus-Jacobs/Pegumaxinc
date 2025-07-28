@@ -17,11 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path # Ensure re_path is imported
 from django.conf import settings
-from django.conf.urls.static import static # This is for serving media in DEBUG, often not needed for static
-from django.views.generic import RedirectView # Ensure RedirectView is imported
+# from django.conf.urls.static import static # This is for serving media in DEBUG, often not needed for static
+# from django.views.generic import RedirectView # No longer needed if using direct serve for Flutter
 
-# Note: os is not directly used here as paths are relative to STATIC_URL,
-# which is derived from settings.BASE_DIR in settings.py.
+from django.views.static import serve # <--- IMPORT THIS for serving static files directly
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,21 +28,30 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')), # Django's built-in auth URLs (login, logout, password reset, etc.)
     path('bot-api/', include('bot_monitor.urls', namespace='bot_monitor')), # API for bot communication
 
-    # --- START: URL Patterns for serving the Flutter Student Suite app with WhiteNoise ---
-    # These patterns redirect incoming URLs to the actual location of index.html
-    # within the /static/ path, which WhiteNoise then serves.
+    # --- START: URL Patterns for serving the Flutter Student Suite app directly ---
+    # With WhiteNoise in production, these `serve` views are usually intercepted by WhiteNoise
+    # which efficiently serves the static files. However, they are necessary for Django's
+    # URL resolution to point to the correct file location.
 
-    # 1. Handle the base URL for the Flutter app (e.g., /software-center/student-suite/)
-    # This ensures that when a user navigates directly to this path, the Flutter index.html is loaded.
-    path('software-center/student-suite/', RedirectView.as_view(url=f'{settings.STATIC_URL}frontend/student-suite-web/index.html')),
+    # 1. Serve the base index.html for the Flutter app when navigating directly to its root URL.
+    # When a user goes to /software-center/student-suite/, this serves the index.html.
+    re_path(r'^software-center/student-suite/$', serve, {
+        'document_root': settings.STATIC_ROOT,
+        'path': 'frontend/student-suite-web/index.html',
+        'insecure': True # Use insecure=True for serve() in production with WhiteNoise.
+                         # WhiteNoise takes precedence, so this isn't a security vulnerability here.
+    }),
 
-    # 2. Handle Flutter's HTML5 History Mode (deep linking)
-    # This is crucial for paths like /software-center/student-suite/dashboard or /software-center/student-suite/profile.
-    # It redirects any sub-path under /software-center/student-suite/ back to index.html,
-    # allowing Flutter's client-side router to then handle the specific route.
-    # The (?:.*)? part means "match any characters, zero or more times, optionally followed by a slash".
-    re_path(r'^software-center/student-suite/(?:.*)/?$', RedirectView.as_view(url=f'{settings.STATIC_URL}frontend/student-suite-web/index.html')),
-
+    # 2. Crucial for Flutter's HTML5 History Mode and asset loading.
+    # This pattern captures any sub-paths under /software-center/student-suite/ (like
+    # /software-center/student-suite/dashboard, /software-center/student-suite/main.dart.js,
+    # or /software-center/student-suite/assets/image.png).
+    # It tells Django to serve these files from the 'frontend/student-suite-web/' subdirectory
+    # within your STATIC_ROOT. Flutter's router then takes over for internal routes.
+    re_path(r'^software-center/student-suite/(?P<path>.*)$', serve, {
+        'document_root': settings.STATIC_ROOT / 'frontend' / 'student-suite-web',
+        'insecure': True # Same reasoning as above for 'insecure=True'
+    }),
     # --- END: URL Patterns for serving the Flutter Student Suite app ---
 ]
 
@@ -53,9 +61,6 @@ urlpatterns = [
 # or a cloud storage service (like AWS S3).
 if settings.DEBUG:
     # This serves media files during development
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    # Note: You typically do NOT need to manually serve STATIC_URL here if
-    # 'whitenoise.runserver_nostatic' is in INSTALLED_APPS, as it handles
-    # static file serving for Django's runserver in debug mode.
-    # If you remove 'whitenoise.runserver_nostatic', you might add:
-    # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # Ensure settings.MEDIA_URL and settings.MEDIA_ROOT are defined in settings.py if using.
+    # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    pass # Keeping this section clean if you're not actively using it for development media.
