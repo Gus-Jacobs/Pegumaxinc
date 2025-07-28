@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,6 +59,7 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
+        /* Changed .software-card to an anchor tag for clickability */
         .software-card {
             background-color: #1a1a1a; /* Darker card background */
             border: 1px solid #333;
@@ -65,23 +67,21 @@
             padding: 20px;
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex; /* Use flex for alignment */
+            flex-direction: column;
+            justify-content: space-between;
+            text-decoration: none; /* Remove underline from link */
+            color: inherit; /* Inherit text color */
         }
         .software-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
         }
-        .software-card .card-icon { /* Changed from img to .card-icon */
-            font-size: 3em; /* Adjust icon size */
-            color: #00ffff; /* Icon color */
+        .software-card .card-icon {
+            font-size: 3em;
+            color: #00ffff;
             margin-bottom: 15px;
         }
-        /* Remove img styles if no longer used elsewhere, or keep if other cards might use images */
-        /* .software-card img {
-            max-width: 100px;
-            height: auto;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }*/
         .software-card h4 {
             color: #00ffff;
             margin-bottom: 10px;
@@ -90,6 +90,7 @@
             font-size: 0.9em;
             color: #bbb;
             margin-bottom: 15px;
+            flex-grow: 1; /* Allow description to grow and push status to bottom */
         }
         .software-card .status {
             font-weight: bold;
@@ -114,21 +115,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 2000; /* Ensure it's above other content */
-            padding: 20px; /* Add some padding for smaller screens */
+            z-index: 2000;
+            padding: 20px;
         }
         .modal-content {
             background-color: #2a2a30;
             padding: 30px;
             border-radius: 8px;
             color: #e0e0e0;
-            width: 100%; /* Take available width within padding */
-            max-width: 550px; /* Max width of the modal card */
+            width: 100%;
+            max-width: 550px;
             text-align: center;
             position: relative;
             box-shadow: 0 5px 25px rgba(0,0,0,0.5);
-            max-height: 90vh; /* Prevent modal from being taller than viewport */
-            overflow-y: auto; /* Allow internal scrolling if form content is long */
+            max-height: 90vh;
+            overflow-y: auto;
         }
         .modal-content h3 {
             color: #00ffff;
@@ -161,7 +162,7 @@
             border: 1px solid #444;
             color: #e0e0e0;
             border-radius: 4px;
-            box-sizing: border-box; /* Important for width 100% */
+            box-sizing: border-box;
         }
         .form-control-dark:focus {
             border-color: #00ffff;
@@ -195,12 +196,11 @@
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'main_site:account' %}">Account</a></li> {# Create account_view and URL later #}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li>
                     {% else %}
                         <li><a href="{% url 'login' %}">Login</a></li>
                         <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
                     {% endif %}
-                </ul>
                 </ul>
             </nav>
         </div>
@@ -231,15 +231,13 @@
                 <div id="tools" class="tab-content">
                     <h3>Productivity Tools</h3>
                     <div class="software-grid">
-                        <!-- In software-center.html, within the #tools tab-content -->
                         <a href="{% url 'main_site:movie_word_scanner' %}" class="software-card" data-category="tool">
                             <div class="card-icon"><i class="fas fa-film"></i></div>
                             <h4>Movie Word Scanner</h4>
                             <p>Analyze scripts and text with linguistic precision.</p>
-                            <span class="category-tag">Tool</span> <!-- Ensure this class is present for styling -->
+                            <span class="category-tag">Tool</span>
                         </a>
 
-                        <!-- Example of a non-clickable card for comparison -->
                         <div class="software-card coming-soon" data-category="tool">
                             <div class="card-icon"><i class="fas fa-user-secret"></i></div>
                             <h4>VPN</h4>
@@ -260,13 +258,15 @@
                 <div id="suites" class="tab-content">
                     <h3>Powerful Suites</h3>
                     <div class="software-grid">
-                        <div class="software-card" data-category="suite">
+                        <!-- Student Suite Card (Now Clickable) -->
+                        <a href="{% url 'main_site:student_suite_launch' %}" class="software-card" data-category="suite">
                             <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
                             <h4>Student Suite</h4>
                             <p>Essential applications for academic success and productivity.</p>
-                            <p class="status">Coming Soon</p>
+                            {# <p class="status">Coming Soon</p> -- REMOVED #}
                             <span class="category-tag">Suite</span>
-                        </div>
+                        </a>
+
                         <div class="software-card" data-category="suite">
                             <div class="card-icon"><i class="fas fa-edit"></i></div>
                             <h4>Editor Suite</h4>
@@ -292,10 +292,9 @@
                             <h4>Dominion</h4>
                             <p>Conquer realms in this upcoming strategy masterpiece.</p>
                             <p class="status">Coming Soon</p>
-
-                             <span class="category-tag">Game</span>
-                         </div>
-                     </div>
+                            <span class="category-tag">Game</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -307,7 +306,6 @@
                 <p>We will soon be offering you the unique ability to gain a <strong>master key</strong> to all our tools for just <strong>$100 a month!</strong></p>
                 <p>Interested?</p>
                 <button class="btn btn-primary" onclick="openSubscriptionInterestForm()">Let Us Know!</button>
-                <!-- You might want a small form or a button that links to a contact/interest form -->
             </div>
         </div>
         <!-- Submit Idea Modal -->
@@ -376,6 +374,16 @@
     <footer class="site-footer">
         <div class="container">
             <p>&copy; <span id="current-year"></span> Pegumax Inc. All rights reserved.</p>
+            <p>Empowering the human spirit through technological transcendence.</p>
+            <div class="social-links">
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+            </div>
+            <div class="contact-info">
+                <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
+                <p>123 Innovation Drive, Tech City, TX 75001</p>
+            </div>
         </div>
     </footer>
     <script src="{% static 'js/script.js' %}"></script>
@@ -413,7 +421,7 @@
             document.getElementById(tabName).style.display = "block";
             document.getElementById(tabName).classList.add("active");
             if (evt) { // Check if evt is passed (not null on initial load)
-                 evt.currentTarget.classList.add("active");
+                evt.currentTarget.classList.add("active");
             } else { // For initial load, find the 'all' tab link and activate it
                 document.querySelector('.tab-link[onclick*="\'all\'"]').classList.add('active');
             }
@@ -537,6 +545,5 @@
         }
 
     </script>
-
 </body>
 </html>
