@@ -24,11 +24,9 @@ def is_admin(user):
 def home_view(request):
     return render(request, 'index.html')
 
-@login_required
 def software_center_view(request):
     return render(request, 'software-center.html')
 
-@login_required
 def about_view(request):
     return render(request, 'about.html')
 
@@ -48,7 +46,6 @@ def admin_login_view(request):
 def account_view(request):
     return render(request, 'account.html') # We'll replace this later
 
-@login_required
 def movie_word_scanner_view(request):
     return render(request, 'movie-word-scanner.html')
 
