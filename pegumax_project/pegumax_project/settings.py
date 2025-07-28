@@ -21,12 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# This line below should be the ONLY definition of SECRET_KEY for production.
-# The hardcoded key is only a fallback if the environment variable is not set (useful for local dev if you don't set it locally).
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-default-development-secret-key-here-make-it-long-and-random-for-local-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# For clarity, it's often better to default DEBUG to True for local dev if the env var isn't set.
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS_STRING = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
@@ -34,9 +31,8 @@ if ALLOWED_HOSTS_STRING:
     ALLOWED_HOSTS = ALLOWED_HOSTS_STRING.split(',')
 else:
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost'] # Default for local development
-    if not DEBUG: # In production, if DJANGO_ALLOWED_HOSTS is not set, this is a problem.
+    if not DEBUG:
         print("WARNING: DJANGO_ALLOWED_HOSTS environment variable is not set. This is insecure for production.", file=os.sys.stderr)
-        # ALLOWED_HOSTS = ['*'] # Consider this carefully if you must, but specific domains are better.
 
 # Application definition
 INSTALLED_APPS = [
@@ -45,26 +41,21 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles', # Crucial for 'collectstatic' and Django's static file serving
-    'main_site.apps.MainSiteConfig', # or just 'main_site'
+    'django.contrib.staticfiles',
+    'main_site.apps.MainSiteConfig',
     'django.contrib.humanize',
     'rest_framework',
     'bot_monitor',
-    # 'whitenoise.runserver_nostatic' is generally only needed if you want
-    # WhiteNoise to serve static files when DEBUG=False in local development.
-    # If DEBUG=True, Django's built-in static file server works.
-    # You can keep it, but it's not strictly necessary for production or typical local debug.
     'whitenoise.runserver_nostatic',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # WhiteNoiseMiddleware should be placed directly after SecurityMiddleware for security headers to apply first.
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    # 'bot_monitor.middleware.CsrfExemptAPIMiddleware', # Add custom middleware here if active
+    # 'bot_monitor.middleware.CsrfExemptAPIMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware', # Ensure this is active for production
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -72,14 +63,35 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'pegumax_project.urls'
 
+# --- NEW ORDERING: Define STATIC_URL and STATIC_ROOT BEFORE TEMPLATES ---
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles' # Directory where collectstatic will gather files
+
+# WhiteNoise storage class (essential for production with collectstatic)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Additional locations of static files
+STATICFILES_DIRS = [
+    BASE_DIR / "assets", # Add path to your project-level assets directory if used (e.g., global CSS/JS)
+    # CRITICAL FIX: Use the tuple form for the Flutter app's static files.
+    # This tells collectstatic to take the contents of 'BASE_DIR / "frontend" / "student-suite-web"'
+    # and place them into 'STATIC_ROOT / "frontend" / "student-suite-web/"',
+    # preserving the desired subdirectory structure under /static/.
+    ('frontend/student-suite-web', BASE_DIR / "frontend" / "student-suite-web"),
+]
+# --- END NEW ORDERING ---
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'templates',
-            # <--- NEW: Add STATIC_ROOT here so TemplateView can find index.html
-            # This makes collected static files discoverable as templates.
-            STATIC_ROOT, # Make sure STATIC_ROOT is defined BEFORE this section, or reference it via settings
+            # Now STATIC_ROOT is defined above this line, so it's accessible
+            STATIC_ROOT,
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -140,30 +152,10 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = '/static/'
-# <--- Make sure STATIC_ROOT is defined as a Path object before TEMPLATES
-STATIC_ROOT = BASE_DIR / 'staticfiles' # Directory where collectstatic will gather files
-
-# WhiteNoise storage class (essential for production with collectstatic)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Additional locations of static files
-STATICFILES_DIRS = [
-    BASE_DIR / "assets", # Add path to your project-level assets directory if used (e.g., global CSS/JS)
-    # CRITICAL FIX: Use the tuple form for the Flutter app's static files.
-    # This tells collectstatic to take the contents of 'BASE_DIR / "frontend" / "student-suite-web"'
-    # and place them into 'STATIC_ROOT / "frontend" / "student-suite-web/"',
-    # preserving the desired subdirectory structure under /static/.
-    ('frontend/student-suite-web', BASE_DIR / "frontend" / "student-suite-web"),
-]
 
 LOGIN_URL = 'login' # Name of the login URL pattern
 LOGIN_REDIRECT_URL = 'main_site:home' # Redirect after successful login
 LOGOUT_REDIRECT_URL = 'main_site:home' # Redirect after logout
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # Keep production settings commented for now
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # TEMPORARY for signup
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
@@ -188,15 +180,10 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # If behind a proxy like Nginx or Render load balancer
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-    # Configure CSRF_TRUSTED_ORIGINS with your production domain(s)
-    # Example: CSRF_TRUSTED_ORIGINS = ['https://your_render_app_name.onrender.com', 'https://www.yourdomain.com']
     CSRF_TRUSTED_ORIGINS_STRING = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS')
     if CSRF_TRUSTED_ORIGINS_STRING:
         CSRF_TRUSTED_ORIGINS = CSRF_TRUSTED_ORIGINS_STRING.split(',')
     else:
-        # Important: If not set via env var, set specific trusted origins here for production
-        # Do NOT use '*' in production. This is just a placeholder warning.
         print("WARNING: DJANGO_CSRF_TRUSTED_ORIGINS is not set in production. This might cause issues with POST requests from your domain.", file=os.sys.stderr)
-        # CSRF_TRUSTED_ORIGINS = ['https://your-app-name.onrender.com', 'https://www.yourdomain.com']
