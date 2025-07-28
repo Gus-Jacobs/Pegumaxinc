@@ -89,11 +89,15 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'templates',
-            # Now STATIC_ROOT is defined above this line, so it's accessible
-            STATIC_ROOT,
+            BASE_DIR / 'templates', # This allows finding 'my_template.html' if it's in templates/
+            # If you have templates organized by app within the project-level templates folder,
+            # you usually list their common parent here, and then use the full path in template_name.
+            # Example: If 'student_suite_launch.html' is in 'templates/main_site/'
+            # then template_name='main_site/student_suite_launch.html' will work.
+            
+            STATIC_ROOT, # Important for Flutter's index.html
         ],
-        'APP_DIRS': True,
+        'APP_DIRS': False, # <--- CRITICAL CHANGE: Set to False if all templates are in DIRS
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
