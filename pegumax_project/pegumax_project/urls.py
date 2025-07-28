@@ -5,7 +5,13 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.views.generic import TemplateView
-from . import views # Import your custom views.py (pegumax_project/views.py)
+from . import views # Import your custom views.py
+
+# --- NEW: Define handlers for custom error pages ---
+handler404 = 'pegumax_project.views.custom_404_view'
+handler500 = 'pegumax_project.views.custom_500_view'
+# --- END NEW ---
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -15,21 +21,11 @@ urlpatterns = [
 
     # --- START: URL Patterns for serving the Flutter Student Suite app with Clean URLs ---
 
-    # 1. Serve Flutter's *assets* (JS, CSS, fonts, images, manifest, etc.)
-    # This pattern explicitly matches any path that has at least one character
-    # AFTER '/software-center/student-suite/'.
-    # It must come FIRST.
-    re_path(r'^software-center/student-suite/(?P<path>.+)$', views.serve_flutter_asset),
+    # 1. Serve Flutter's *assets* (MUST BE FIRST)
+    re_path(r'^software-center/student-suite/(?P<path>.*)$', views.serve_flutter_asset),
 
 
     # 2. Serve the base index.html for the Flutter app AND handle Flutter's internal routing (deep links)
-    # This pattern catches:
-    #   - /software-center/student-suite/ (with trailing slash)
-    #   - /software-center/student-suite (without trailing slash)
-    #   - /software-center/student-suite/dashboard (deep link)
-    #   - /software-center/student-suite/settings/profile (deep link)
-    # It must come AFTER the asset serving pattern.
-    # Added 'name' attribute to allow linking from other Django templates.
     re_path(r'^software-center/student-suite/?(?:.*)?$', TemplateView.as_view(template_name='frontend/student-suite-web/index.html'), name='student_suite_app_launch'),
 
     # --- END: URL Patterns for serving the Flutter Student Suite app ---
