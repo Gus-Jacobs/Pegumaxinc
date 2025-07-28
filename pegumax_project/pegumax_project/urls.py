@@ -21,24 +21,23 @@ urlpatterns = [
 
     # --- START: URL Patterns for serving the Flutter Student Suite app with Clean URLs ---
 
-    # 1. EXACT Match for the Flutter App Root HTML (with and without trailing slash)
-    # This ensures that when the user navigates directly to the base URL,
-    # the index.html is served specifically as the entry point.
-    path('software-center/student-suite/', TemplateView.as_view(template_name='frontend/student-suite-web/index.html'), name='student_suite_app_launch_base'),
-    path('software-center/student-suite', TemplateView.as_view(template_name='frontend/student-suite-web/index.html'), name='student_suite_app_launch_no_slash'), # Handle no trailing slash
-
-    # 2. Serve Flutter's *assets* (JS, CSS, fonts, images, manifest, etc.)
-    # This pattern explicitly matches any request that has at least one character
+    # 1. Serve Flutter's *assets* (MUST BE FIRST)
+    # This pattern explicitly matches any path that has at least one character
     # AFTER '/software-center/student-suite/'.
     # This ensures it captures files like 'main.dart.js' but NOT the base URL itself.
-    # This must come BEFORE the general deep-link catch-all.
+    # It must come FIRST.
     re_path(r'^software-center/student-suite/(?P<path>.+)$', views.serve_flutter_asset, name='student_suite_assets'),
 
-    # 3. Handle Flutter's internal routing (deep links)
-    # This pattern acts as a fallback for any sub-path under 'software-center/student-suite/'
-    # that wasn't matched by the asset server. This is for Flutter's client-side router.
-    # It must come AFTER the exact root HTML serving patterns AND the asset serving pattern.
-    re_path(r'^software-center/student-suite/(?P<path>.*)/?$', TemplateView.as_view(template_name='frontend/student-suite-web/index.html')),
+
+    # 2. Serve the base index.html for the Flutter app AND handle Flutter's internal routing (deep links)
+    # This pattern catches:
+    #   - /software-center/student-suite/ (with trailing slash)
+    #   - /software-center/student-suite (without trailing slash)
+    #   - /software-center/student-suite/dashboard (deep link)
+    #   - /software-center/student-suite/settings/profile (deep link)
+    # It must come AFTER the asset serving pattern.
+    # CRITICAL: Ensure 'name=student_suite_app_launch' is present on THIS line.
+    re_path(r'^software-center/student-suite/?(?:.*)?$', TemplateView.as_view(template_name='frontend/student-suite-web/index.html'), name='student_suite_app_launch'),
 
 
     # --- END: URL Patterns for serving the Flutter Student Suite app ---
