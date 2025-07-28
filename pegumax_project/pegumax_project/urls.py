@@ -7,10 +7,10 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from . import views # Import your custom views.py
 
-# --- NEW: Define handlers for custom error pages ---
+# --- Define handlers for custom error pages ---
 handler404 = 'pegumax_project.views.custom_404_view'
 handler500 = 'pegumax_project.views.custom_500_view'
-# --- END NEW ---
+# --- END handlers ---
 
 
 urlpatterns = [
@@ -21,12 +21,25 @@ urlpatterns = [
 
     # --- START: URL Patterns for serving the Flutter Student Suite app with Clean URLs ---
 
-    # 1. Serve Flutter's *assets* (MUST BE FIRST)
-    re_path(r'^software-center/student-suite/(?P<path>.*)$', views.serve_flutter_asset),
+    # 1. EXACT Match for the Flutter App Root HTML (with and without trailing slash)
+    # This ensures that when the user navigates directly to the base URL,
+    # the index.html is served specifically as the entry point.
+    path('software-center/student-suite/', TemplateView.as_view(template_name='frontend/student-suite-web/index.html'), name='student_suite_app_launch_base'),
+    path('software-center/student-suite', TemplateView.as_view(template_name='frontend/student-suite-web/index.html'), name='student_suite_app_launch_no_slash'), # Handle no trailing slash
 
+    # 2. Serve Flutter's *assets* (JS, CSS, fonts, images, manifest, etc.)
+    # This pattern explicitly matches any request that has at least one character
+    # AFTER '/software-center/student-suite/'.
+    # This ensures it captures files like 'main.dart.js' but NOT the base URL itself.
+    # This must come BEFORE the general deep-link catch-all.
+    re_path(r'^software-center/student-suite/(?P<path>.+)$', views.serve_flutter_asset, name='student_suite_assets'),
 
-    # 2. Serve the base index.html for the Flutter app AND handle Flutter's internal routing (deep links)
-    re_path(r'^software-center/student-suite/?(?:.*)?$', TemplateView.as_view(template_name='frontend/student-suite-web/index.html'), name='student_suite_app_launch'),
+    # 3. Handle Flutter's internal routing (deep links)
+    # This pattern acts as a fallback for any sub-path under 'software-center/student-suite/'
+    # that wasn't matched by the asset server. This is for Flutter's client-side router.
+    # It must come AFTER the exact root HTML serving patterns AND the asset serving pattern.
+    re_path(r'^software-center/student-suite/(?P<path>.*)/?$', TemplateView.as_view(template_name='frontend/student-suite-web/index.html')),
+
 
     # --- END: URL Patterns for serving the Flutter Student Suite app ---
 ]
