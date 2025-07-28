@@ -75,13 +75,18 @@ ROOT_URLCONF = 'pegumax_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'templates',
+            # <--- NEW: Add STATIC_ROOT here so TemplateView can find index.html
+            # This makes collected static files discoverable as templates.
+            STATIC_ROOT, # Make sure STATIC_ROOT is defined BEFORE this section, or reference it via settings
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages', # <--- This is the line required by admin
+                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
@@ -139,6 +144,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
+# <--- Make sure STATIC_ROOT is defined as a Path object before TEMPLATES
 STATIC_ROOT = BASE_DIR / 'staticfiles' # Directory where collectstatic will gather files
 
 # WhiteNoise storage class (essential for production with collectstatic)
