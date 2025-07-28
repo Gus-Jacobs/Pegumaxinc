@@ -57,10 +57,10 @@
                 <h3>Key Features:</h3>
                 <ul>
                     <li>Integrated course management and calendar.</li>
-                    <li>Study tools like flashcard generator and ai_teacher.</li>
-                    <li>Career tools such as resume and cover letter generator.</li>
-                    <li>Awesome themes, fonts and profile frames.</li>
-                    <li>AI features to boost results.</li>
+                    <li>Study tools like flashcard generating tools and ai teachers.</li>
+                    <li>Career tools like resume and cover letter generators and ai interview assitance.</li>
+                    <li>Awesome settings like themes, fonts and profile frames</li>
+                    <li>Ai tools to enhance learning and productivity.</li>
                 </ul>
 
                 <h3>Launch Options:</h3>
@@ -193,75 +193,61 @@
                 });
             }
 
-            // Functions from your software_center.html that were inlined in <script> tags
-            // They need to be global or attached to window object if called from onclick attributes.
-            // Putting them here in the DOMContentLoaded listener scope means they are local.
-            // If the HTML uses onclick="openTab(...)" then they need to be globally accessible.
-            // For now, I'll make them global.
-            window.openTab = openTab;
-            window.populateAllTab = populateAllTab;
-            window.openSubmitIdeaForm = openSubmitIdeaForm;
-            window.closeSubmitIdeaForm = closeSubmitIdeaForm;
-            window.openSubscriptionInterestForm = openSubscriptionInterestForm;
-            window.closeSubscriptionInterestForm = closeSubscriptionInterestForm;
-        });
-
-        // Moved these functions out to global scope or attached to window for onclick attributes to work
-        // These are definitions for functions needed by onclick in software_center.html
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-                tabcontent[i].classList.remove("active");
-            }
-            tablinks = document.getElementsByClassName("tab-link");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].classList.remove("active");
-            }
-            document.getElementById(tabName).style.display = "block";
-            document.getElementById(tabName).classList.add("active");
-            if (evt) {
-                evt.currentTarget.classList.add("active");
-            } else {
-                document.querySelector('.tab-link[onclick*="\'all\'"]').classList.add('active');
-            }
-        }
-
-        function populateAllTab() {
-            const allTabGrid = document.querySelector('#all .software-grid');
-            allTabGrid.innerHTML = ''; // Clear existing items
-
-            const categories = ['tools', 'suites', 'games'];
-            categories.forEach(category => {
-                const categoryGrid = document.querySelector(`#${category} .software-grid`);
-                if (categoryGrid) {
-                    const items = categoryGrid.querySelectorAll('.software-card');
-                    items.forEach(item => {
-                        allTabGrid.appendChild(item.cloneNode(true));
-                    });
+            // Moved these functions out to global scope or attached to window for onclick attributes to work
+            // These are definitions for functions needed by onclick in software_center.html
+            function openTab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tab-content");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                    tabcontent[i].classList.remove("active");
                 }
+                tablinks = document.getElementsByClassName("tab-link");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].classList.remove("active");
+                }
+                document.getElementById(tabName).style.display = "block";
+                document.getElementById(tabName).classList.add("active");
+                if (evt) {
+                    evt.currentTarget.classList.add("active");
+                } else {
+                    document.querySelector('.tab-link[onclick*="\'all\'"]').classList.add('active');
+                }
+            }
+
+            function populateAllTab() {
+                const allTabGrid = document.querySelector('#all .software-grid');
+                allTabGrid.innerHTML = ''; // Clear existing items
+
+                const categories = ['tools', 'suites', 'games'];
+                categories.forEach(category => {
+                    const categoryGrid = document.querySelector(`#${category} .software-grid`);
+                    if (categoryGrid) {
+                        const items = categoryGrid.querySelectorAll('.software-card');
+                        items.forEach(item => {
+                            allTabGrid.appendChild(item.cloneNode(true));
+                        });
+                    }
+                });
+            }
+
+            function openSubmitIdeaForm() {
+                document.getElementById('submit-idea-popup').style.display = 'flex';
+            }
+            function closeSubmitIdeaForm() {
+                document.getElementById('submit-idea-popup').style.display = 'none';
+            }
+            function openSubscriptionInterestForm() {
+                document.getElementById('subscription-popup').style.display = 'none';
+                document.getElementById('subscription-interest-popup').style.display = 'flex';
+            }
+            function closeSubscriptionInterestForm() {
+                document.getElementById('subscription-interest-popup').style.display = 'none';
+            }
+
+            // Update current year dynamically
+            document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('current-year').textContent = new Date().getFullYear();
             });
-        }
-
-        function openSubmitIdeaForm() {
-            document.getElementById('submit-idea-popup').style.display = 'flex';
-        }
-        function closeSubmitIdeaForm() {
-            document.getElementById('submit-idea-popup').style.display = 'none';
-        }
-        function openSubscriptionInterestForm() {
-            document.getElementById('subscription-popup').style.display = 'none';
-            document.getElementById('subscription-interest-popup').style.display = 'flex';
-        }
-        function closeSubscriptionInterestForm() {
-            document.getElementById('subscription-interest-popup').style.display = 'none';
-        }
-
-        // Update current year dynamically
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('current-year').textContent = new Date().getFullYear();
         });
-    </script>
-</body>
-</html>
+    </scri
