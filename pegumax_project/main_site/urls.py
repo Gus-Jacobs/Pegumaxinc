@@ -31,5 +31,5 @@ urlpatterns = [
 
     # --- NEW: URL for the Student Suite Launch Page ---
     # This renders the static HTML template for the launch page.
-    path('software-center/student-suite-launch/', TemplateView.as_view(template_name='main_site/student_suite_launch.html'), name='student_suite_launch'),
+    path('software-center/student-suite-launch/', TemplateView.as_view(template_name='main_site/student-suite-launch.html'), name='student_suite_launch'),
 ]
