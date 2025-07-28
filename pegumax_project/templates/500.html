@@ -1,0 +1,117 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Server Error | Pegumax Inc.</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Basic styling for error pages, adapted from your software center for consistency */
+        body {
+            background-color: #0d0d0d; /* Dark background */
+            color: #e0e0e0; /* Light text */
+            font-family: 'Rajdhani', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .error-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .error-code {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8em;
+            color: #ff0000; /* Red highlight for server error */
+            margin-bottom: 0px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        .error-message {
+            font-size: 1.8em;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        .error-message .highlight {
+            color: #ffcc00; /* Highlight color for emphasis */
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #00ffff;
+            color: #0d0d0d;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 255, 255, 0.3);
+        }
+        .cta-button:hover {
+            background-color: #00e6e6;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 255, 255, 0.4);
+        }
+        .site-footer {
+            background-color: #1a1a1a;
+            color: #bbb;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+        .social-links a {
+            color: #bbb;
+            margin: 0 10px;
+            font-size: 1.2em;
+            transition: color 0.3s ease;
+        }
+        .social-links a:hover {
+            color: #00ffff;
+        }
+        .contact-info a {
+            color: #bbb;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            color: #00ffff;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section class="error-container">
+            <h1 class="error-code">500</h1>
+            <p class="error-message">An unexpected server error occurred. Please <span class="highlight">try again</span> later.</p>
+            <a href="{% url 'main_site:home' %}" class="cta-button">Go to Homepage</a>
+        </section>
+    </main>
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year-500">2024</span> Pegumax Inc. All rights reserved.</p>
+            <p>Empowering the human spirit through technological transcendence.</p>
+            <div class="social-links">
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+            </div>
+            <div class="contact-info">
+                <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
+                <p>123 Innovation Drive, Tech City, TX 75001</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.getElementById('current-year-500').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
