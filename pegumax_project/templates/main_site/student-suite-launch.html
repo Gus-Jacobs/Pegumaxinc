@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}"> {# Assuming main site favicon is fine #}
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
@@ -49,7 +49,6 @@
         <section class="content-section app-detail-page">
             <div class="container">
                 <div class="app-header">
-                    {# Using a generic education/student icon #}
                     <div class="app-icon-large"><i class="fas fa-graduation-cap"></i></div>
                     <h1>Student <span class="highlight">Suite</span></h1>
                 </div>
@@ -66,8 +65,8 @@
 
                 <h3>Launch Options:</h3>
                 <div class="download-links">
-                    {# Link to your deployed Flutter web app #}
-                    <a href="{% url 'main_site:student_suite_app_launch' %}" class="download-button online-dl active"><i class="fas fa-globe"></i> Launch Web App</a>
+                    {# Link to your deployed Flutter web app - CORRECTED #}
+                    <a href="{% url 'student_suite_app_launch' %}" class="download-button online-dl active"><i class="fas fa-globe"></i> Launch Web App</a>
                     <a href="#" class="download-button windows-dl disabled"><i class="fab fa-windows"></i> Windows <span class="coming-soon-inline">(Soon)</span></a>
                     <a href="#" class="download-button ios-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a>
                     <a href="#" class="download-button android-dl disabled"><i class="fab fa-android"></i> Android <span class="coming-soon-inline">(Soon)</span></a>
@@ -95,11 +94,11 @@
 
     <script src="{% static 'js/script.js' %}"></script>
     <script>
-        // Update current year dynamically
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-
-        // Hamburger menu toggle (assuming script.js doesn't already handle this)
         document.addEventListener('DOMContentLoaded', function() {
+            // Update current year dynamically
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            // Hamburger menu toggle (assuming script.js doesn't already handle this)
             const navToggle = document.querySelector('.nav-toggle');
             const mainNav = document.querySelector('.main-nav');
 
@@ -110,6 +109,158 @@
                     mainNav.classList.toggle('nav-open');
                 });
             }
+
+            // Software Center specific JavaScript (from your software_center.html)
+            populateAllTab();
+            openTab(null, 'all'); // Initialize the first tab (All) on page load
+
+            // Modal functions (from your software_center.html)
+            function openSubmitIdeaForm() {
+                document.getElementById('submit-idea-popup').style.display = 'flex';
+            }
+            function closeSubmitIdeaForm() {
+                document.getElementById('submit-idea-popup').style.display = 'none';
+            }
+            function openSubscriptionInterestForm() {
+                document.getElementById('subscription-popup').style.display = 'none';
+                document.getElementById('subscription-interest-popup').style.display = 'flex';
+            }
+            function closeSubscriptionInterestForm() {
+                document.getElementById('subscription-interest-popup').style.display = 'none';
+            }
+
+            const submitIdeaForm = document.getElementById('submit-idea-form');
+            if (submitIdeaForm) {
+                submitIdeaForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const form = event.target;
+                    const formData = new FormData(form);
+                    const dataForBackend = new FormData();
+                    dataForBackend.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
+                    dataForBackend.append('idea_text', formData.get('idea-description'));
+                    if (formData.get('idea-email')) {
+                        dataForBackend.append('user_email_idea', formData.get('idea-email'));
+                    }
+                    fetch("{% url 'main_site:submit_software_idea' %}", {
+                        method: 'POST',
+                        body: dataForBackend,
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if(data.success) {
+                            closeSubmitIdeaForm();
+                            form.reset();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error submitting idea:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                });
+            }
+
+            const subInterestForm = document.getElementById('subscription-interest-form');
+            if (subInterestForm) {
+                subInterestForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const form = event.target;
+                    const formData = new FormData(form);
+                    const dataForBackend = new FormData();
+                    dataForBackend.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
+                    dataForBackend.append('email_access', formData.get('interest-email'));
+                    let reason = `Tools worth: ${formData.get('interest-tools-worth') || 'N/A'}\n`;
+                    reason += `Could replace: ${formData.get('interest-replaces') || 'N/A'}\n`;
+                    reason += `Wants included: ${formData.get('interest-wants') || 'N/A'}`;
+                    dataForBackend.append('interest_reason_access', reason);
+
+                    fetch("{% url 'main_site:full_access_inquiry' %}", {
+                        method: 'POST',
+                        body: dataForBackend,
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if(data.success) {
+                            closeSubscriptionInterestForm();
+                            form.reset();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error submitting interest:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                });
+            }
+
+            // Functions from your software_center.html that were inlined in <script> tags
+            // They need to be global or attached to window object if called from onclick attributes.
+            // Putting them here in the DOMContentLoaded listener scope means they are local.
+            // If the HTML uses onclick="openTab(...)" then they need to be globally accessible.
+            // For now, I'll make them global.
+            window.openTab = openTab;
+            window.populateAllTab = populateAllTab;
+            window.openSubmitIdeaForm = openSubmitIdeaForm;
+            window.closeSubmitIdeaForm = closeSubmitIdeaForm;
+            window.openSubscriptionInterestForm = openSubscriptionInterestForm;
+            window.closeSubscriptionInterestForm = closeSubscriptionInterestForm;
+        });
+
+        // Moved these functions out to global scope or attached to window for onclick attributes to work
+        // These are definitions for functions needed by onclick in software_center.html
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-link");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            if (evt) {
+                evt.currentTarget.classList.add("active");
+            } else {
+                document.querySelector('.tab-link[onclick*="\'all\'"]').classList.add('active');
+            }
+        }
+
+        function populateAllTab() {
+            const allTabGrid = document.querySelector('#all .software-grid');
+            allTabGrid.innerHTML = ''; // Clear existing items
+
+            const categories = ['tools', 'suites', 'games'];
+            categories.forEach(category => {
+                const categoryGrid = document.querySelector(`#${category} .software-grid`);
+                if (categoryGrid) {
+                    const items = categoryGrid.querySelectorAll('.software-card');
+                    items.forEach(item => {
+                        allTabGrid.appendChild(item.cloneNode(true));
+                    });
+                }
+            });
+        }
+
+        function openSubmitIdeaForm() {
+            document.getElementById('submit-idea-popup').style.display = 'flex';
+        }
+        function closeSubmitIdeaForm() {
+            document.getElementById('submit-idea-popup').style.display = 'none';
+        }
+        function openSubscriptionInterestForm() {
+            document.getElementById('subscription-popup').style.display = 'none';
+            document.getElementById('subscription-interest-popup').style.display = 'flex';
+        }
+        function closeSubscriptionInterestForm() {
+            document.getElementById('subscription-interest-popup').style.display = 'none';
+        }
+
+        // Update current year dynamically
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
         });
     </script>
 </body>
