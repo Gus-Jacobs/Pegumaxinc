@@ -85,7 +85,7 @@
         }
 
         .header-logo-img {
-            height: 2.5rem;
+            height: 2.5rem; /* Controlled height for the logo image */
             margin-right: 0.5rem;
         }
 
@@ -119,6 +119,11 @@
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
+            /* Explicitly remove button-like styles from nav links */
+            background: none;
+            border: none;
+            padding: 0;
+            white-space: nowrap; /* Prevent text wrapping */
         }
 
         .main-nav a:hover {
@@ -375,6 +380,10 @@
             .header-logo-img {
                 height: 2rem;
             }
+            /* Adjust font size for nav links on smaller screens */
+            .main-nav a {
+                font-size: 0.95rem;
+            }
 
             .app-detail-page {
                 padding: 3rem 0;
@@ -442,6 +451,10 @@
             }
             .header-logo-img {
                 height: 1.8rem;
+            }
+            /* Further adjust font size for nav links on very small screens */
+            .main-nav a {
+                font-size: 0.85rem;
             }
 
             .app-detail-page {
@@ -557,7 +570,6 @@
                             <a href="{% static 'downloads/student_suite.apk' %}" download>Direct APK Download</a>
                         </div>
                     </div>
-                    {# <a href="#" class="download-button android-dl disabled"><i class="fab fa-android"></i> Android <span class="coming-soon-inline">(Soon)</span></a> #}
                     
                     <a href="#" class="download-button linux-dl disabled"><i class="fab fa-linux"></i> Linux <span class="coming-soon-inline">(Soon)</span></a>
                 </div>
@@ -571,12 +583,12 @@
             <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
             <p>Empowering the human spirit through technological transcendence.</p>
             <div class="social-links">
-                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
             </div>
             <div class="contact-info">
-                <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
+                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p> {# Updated to link to contact page #}
                 <p>123 Innovation Drive, Tech City, TX 75001</p>
             </div>
         </div>
