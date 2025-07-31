@@ -5,13 +5,492 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Suite - Pegumax Inc.</title>
+    <title>Student Suite - Your All-in-One Academic Companion | Pegumax Inc.</title>
+    <meta name="description" content="Pegumax Student Suite: an essential all-in-one app for students featuring course management, study tools (flashcards, AI teachers), career tools (resume/cover letter generators, AI interview assistance), and customizable settings. Launch the web app or download for Android (Google Play or APK).">
+    <meta name="keywords" content="Student Suite, Pegumax, academic tools, study app, flashcards, AI teacher, resume generator, cover letter, AI interview, student productivity, education software, learning companion, Android app, web app">
+    
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Universal box-sizing for consistent layout */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* Root variables (assuming they are also in style.css) */
+        :root {
+            --bg-color: #0d0e12;
+            --bg-dark-1: #1a1c23;
+            --bg-dark-2: #22242b;
+            --card-bg: #16181d;
+            --text-color: #e0e0e0;
+            --text-light: #b0b0b0;
+            --highlight-color: #00efff;
+            --border-color: #333740;
+            --primary-font: 'Rajdhani', sans-serif;
+            --secondary-font: 'Orbitron', sans-serif;
+            --danger-color: #ff4d4f;
+            --success-color: #52c41a;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            line-height: 1.6; /* Improved readability */
+        }
+
+        main {
+            flex-grow: 1; /* Allows main content to take up available space */
+        }
+
+        .container {
+            max-width: 1200px; /* Max width for content on large screens */
+            margin: 0 auto; /* Center the container */
+            padding: 0 1.5rem; /* Responsive horizontal padding */
+        }
+
+        /* Header Styles (unified for consistency) */
+        .page-header {
+            background-color: var(--bg-dark-1);
+            padding: 1rem 0;
+            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .page-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-color);
+            font-family: var(--secondary-font);
+            font-size: 1.5rem;
+        }
+
+        .header-logo-img {
+            height: 2.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .nav-toggle {
+            display: none; /* Hidden by default, shown on smaller screens */
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .hamburger-line {
+            display: block;
+            width: 1.5rem;
+            height: 0.125rem;
+            background-color: var(--highlight-color);
+            margin: 0.25rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .main-nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav a:hover {
+            color: var(--highlight-color);
+        }
+
+        /* App Detail Page Specific Styles */
+        .app-detail-page {
+            padding: 4rem 0; /* Consistent section padding */
+            background-color: var(--bg-color);
+        }
+
+        .app-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 2.5rem; /* 40px */
+        }
+
+        .app-icon-large {
+            font-size: 6rem; /* Large icon size */
+            color: var(--highlight-color);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 1rem rgba(0, 255, 255, 0.5);
+        }
+
+        .app-header h1 {
+            font-family: var(--secondary-font);
+            font-size: 3.5rem; /* Large heading */
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .app-header h1 .highlight {
+            color: var(--highlight-color);
+        }
+
+        .section-intro {
+            max-width: 900px;
+            margin: 0 auto 2.5rem auto; /* 40px */
+            font-size: 1.1rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        h3 {
+            font-family: var(--secondary-font);
+            font-size: 1.8rem;
+            color: var(--highlight-color);
+            margin-top: 2.5rem; /* 40px */
+            margin-bottom: 1.25rem; /* 20px */
+            text-align: center;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto 2.5rem auto; /* 40px */
+            max-width: 700px;
+        }
+
+        ul li {
+            background-color: var(--bg-dark-1);
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 0.625rem; /* 10px */
+            border-radius: 0.3rem;
+            border-left: 0.25rem solid var(--highlight-color); /* 4px */
+            color: var(--text-color);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        ul li::before {
+            content: "\f00c"; /* Font Awesome checkmark icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: var(--success-color);
+            margin-right: 0.75rem;
+        }
+
+        .download-links {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap to next line */
+            justify-content: center;
+            gap: 1.25rem; /* 20px */
+            margin-top: 2.5rem; /* 40px */
+            margin-bottom: 2.5rem; /* 40px */
+        }
+
+        .download-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
+            font-size: 1rem;
+            min-width: 10rem; /* Ensure buttons have a minimum width */
+            justify-content: center;
+            border: none; /* Ensure no default button border */
+            cursor: pointer;
+        }
+
+        .download-button i {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .download-button:hover {
+            background-color: #00e6e6;
+            transform: translateY(-0.125rem);
+            box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
+        }
+
+        .download-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: var(--border-color);
+            color: var(--text-light);
+            box-shadow: none;
+        }
+
+        .download-button.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .coming-soon-inline {
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .small-text {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        /* Android Dropdown Specific Styles */
+        .android-dropdown-container {
+            position: relative;
+            display: inline-block; /* Allows it to sit next to other buttons */
+        }
+
+        .android-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--card-bg);
+            min-width: 12rem; /* Adjusted width */
+            box-shadow: 0px 0.5rem 1rem 0px rgba(0,0,0,0.2); /* 8px 16px */
+            z-index: 1;
+            border-radius: 0.3rem;
+            overflow: hidden; /* Ensures rounded corners apply to children */
+            top: calc(100% + 0.5rem); /* Position below the button with some space */
+            left: 50%;
+            transform: translateX(-50%); /* Center the dropdown below the button */
+            border: 0.0625rem solid var(--highlight-color);
+        }
+
+        .android-dropdown-content a {
+            color: var(--text-color);
+            padding: 0.75rem 1rem; /* 12px 16px */
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            font-family: var(--primary-font);
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .android-dropdown-content a:hover {
+            background-color: var(--bg-dark-2);
+            color: var(--highlight-color);
+        }
+
+        .android-dropdown-container.active .android-dropdown-content {
+            display: block;
+        }
+
+        /* Site Footer Styles (consistent with other pages) */
+        .site-footer {
+            background-color: var(--bg-dark-1);
+            color: var(--text-light);
+            padding: 1.25rem 1rem;
+            font-size: 0.85rem;
+            width: 100%;
+        }
+        .site-footer .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .social-links {
+            margin-top: 0.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .social-links a {
+            color: inherit;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+            text-decoration: none;
+        }
+        .social-links a:hover {
+            color: var(--highlight-color);
+        }
+        .contact-info {
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .contact-info a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            color: var(--highlight-color);
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 768px) {
+            .page-header .main-nav {
+                display: none;
+                width: 100%;
+                order: 2;
+            }
+            .page-header .nav-toggle {
+                display: block;
+            }
+            .page-header .main-nav.is-open {
+                display: flex;
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            .header-logo-link {
+                font-size: 1.2rem;
+            }
+            .header-logo-img {
+                height: 2rem;
+            }
+
+            .app-detail-page {
+                padding: 3rem 0;
+            }
+            .app-icon-large {
+                font-size: 5rem;
+                margin-bottom: 1rem;
+            }
+            .app-header h1 {
+                font-size: 2.8rem;
+            }
+            .section-intro {
+                font-size: 1rem;
+                margin-bottom: 2rem;
+            }
+            h3 {
+                font-size: 1.6rem;
+                margin-top: 2rem;
+                margin-bottom: 1rem;
+            }
+            ul {
+                margin-bottom: 2rem;
+            }
+            ul li {
+                font-size: 0.95rem;
+                padding: 0.7rem 1rem;
+            }
+            .download-links {
+                flex-direction: column; /* Stack buttons vertically */
+                gap: 0.8rem;
+                margin-top: 2rem;
+                margin-bottom: 2rem;
+            }
+            .download-button {
+                min-width: 80%; /* Make buttons wider on mobile */
+                padding: 0.7rem 1.2rem;
+                font-size: 0.95rem;
+            }
+            .android-dropdown-container {
+                width: 80%; /* Match parent button width */
+            }
+            .android-dropdown-content {
+                min-width: 100%; /* Make dropdown match button width */
+            }
+            .small-text {
+                font-size: 0.85rem;
+                margin-top: 1rem;
+            }
+
+            .site-footer {
+                font-size: 0.8rem;
+                padding: 1rem 0.8rem;
+            }
+            .social-links {
+                gap: 0.8rem;
+            }
+            .social-links a {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-logo-link {
+                font-size: 1.1rem;
+            }
+            .header-logo-img {
+                height: 1.8rem;
+            }
+
+            .app-detail-page {
+                padding: 2rem 0;
+            }
+            .app-icon-large {
+                font-size: 4rem;
+                margin-bottom: 0.8rem;
+            }
+            .app-header h1 {
+                font-size: 2.2rem;
+            }
+            .section-intro {
+                font-size: 0.9rem;
+                margin-bottom: 1.5rem;
+            }
+            h3 {
+                font-size: 1.4rem;
+                margin-top: 1.5rem;
+                margin-bottom: 0.8rem;
+            }
+            ul li {
+                font-size: 0.9rem;
+                padding: 0.6rem 0.8rem;
+            }
+            .download-links {
+                gap: 0.6rem;
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            .download-button {
+                min-width: 90%;
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+            .android-dropdown-container {
+                width: 90%;
+            }
+            .coming-soon-inline {
+                font-size: 0.7rem;
+            }
+            .small-text {
+                font-size: 0.8rem;
+            }
+            .site-footer .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="page-header">
@@ -57,21 +536,32 @@
                 <h3>Key Features:</h3>
                 <ul>
                     <li>Integrated course management and calendar.</li>
-                    <li>Study tools like flashcard generating tools and ai teachers.</li>
-                    <li>Career tools like resume and cover letter generators and ai interview assitance.</li>
-                    <li>Awesome settings like themes, fonts and profile frames</li>
-                    <li>Ai tools to enhance learning and productivity.</li>
+                    <li>Study tools like flashcard generating tools and AI teachers.</li>
+                    <li>Career tools like resume and cover letter generators and AI interview assistance.</li>
+                    <li>Awesome settings like themes, fonts, and profile frames.</li>
+                    <li>AI tools to enhance learning and productivity.</li>
                 </ul>
 
                 <h3>Launch Options:</h3>
                 <div class="download-links">
-                    {# Link to your deployed Flutter web app - CORRECTED #}
-                    <a href="{% url 'student_suite_app_launch' %}" class="download-button online-dl active"><i class="fas fa-globe"></i> Launch Web App</a>
+                    {# Link to your deployed Flutter web app #}
+                    <a href="{% url 'student_suite_app_launch' %}" class="download-button online-dl active" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i> Launch Web App</a>
                     <a href="#" class="download-button windows-dl disabled"><i class="fab fa-windows"></i> Windows <span class="coming-soon-inline">(Soon)</span></a>
                     <a href="#" class="download-button ios-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a>
-                    <a href="#" class="download-button android-dl disabled"><i class="fab fa-android"></i> Android <span class="coming-soon-inline">(Soon)</span></a>
+                    
+                    {# Android Dropdown Button #}
+                    <div class="android-dropdown-container">
+                        <button class="download-button android-dl" onclick="toggleAndroidDropdown(event)"><i class="fab fa-android"></i> Android <i class="fas fa-caret-down" style="margin-left: 0.5rem;"></i></button>
+                        <div class="android-dropdown-content">
+                            <a href="https://play.google.com/store/apps/details?id=com.pegumax.studentsuite" target="_blank" rel="noopener noreferrer">Google Play Store</a>
+                            <a href="{% static 'downloads/student_suite.apk' %}" download>Direct APK Download</a>
+                        </div>
+                    </div>
+                    {# <a href="#" class="download-button android-dl disabled"><i class="fab fa-android"></i> Android <span class="coming-soon-inline">(Soon)</span></a> #}
+                    
+                    <a href="#" class="download-button linux-dl disabled"><i class="fab fa-linux"></i> Linux <span class="coming-soon-inline">(Soon)</span></a>
                 </div>
-                <p class="small-text">*Web App available now. Desktop and mobile versions coming soon!</p>
+                <p class="small-text">*Web App and Android versions available now. Desktop and other mobile versions coming soon!</p>
             </div>
         </section>
     </main>
@@ -98,7 +588,7 @@
             // Update current year dynamically
             document.getElementById('current-year').textContent = new Date().getFullYear();
 
-            // Hamburger menu toggle (assuming script.js doesn't already handle this)
+            // Hamburger menu toggle
             const navToggle = document.querySelector('.nav-toggle');
             const mainNav = document.querySelector('.main-nav');
 
@@ -106,148 +596,27 @@
                 navToggle.addEventListener('click', () => {
                     const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
                     navToggle.setAttribute('aria-expanded', !expanded);
-                    mainNav.classList.toggle('nav-open');
+                    mainNav.classList.toggle('is-open'); // Use 'is-open' for consistency
                 });
             }
-
-            // Software Center specific JavaScript (from your software_center.html)
-            populateAllTab();
-            openTab(null, 'all'); // Initialize the first tab (All) on page load
-
-            // Modal functions (from your software_center.html)
-            function openSubmitIdeaForm() {
-                document.getElementById('submit-idea-popup').style.display = 'flex';
-            }
-            function closeSubmitIdeaForm() {
-                document.getElementById('submit-idea-popup').style.display = 'none';
-            }
-            function openSubscriptionInterestForm() {
-                document.getElementById('subscription-popup').style.display = 'none';
-                document.getElementById('subscription-interest-popup').style.display = 'flex';
-            }
-            function closeSubscriptionInterestForm() {
-                document.getElementById('subscription-interest-popup').style.display = 'none';
-            }
-
-            const submitIdeaForm = document.getElementById('submit-idea-form');
-            if (submitIdeaForm) {
-                submitIdeaForm.addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    const form = event.target;
-                    const formData = new FormData(form);
-                    const dataForBackend = new FormData();
-                    dataForBackend.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
-                    dataForBackend.append('idea_text', formData.get('idea-description'));
-                    if (formData.get('idea-email')) {
-                        dataForBackend.append('user_email_idea', formData.get('idea-email'));
-                    }
-                    fetch("{% url 'main_site:submit_software_idea' %}", {
-                        method: 'POST',
-                        body: dataForBackend,
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message);
-                        if(data.success) {
-                            closeSubmitIdeaForm();
-                            form.reset();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error submitting idea:', error);
-                        alert('An error occurred. Please try again.');
-                    });
-                });
-            }
-
-            const subInterestForm = document.getElementById('subscription-interest-form');
-            if (subInterestForm) {
-                subInterestForm.addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    const form = event.target;
-                    const formData = new FormData(form);
-                    const dataForBackend = new FormData();
-                    dataForBackend.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
-                    dataForBackend.append('email_access', formData.get('interest-email'));
-                    let reason = `Tools worth: ${formData.get('interest-tools-worth') || 'N/A'}\n`;
-                    reason += `Could replace: ${formData.get('interest-replaces') || 'N/A'}\n`;
-                    reason += `Wants included: ${formData.get('interest-wants') || 'N/A'}`;
-                    dataForBackend.append('interest_reason_access', reason);
-
-                    fetch("{% url 'main_site:full_access_inquiry' %}", {
-                        method: 'POST',
-                        body: dataForBackend,
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message);
-                        if(data.success) {
-                            closeSubscriptionInterestForm();
-                            form.reset();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error submitting interest:', error);
-                        alert('An error occurred. Please try again.');
-                    });
-                });
-            }
-
-            // Moved these functions out to global scope or attached to window for onclick attributes to work
-            // These are definitions for functions needed by onclick in software_center.html
-            function openTab(evt, tabName) {
-                var i, tabcontent, tablinks;
-                tabcontent = document.getElementsByClassName("tab-content");
-                for (i = 0; i < tabcontent.length; i++) {
-                    tabcontent[i].style.display = "none";
-                    tabcontent[i].classList.remove("active");
-                }
-                tablinks = document.getElementsByClassName("tab-link");
-                for (i = 0; i < tablinks.length; i++) {
-                    tablinks[i].classList.remove("active");
-                }
-                document.getElementById(tabName).style.display = "block";
-                document.getElementById(tabName).classList.add("active");
-                if (evt) {
-                    evt.currentTarget.classList.add("active");
-                } else {
-                    document.querySelector('.tab-link[onclick*="\'all\'"]').classList.add('active');
-                }
-            }
-
-            function populateAllTab() {
-                const allTabGrid = document.querySelector('#all .software-grid');
-                allTabGrid.innerHTML = ''; // Clear existing items
-
-                const categories = ['tools', 'suites', 'games'];
-                categories.forEach(category => {
-                    const categoryGrid = document.querySelector(`#${category} .software-grid`);
-                    if (categoryGrid) {
-                        const items = categoryGrid.querySelectorAll('.software-card');
-                        items.forEach(item => {
-                            allTabGrid.appendChild(item.cloneNode(true));
-                        });
-                    }
-                });
-            }
-
-            function openSubmitIdeaForm() {
-                document.getElementById('submit-idea-popup').style.display = 'flex';
-            }
-            function closeSubmitIdeaForm() {
-                document.getElementById('submit-idea-popup').style.display = 'none';
-            }
-            function openSubscriptionInterestForm() {
-                document.getElementById('subscription-popup').style.display = 'none';
-                document.getElementById('subscription-interest-popup').style.display = 'flex';
-            }
-            function closeSubscriptionInterestForm() {
-                document.getElementById('subscription-interest-popup').style.display = 'none';
-            }
-
-            // Update current year dynamically
-            document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('current-year').textContent = new Date().getFullYear();
-            });
         });
-    </scri
+
+        // Android Dropdown Toggle Function
+        function toggleAndroidDropdown(event) {
+            event.stopPropagation(); // Prevent click from immediately closing dropdown via window click
+            const dropdownContainer = event.currentTarget.closest('.android-dropdown-container');
+            dropdownContainer.classList.toggle('active');
+        }
+
+        // Close the dropdown if the user clicks outside of it
+        window.onclick = function(event) {
+            const dropdowns = document.querySelectorAll('.android-dropdown-container');
+            dropdowns.forEach(dropdown => {
+                if (dropdown.classList.contains('active') && !dropdown.contains(event.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
