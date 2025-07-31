@@ -215,10 +215,6 @@
             opacity: 0;
             transition: opacity 0.4s ease;
         }
-        .dashboard-card:hover::before {
-            opacity: 0.6;
-            animation: spin 4s linear infinite;
-        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .dashboard-card-header {
@@ -573,7 +569,7 @@
                 padding: 0.5rem 1rem;
                 font-size: 0.85rem;
             }
-            .site-footer { /* Changed from site-footer-minimal */
+            .site-footer {
                 padding: 1.5rem 1rem;
                 font-size: 0.8rem;
                 margin-top: 2rem;
@@ -628,7 +624,7 @@
                 padding: 0.4rem 0.8rem;
                 font-size: 0.8rem;
             }
-            .site-footer { /* Changed from site-footer-minimal */
+            .site-footer {
                 padding: 1rem 0.8rem;
                 font-size: 0.75rem;
                 margin-top: 1.5rem;
@@ -651,11 +647,11 @@
     </style>
 </head>
 <body>
-    <header class="page-header"> {# Changed from page-header-minimal for consistency #}
+    <header class="page-header">
         <div class="container">
             <div class="logo-container">
-                <a href="{% url 'main_site:home' %}" class="navbar-brand"> {# Changed class from logo-link #}
-                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img"> {# Changed class from logo-link img #}
+                <a href="{% url 'main_site:home' %}" class="navbar-brand">
+                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
                     <span class="header-logo-text">Pegumax Inc.</span>
                 </a>
             </div>
@@ -666,7 +662,6 @@
             </button>
             <nav class="navbar-links">
                 <ul>
-                    {# Removed 'Home' link as per consistency #}
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
@@ -716,7 +711,7 @@
                 <div class="profile-info">
                     <h2>{{ user.username|capfirst }}</h2>
                     <p><i class="fas fa-envelope fa-fw"></i> {{ user.email|default:"No email provided" }}</p>
-                    <p><i class="fas fa-calendar-alt fa-fw"></i> Joined: {{ user.date_joined|date:"M d, Y" }}</p>
+                    <p><i class="fas fa-calendar-alt fa-fw"></i> Joined: {{ user.date_joined|date:"M d, Y, P T"|default:"N/A" }}</p>
                 </div>
             </div>
             <div class="dashboard-card">
@@ -759,7 +754,7 @@
         </div>
     </main>
 
-    <footer class="site-footer"> {# Changed from site-footer-minimal for consistency #}
+    <footer class="site-footer">
         <div class="container">
             <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
             <p>Empowering the human spirit through technological transcendence.</p>
@@ -769,7 +764,7 @@
                 <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
             </div>
             <div class="contact-info">
-                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p> {# Updated to link to contact page #}
+                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p>
                 <p>123 Innovation Drive, Tech City, TX 75001</p>
             </div>
         </div>
@@ -789,10 +784,10 @@
                 </div>
                 <div>
                     <label for="id_email_edit">Email:</label>
-                    <input type="email" name="email" value="{{ user.email }}" required id="id_email_edit" class="form-input">
+                    <input type="email" name="email" value="{{ user.email|default:"" }}" id="id_email_edit" class="form-input">
                     <span class="form-error" id="error_email_edit"></span>
                 </div>
-                <button type="submit" class="dashboard-button" style="width: 100%; margin-top: 1.25rem;">Save Changes</button>
+                <button type="submit" class="dashboard-button">Save Changes</button>
             </form>
         </div>
     </div>
@@ -801,7 +796,7 @@
     <div id="changePasswordModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal('changePasswordModal')">&times;</span>
-            <h3>Change Your Password</h3>
+            <h3>Change Password</h3>
             <div id="changePasswordMessageArea"></div>
             <form id="changePasswordForm">
                 {% csrf_token %}
@@ -820,7 +815,7 @@
                     <input type="password" name="new_password2" required id="id_new_password2" class="form-input">
                     <span class="form-error" id="error_new_password2"></span>
                 </div>
-                <button type="submit" class="dashboard-button" style="width: 100%; margin-top: 1.25rem;">Update Password</button>
+                <button type="submit" class="dashboard-button">Change Password</button>
             </form>
         </div>
     </div>
@@ -829,168 +824,225 @@
     <div id="loginHistoryModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal('loginHistoryModal')">&times;</span>
-            <h3>Recent Login Activity</h3>
-            <div id="loginHistoryContent" class="login-history-wrapper">
-                <p>Loading history...</p>
+            <h3>Login History</h3>
+            <div class="login-history-wrapper">
+                <table class="login-history-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>IP Address</th>
+                            <th>Device/Browser</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {# Example data - replace with actual Django loop if you have login history #}
+                        <tr class="current-device">
+                            <td>{{ user.last_login|date:"M d, Y, P T"|default:"N/A" }}</td>
+                            <td>Current Device <i class="fas fa-check-circle"></i></td>
+                            <td>Your current browser/device.</td>
+                        </tr>
+                        <tr>
+                            <td>Jul 29, 2025, 10:30 AM EDT</td>
+                            <td>192.168.1.10</td>
+                            <td>Chrome on Windows</td>
+                        </tr>
+                        <tr>
+                            <td>Jul 28, 2025, 08:15 PM EDT</td>
+                            <td>10.0.0.5</td>
+                            <td>Safari on iOS</td>
+                        </tr>
+                        {# End example data #}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
+    <script src="{% static 'js/script.js' %}"></script>
     <script>
-    function openModal(modalId) {
-        document.getElementById(modalId).style.display = 'flex';
-    }
-    function closeModal(modalId) {
-        document.getElementById(modalId).style.display = 'none';
-        // Clear any previous messages or form errors
-        const messageArea = document.getElementById(modalId.replace('Modal', 'MessageArea'));
-        if (messageArea) messageArea.innerHTML = '';
-        document.querySelectorAll(`#${modalId.replace('Modal', 'Form')} .form-error`).forEach(el => el.textContent = '');
-    }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
 
-    // Close modal if user clicks outside of it
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal')) {
-            closeModal(event.target.id);
-        }
-    }
+            // Mobile navigation toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const navbarLinks = document.querySelector('.navbar-links'); // Corrected class name
 
-    function displayMessage(areaId, message, isSuccess) {
-        const area = document.getElementById(areaId);
-        area.innerHTML = `<div class="message-area ${isSuccess ? 'success' : 'error'}">${message}</div>`;
-    }
-    function displayFormErrors(formId, errors) {
-        // Clear all existing errors first
-        document.querySelectorAll(`#${formId} .form-error`).forEach(el => el.textContent = '');
-        for (const field in errors) {
-            const errorEl = document.getElementById(`error_${field}_edit`) || document.getElementById(`error_${field}`);
-            if (errorEl) errorEl.textContent = errors[field];
-        }
-    }
-
-    document.getElementById('editProfileBtn').onclick = () => openModal('editProfileModal');
-    document.getElementById('changePasswordBtn').onclick = () => openModal('changePasswordModal');
-    document.getElementById('loginHistoryBtn').onclick = () => {
-        openModal('loginHistoryModal');
-        // Clear previous content and show loading message
-        document.getElementById('loginHistoryContent').innerHTML = '<p>Loading history...</p>';
-
-        fetch("{% url 'main_site:get_login_history' %}")
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const contentEl = document.getElementById('loginHistoryContent');
-                if (data.history && data.history.length > 0) {
-                    let tableHtml = '<table class="login-history-table"><thead><tr><th>Timestamp</th><th>IP Address</th><th>Device/Browser</th></tr></thead><tbody>';
-                    data.history.forEach(item => {
-                        tableHtml += `<tr class="${item.is_current_device ? 'current-device' : ''}">
-                                            <td>${item.timestamp} ${item.is_current_device ? '<i class="fas fa-check-circle"></i>' : ''}</td>
-                                            <td>${item.ip_address}</td>
-                                            <td>${item.user_agent ? item.user_agent.substring(0, 50) + (item.user_agent.length > 50 ? '...' : '') : 'N/A'}</td>
-                                        </tr>`;
-                    });
-                    tableHtml += '</tbody></table>';
-                    contentEl.innerHTML = tableHtml;
-                } else {
-                    contentEl.innerHTML = '<p>No login history found.</p>';
-                }
-            })
-            .catch(error => {
-                document.getElementById('loginHistoryContent').innerHTML = '<p>Error loading history.</p>';
-                console.error('Error fetching login history:', error);
-            });
-    };
-
-    document.getElementById('editProfileForm').onsubmit = function(e) {
-        e.preventDefault();
-        // Clear previous messages and errors
-        displayMessage('editProfileMessageArea', '', true); // Clear success/error message
-        displayFormErrors('editProfileForm', {}); // Clear form-specific errors
-
-        fetch("{% url 'main_site:edit_profile' %}", {
-            method: 'POST',
-            body: new FormData(this),
-            headers: {'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value}
-        })
-        .then(response => response.json().then(data => ({status: response.status, body: data})))
-        .then(({status, body}) => {
-            if (status === 200 && body.success) {
-                displayMessage('editProfileMessageArea', body.message, true);
-                setTimeout(() => { closeModal('editProfileModal'); location.reload(); }, 1500); // Reload to see changes
-            } else {
-                displayMessage('editProfileMessageArea', body.message || 'Error updating profile.', false);
-                if(body.errors) displayFormErrors('editProfileForm', body.errors);
+            if (navToggle && navbarLinks) {
+                navToggle.addEventListener('click', () => {
+                    const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+                    navToggle.setAttribute('aria-expanded', !expanded);
+                    navbarLinks.classList.toggle('is-open');
+                });
             }
-        }).catch(error => {
-            console.error('Fetch error:', error);
-            displayMessage('editProfileMessageArea', 'An unexpected error occurred.', false);
-        });
-    };
 
-    document.getElementById('changePasswordForm').onsubmit = function(e) {
-        e.preventDefault();
-        // Clear previous messages and errors
-        displayMessage('changePasswordMessageArea', '', true); // Clear success/error message
-        displayFormErrors('changePasswordForm', {}); // Clear form-specific errors
-
-        fetch("{% url 'main_site:change_password_popup' %}", {
-            method: 'POST',
-            body: new FormData(this),
-            headers: {'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value}
-        })
-        .then(response => response.json().then(data => ({status: response.status, body: data})))
-        .then(({status, body}) => {
-            if (status === 200 && body.success) {
-                displayMessage('changePasswordMessageArea', body.message, true);
-                setTimeout(() => closeModal('changePasswordModal'), 2000);
-                this.reset(); // Clear the form
-            } else {
-                displayMessage('changePasswordMessageArea', body.message || 'Error changing password.', false);
-                if(body.errors) displayFormErrors('changePasswordForm', body.errors);
+            // More menu dropdown toggle function
+            function toggleMoreDropdown(event) {
+                event.stopPropagation(); // Prevent document click from immediately closing
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                moreWrapper.classList.toggle('active'); // Toggle 'active' class to show/hide dropdown
             }
-        }).catch(error => {
-            console.error('Fetch error:', error);
-            displayMessage('changePasswordMessageArea', 'An unexpected error occurred.', false);
-        });
-    };
 
-    // More menu dropdown toggle function (copied from index.html)
-    function toggleMoreDropdown(event) {
-        event.stopPropagation(); // Prevent document click from immediately closing
-        const moreWrapper = document.querySelector('.more-menu-wrapper');
-        moreWrapper.classList.toggle('active'); // Toggle 'active' class to show/hide dropdown
-    }
-
-    // Close dropdowns when clicking outside (copied from index.html)
-    window.addEventListener('click', function(event) {
-        const moreWrapper = document.querySelector('.more-menu-wrapper');
-        if (moreWrapper && moreWrapper.classList.contains('active') && !moreWrapper.contains(event.target)) {
-            moreWrapper.classList.remove('active');
-        }
-    });
-
-    // Expose toggleMoreDropdown to global scope for onclick attribute
-    window.toggleMoreDropdown = toggleMoreDropdown;
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-
-        // Mobile navigation toggle (copied from index.html)
-        const navToggle = document.querySelector('.nav-toggle');
-        const navbarLinks = document.querySelector('.navbar-links');
-
-        if (navToggle && navbarLinks) {
-            navToggle.addEventListener('click', () => {
-                const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
-                navToggle.setAttribute('aria-expanded', !expanded);
-                navbarLinks.classList.toggle('is-open');
+            // Close dropdowns when clicking outside
+            window.addEventListener('click', function(event) {
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                if (moreWrapper && moreWrapper.classList.contains('active') && !moreWrapper.contains(event.target)) {
+                    moreWrapper.classList.remove('active');
+                }
             });
-        }
-    });
+
+            // Expose toggleMoreDropdown to global scope for onclick attribute
+            window.toggleMoreDropdown = toggleMoreDropdown;
+
+
+            // Modal functionality
+            const editProfileModal = document.getElementById('editProfileModal');
+            const changePasswordModal = document.getElementById('changePasswordModal');
+            const loginHistoryModal = document.getElementById('loginHistoryModal');
+
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            const changePasswordBtn = document.getElementById('changePasswordBtn');
+            const loginHistoryBtn = document.getElementById('loginHistoryBtn');
+
+            function openModal(modalId) {
+                document.getElementById(modalId).style.display = 'flex';
+            }
+
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+                // Clear form errors/messages when closing modal
+                const messageArea = document.getElementById(modalId.replace('Modal', 'MessageArea'));
+                if (messageArea) messageArea.innerHTML = '';
+                const formErrors = document.querySelectorAll(`#${modalId} .form-error`);
+                formErrors.forEach(error => error.textContent = '');
+            }
+
+            if (editProfileBtn) {
+                editProfileBtn.onclick = () => openModal('editProfileModal');
+            }
+            if (changePasswordBtn) {
+                changePasswordBtn.onclick = () => openModal('changePasswordModal');
+            }
+            if (loginHistoryBtn) {
+                loginHistoryBtn.onclick = () => openModal('loginHistoryModal');
+            }
+
+            // Close modals when clicking outside of the content
+            window.addEventListener('click', function(event) {
+                if (event.target === editProfileModal) {
+                    closeModal('editProfileModal');
+                }
+                if (event.target === changePasswordModal) {
+                    closeModal('changePasswordModal');
+                }
+                if (event.target === loginHistoryModal) {
+                    closeModal('loginHistoryModal');
+                }
+            });
+
+            // Handle form submissions via AJAX (example for edit profile)
+            const editProfileForm = document.getElementById('editProfileForm');
+            if (editProfileForm) {
+                editProfileForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const messageArea = document.getElementById('editProfileMessageArea');
+                    const formErrors = document.querySelectorAll('#editProfileForm .form-error');
+                    formErrors.forEach(error => error.textContent = ''); // Clear previous errors
+                    messageArea.innerHTML = ''; // Clear previous messages
+
+                    try {
+                        const response = await fetch('{% url "main_site:edit_profile" %}', { // Assuming you have an edit_profile URL
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest', // Important for Django to recognize AJAX
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            messageArea.innerHTML = `<div class="message-area success">${data.message}</div>`;
+                            // Update displayed user info on the dashboard
+                            document.querySelector('.profile-info h2').textContent = data.username.charAt(0).toUpperCase() + data.username.slice(1);
+                            document.querySelector('.profile-info p:nth-child(2) span').textContent = data.email || 'Not set';
+                            document.querySelector('.info-item strong:nth-child(1) + span').textContent = data.username;
+                            document.querySelector('.info-item strong:nth-child(2) + span').textContent = data.email || 'Not set';
+                            // Optionally close modal after success
+                            // setTimeout(() => closeModal('editProfileModal'), 2000);
+                        } else {
+                            if (data.errors) {
+                                for (const fieldName in data.errors) {
+                                    const errorSpan = document.getElementById(`error_${fieldName}_edit`);
+                                    if (errorSpan) {
+                                        errorSpan.textContent = data.errors[fieldName].join(' ');
+                                    } else {
+                                        // Handle non-field errors or general form errors
+                                        messageArea.innerHTML = `<div class="message-area error">${data.errors[fieldName].join(' ')}</div>`;
+                                    }
+                                }
+                            } else {
+                                messageArea.innerHTML = `<div class="message-area error">${data.message || 'An unknown error occurred.'}</div>`;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        messageArea.innerHTML = `<div class="message-area error">An error occurred: ${error.message}</div>`;
+                    }
+                });
+            }
+
+            // Handle change password form submission via AJAX
+            const changePasswordForm = document.getElementById('changePasswordForm');
+            if (changePasswordForm) {
+                changePasswordForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const messageArea = document.getElementById('changePasswordMessageArea');
+                    const formErrors = document.querySelectorAll('#changePasswordForm .form-error');
+                    formErrors.forEach(error => error.textContent = ''); // Clear previous errors
+                    messageArea.innerHTML = ''; // Clear previous messages
+
+                    try {
+                        const response = await fetch('{% url "password_change" %}', { // Assuming you have a password_change URL
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            messageArea.innerHTML = `<div class="message-area success">${data.message}</div>`;
+                            this.reset(); // Clear form fields on success
+                            // Optionally close modal after success
+                            // setTimeout(() => closeModal('changePasswordModal'), 2000);
+                        } else {
+                            if (data.errors) {
+                                for (const fieldName in data.errors) {
+                                    const errorSpan = document.getElementById(`error_${fieldName}`);
+                                    if (errorSpan) {
+                                        errorSpan.textContent = data.errors[fieldName].join(' ');
+                                    } else {
+                                        messageArea.innerHTML = `<div class="message-area error">${data.errors[fieldName].join(' ')}</div>`;
+                                    }
+                                }
+                            } else {
+                                messageArea.innerHTML = `<div class="message-area error">${data.message || 'An unknown error occurred.'}</div>`;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        messageArea.innerHTML = `<div class="message-area error">An error occurred: ${error.message}</div>`;
+                    }
+                });
+            }
+
+            // Expose closeModal to global scope for onclick attribute on close buttons
+            window.closeModal = closeModal;
+        });
     </script>
 </body>
 </html>
