@@ -4,21 +4,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community - Pegumax Inc.</title>
+    <title>Community - Pegumax Inc. | Connect, Share, Innovate</title>
+    <meta name="description" content="Join the Pegumax Inc. community to connect with fellow innovators, share ideas, and collaborate on projects. Forums and discussions are coming soon!">
+    <meta name="keywords" content="Pegumax Inc. community, tech community, software community, innovation, collaboration, forums, discussions, user support">
+    
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        /* Styles specific to the community page content area */
+        /* Universal box-sizing for consistent layout */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* General Page Styles */
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #0d0d0d; /* Dark background */
+            color: #e0e0e0; /* Light text */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensures body takes at least full viewport height */
+            margin: 0;
+            line-height: 1.6; /* Improved readability */
+        }
+
+        main {
+            flex-grow: 1; /* Allows main content to take up available space */
+        }
+
+        .container {
+            max-width: 1200px; /* Max width for content on large screens */
+            margin: 0 auto; /* Center the container */
+            padding: 0 1.5rem; /* Responsive horizontal padding */
+        }
+
+        /* Header Styles (assuming these are in style.css, but adding basic responsive support) */
+        .page-header {
+            background-color: #1a1a1a;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .page-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #e0e0e0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+        }
+
+        .header-logo-img {
+            height: 2.5rem; /* Responsive height */
+            margin-right: 0.5rem;
+        }
+
+        .nav-toggle {
+            display: none; /* Hidden by default, shown on smaller screens */
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .hamburger-line {
+            display: block;
+            width: 1.5rem;
+            height: 0.125rem;
+            background-color: #00ffff;
+            margin: 0.25rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 1.5rem; /* Spacing between nav items */
+        }
+
+        .main-nav a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav a:hover {
+            color: #00ffff;
+        }
+
+        /* Community Hero Section */
         .community-hero-background {
             background-image: url("{% static 'img/img11.webp' %}");
             background-size: cover;
             background-position: center center;
-            background-attachment: fixed;
-            padding: 100px 0; /* Adjust padding as needed */
+            background-attachment: fixed; /* Parallax effect */
+            padding: 6.25rem 0; /* 100px */
             text-align: center;
             color: #fff;
             min-height: 50vh; /* Ensure it takes significant viewport height */
@@ -41,22 +137,160 @@
             position: relative;
             z-index: 2;
         }
-        .community-hero-background h2, .community-hero-background p { /* Keep text shadow for extra pop if needed */
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        .community-hero-background h1, 
+        .community-hero-background p { /* Keep text shadow for extra pop if needed */
+            text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0,0,0,0.7); /* 1px 1px 2px */
         }
-        .community-hero-background h2 .highlight {
-            text-shadow: 0 10px 8px rgba(0, 255, 255, 0.7), 0 0 12px rgba(0, 255, 255, 0.5);
+        .community-hero-background h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4.5rem; /* Adjusted from 48px to rem, made larger for hero */
+            letter-spacing: 0.625rem; /* 10px */
+            margin-bottom: 1rem;
+            color: #00ffff; /* Highlight color */
+            text-shadow: 0 0.625rem 0.5rem rgba(0, 255, 255, 0.7), 0 0 0.75rem rgba(0, 255, 255, 0.5); /* 10px 8px, 12px */
         }
-        .highlight {
-            letter-spacing:10px;
-            font-size: 48px;
+        .community-hero-background .section-intro {
+            font-size: 1.5rem; /* 1.5em */
+            margin-top: 1.25rem; /* 20px */
+            margin-bottom: 0.625rem; /* 10px */
+        }
+        .community-hero-background .tagline-small {
+            margin-top: 0.625rem; /* 10px */
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+
+        /* Site Footer Styles (consistent with other pages) */
+        .site-footer {
+            background-color: #1a1a1a;
+            color: #bbb;
+            padding: 1.25rem 1rem; /* Use rem for padding */
+            font-size: 0.85rem; /* Use rem for font size */
+            width: 100%; /* Ensure footer spans full width */
+        }
+        .site-footer .container {
+            max-width: 900px; /* Limit footer content width */
+            margin: 0 auto; /* Center footer content */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem; /* Space between elements */
+        }
+        .social-links {
+            margin-top: 0.5rem;
+            display: flex; /* Use flexbox for social links */
+            gap: 1rem; /* Space between social icons */
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            justify-content: center;
+        }
+        .social-links a {
+            color: #bbb;
+            font-size: 1.2rem; /* Use rem for icon size */
+            transition: color 0.3s ease;
+            text-decoration: none; /* Remove underline from social links */
+        }
+        .social-links a:hover {
+            color: #00ffff;
+        }
+        .contact-info {
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .contact-info a {
+            color: #bbb;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            color: #00ffff;
+        }
+
+        /* Media Queries for smaller screens */
+        @media (max-width: 768px) {
+            .page-header .main-nav {
+                display: none; /* Hide desktop nav */
+                width: 100%;
+                order: 2; /* Place below logo on mobile */
+            }
+            .page-header .nav-toggle {
+                display: block; /* Show hamburger icon */
+            }
+            .page-header .main-nav.is-open {
+                display: block; /* Show nav when open */
+            }
+            .page-header .main-nav ul {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            .header-logo-link {
+                font-size: 1.2rem;
+            }
+            .header-logo-img {
+                height: 2rem;
+            }
+
+            .community-hero-background {
+                padding: 4rem 0;
+                min-height: 40vh;
+            }
+            .community-hero-background h1 {
+                font-size: 3.5rem;
+                letter-spacing: 0.4rem;
+            }
+            .community-hero-background .section-intro {
+                font-size: 1.3rem;
+            }
+            .community-hero-background .tagline-small {
+                font-size: 1rem;
+            }
+
+            .site-footer {
+                font-size: 0.8rem;
+                padding: 1rem 0.8rem;
+            }
+            .social-links {
+                gap: 0.8rem;
+            }
+            .social-links a {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header .logo-link {
+                font-size: 1.1rem;
+            }
+            .page-header .logo-link img {
+                height: 1.8rem;
+            }
+
+            .community-hero-background {
+                padding: 3rem 0;
+                min-height: 30vh;
+            }
+            .community-hero-background h1 {
+                font-size: 2.5rem;
+                letter-spacing: 0.2rem;
+            }
+            .community-hero-background .section-intro {
+                font-size: 1.1rem;
+            }
+            .community-hero-background .tagline-small {
+                font-size: 0.9rem;
+            }
+            .site-footer .container {
+                padding: 0 1rem;
+            }
         }
     </style>
 </head>
 <body class="community-page">
     <header class="page-header">
         <div class="container">
-             <div class="logo-container">
+            <div class="logo-container">
                 <a href="{% url 'main_site:home' %}" class="header-logo-link">
                     <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="header-logo-img">
                     <span class="header-logo-text">Pegumax Inc.</span>
@@ -68,7 +302,7 @@
                 <span class="hamburger-line"></span>
             </button>
             <nav class="main-nav">
-                 <ul>
+                <ul>
                     <li><a href="{% url 'main_site:home' %}">Home</a></li>
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
@@ -81,7 +315,6 @@
                         <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
                     {% endif %}
                 </ul>
-                </ul>
             </nav>
         </div>
     </header>
@@ -89,20 +322,42 @@
     <main>
         <section id="community-main" class="community-hero-background js-scroll">
             <div class="container">
-                <h1 class="highlight">Pegumax</h1>
-                <p class="section-intro" style="font-size: 1.5em; margin-top: 20px;">Connect, Share, and Innovate Together!</p>
-                <p style="margin-top: 10px;">Forums, discussions, and collaborative projects are on the horizon.</p>
-                <h1 class="highlight">Static</h1>
+                <h1><span class="highlight">Pegumax</span> Community</h1>
+                <p class="section-intro">Connect, Share, and Innovate Together!</p>
+                <p class="tagline-small">Forums, discussions, and collaborative projects are on the horizon. Stay tuned!</p>
             </div>
         </section>
     </main>
 
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; <span id="current-year"></span> Pegumax Inc. All rights reserved.</p>
+            <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
+            <p>Empowering the human spirit through technological transcendence.</p>
+            <div class="social-links">
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+            </div>
+            <div class="contact-info">
+                <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
+                <p>123 Innovation Drive, Tech City, TX 75001</p>
+            </div>
         </div>
     </footer>
-    <!-- script.js already handles current-year -->
     <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Basic mobile navigation toggle (if not handled by style.css or script.js)
+        const navToggle = document.querySelector('.nav-toggle');
+        const mainNav = document.querySelector('.main-nav');
+
+        if (navToggle && mainNav) {
+            navToggle.addEventListener('click', () => {
+                mainNav.classList.toggle('is-open');
+                navToggle.setAttribute('aria-expanded', mainNav.classList.contains('is-open'));
+            });
+        }
+    </script>
 </body>
 </html>
