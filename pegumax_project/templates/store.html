@@ -20,11 +20,27 @@
             box-sizing: border-box;
         }
 
+        /* Root variables (assuming these are defined in style.css or globally) */
+        :root {
+            --bg-color: #0d0e12;
+            --bg-dark-1: #1a1c23;
+            --bg-dark-2: #22242b;
+            --card-bg: #16181d;
+            --text-color: #e0e0e0;
+            --text-light: #b0b0b0;
+            --highlight-color: #00efff;
+            --border-color: #333740;
+            --primary-font: 'Rajdhani', sans-serif;
+            --secondary-font: 'Orbitron', sans-serif;
+            --danger-color: #ff4d4f;
+            --success-color: #52c41a;
+        }
+
         /* General Page Styles */
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: #0d0e12; /* Assuming --bg-color from style.css */
-            color: #e0e0e0; /* Assuming --text-color from style.css */
+            font-family: var(--primary-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
             display: flex;
@@ -72,9 +88,9 @@
 
         /* Header Styles (unified for consistency) */
         .page-header {
-            background-color: #1a1a1a; /* Assuming --bg-dark-1 from style.css */
+            background-color: var(--bg-dark-1);
             padding: 1rem 0;
-            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1); /* Assuming --highlight-color */
+            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -86,16 +102,16 @@
             align-items: center;
         }
 
-        .header-logo-link {
+        .navbar-brand { /* Renamed for consistency */
             display: flex;
             align-items: center;
             text-decoration: none;
-            color: #e0e0e0; /* Assuming --text-color */
-            font-family: 'Orbitron', sans-serif; /* Assuming --secondary-font */
+            color: var(--text-color);
+            font-family: var(--secondary-font);
             font-size: 1.5rem;
         }
 
-        .header-logo-img {
+        .navbar-logo-img { /* Renamed for consistency */
             height: 2.5rem;
             margin-right: 0.5rem;
         }
@@ -112,90 +128,150 @@
             display: block;
             width: 1.5rem;
             height: 0.125rem;
-            background-color: #00ffff; /* Assuming --highlight-color */
+            background-color: var(--highlight-color);
             margin: 0.25rem 0;
             transition: all 0.3s ease;
         }
 
-        .main-nav ul {
+        .navbar-links { /* Renamed for consistency */
             list-style: none;
             margin: 0;
             padding: 0;
             display: flex;
-            gap: 1.5rem;
+            gap: 2.5rem; /* Increased spacing for desktop */
         }
 
-        .main-nav a {
-            color: #e0e0e0; /* Assuming --text-color */
+        .navbar-links a {
+            color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
-            /* Explicitly remove button-like styles from nav links */
-            background: none;
-            border: none;
-            padding: 0;
+            white-space: nowrap; /* Prevent text wrapping */
         }
 
-        .main-nav a:hover {
-            color: #00ffff; /* Assuming --highlight-color */
+        .navbar-links a:hover {
+            color: var(--highlight-color);
+        }
+
+        /* Specific styles for auth links that might be hidden */
+        .nav-auth-item {
+            display: list-item; /* Default to visible */
+        }
+
+        /* More menu wrapper */
+        .more-menu-wrapper {
+            position: relative;
+            display: none; /* Hidden by default, shown in specific breakpoint */
+        }
+
+        .more-toggle {
+            background-color: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem; /* Size of the "..." icon */
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .more-toggle:hover {
+            color: var(--highlight-color);
+        }
+
+        .more-dropdown-content {
+            display: none; /* Hidden by default, toggled by JS */
+            position: absolute;
+            background-color: var(--card-bg);
+            min-width: 10rem;
+            box-shadow: 0px 0.5rem 1rem 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 0.3rem;
+            overflow: hidden;
+            top: calc(100% + 0.5rem); /* Position below the button */
+            right: 0; /* Align to the right of the button */
+            border: 0.0625rem solid var(--border-color);
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .more-dropdown-content li a {
+            color: var(--text-color);
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            font-family: var(--primary-font);
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            white-space: nowrap; /* Ensure dropdown items don't wrap */
+        }
+
+        .more-dropdown-content li a:hover {
+            background-color: var(--bg-dark-2);
+            color: var(--highlight-color);
+        }
+
+        .more-menu-wrapper.active .more-dropdown-content {
+            display: block;
         }
 
         /* Store Page Specific Content Styling */
         #store-main h2 {
-            font-family: 'Orbitron', sans-serif;
+            font-family: var(--secondary-font);
             font-size: 3.5rem; /* Larger for hero section */
-            color: #e0e0e0; /* text-color */
+            color: var(--text-color);
             margin-bottom: 1rem;
         }
 
         #store-main h2 .highlight {
-            color: #00ffff; /* highlight-color */
+            color: var(--highlight-color);
         }
 
         #store-main .section-intro {
-            font-size: 1.5rem; /* 1.5em */
-            margin-top: 1.25rem; /* 20px */
-            margin-bottom: 0.625rem; /* 10px */
-            color: #ccc;
+            font-size: 1.5rem;
+            margin-top: 1.25rem;
+            margin-bottom: 0.625rem;
+            color: var(--text-light);
         }
 
         #store-main p {
             font-size: 1.1rem;
-            margin-top: 0.625rem; /* 10px */
-            color: #bbb;
+            margin-top: 0.625rem;
+            color: var(--text-light);
         }
 
         /* Site Footer Styles (consistent with other pages) */
         .site-footer {
-            background-color: #1a1a1a;
-            color: #bbb;
-            padding: 1.25rem 1rem; /* Use rem for padding */
-            font-size: 0.85rem; /* Use rem for font size */
-            width: 100%; /* Ensure footer spans full width */
+            background-color: var(--bg-dark-1);
+            color: var(--text-light);
+            padding: 1.25rem 1rem;
+            font-size: 0.85rem;
+            width: 100%;
         }
         .site-footer .container {
-            max-width: 900px; /* Limit footer content width */
-            margin: 0 auto; /* Center footer content */
+            max-width: 900px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem; /* Space between elements */
+            gap: 0.5rem;
         }
         .social-links {
             margin-top: 0.5rem;
-            display: flex; /* Use flexbox for social links */
-            gap: 1rem; /* Space between social icons */
-            flex-wrap: wrap; /* Allow wrapping on small screens */
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
             justify-content: center;
         }
         .social-links a {
-            color: #bbb;
-            font-size: 1.2rem; /* Use rem for icon size */
+            color: inherit;
+            font-size: 1.2rem;
             transition: color 0.3s ease;
-            text-decoration: none; /* Remove underline from social links */
+            text-decoration: none;
         }
         .social-links a:hover {
-            color: #00ffff;
+            color: var(--highlight-color);
         }
         .contact-info {
             margin-top: 0.5rem;
@@ -205,34 +281,65 @@
             gap: 0.25rem;
         }
         .contact-info a {
-            color: #bbb;
+            color: inherit;
             text-decoration: none;
         }
         .contact-info a:hover {
-            color: #00ffff;
+            color: var(--highlight-color);
         }
 
         /* Media Queries for responsiveness */
+        @media (max-width: 1200px) {
+            .navbar-links {
+                gap: 1.5rem; /* Reduce gap for slightly smaller screens */
+            }
+            .navbar-links a {
+                font-size: 0.95rem; /* Shrink font to fit more items */
+            }
+
+            /* Hide login/signup/account from main nav and show in 'more' menu */
+            .nav-auth-item {
+                display: none;
+            }
+            .more-menu-wrapper {
+                display: block; /* Show the '...' button */
+            }
+        }
+
         @media (max-width: 768px) {
-            .page-header .main-nav {
+            .page-header .container {
+                flex-wrap: wrap; /* Allow logo and toggle to wrap */
+            }
+            .page-header .navbar-brand {
+                flex-grow: 1; /* Allow brand to take space */
+            }
+            .page-header .navbar-links {
                 display: none; /* Hide desktop nav */
                 width: 100%;
                 order: 2; /* Place below logo on mobile */
+                flex-direction: column; /* Stack vertically in mobile menu */
+                text-align: center;
+                gap: 0.5rem; /* Smaller gap for stacked items */
             }
             .page-header .nav-toggle {
                 display: block; /* Show hamburger icon */
             }
-            .page-header .main-nav.is-open {
+            .page-header .navbar-links.is-open {
                 display: flex; /* Show nav when open */
-                flex-direction: column;
-                text-align: center;
-                gap: 0.5rem;
             }
-            .header-logo-link {
+            .navbar-brand {
                 font-size: 1.2rem;
             }
-            .header-logo-img {
+            .navbar-logo-img {
                 height: 2rem;
+            }
+            /* Ensure auth items are visible in the mobile menu */
+            .nav-auth-item {
+                display: list-item; 
+            }
+            /* Hide the 'more' menu wrapper when hamburger is active */
+            .more-menu-wrapper {
+                display: none;
             }
 
             #store-main h2 {
@@ -258,10 +365,10 @@
         }
 
         @media (max-width: 480px) {
-            .header-logo-link {
+            .navbar-brand {
                 font-size: 1.1rem;
             }
-            .header-logo-img {
+            .navbar-logo-img {
                 height: 1.8rem;
             }
 
@@ -284,8 +391,8 @@
     <header class="page-header">
         <div class="container">
             <div class="logo-container">
-                <a href="{% url 'main_site:home' %}" class="header-logo-link">
-                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="header-logo-img">
+                <a href="{% url 'main_site:home' %}" class="navbar-brand">
+                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
                     <span class="header-logo-text">Pegumax Inc.</span>
                 </a>
             </div>
@@ -294,13 +401,23 @@
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
             </button>
-            <nav class="main-nav">
+            <nav class="navbar-links">
                 <ul>
-                    <li><a href="{% url 'main_site:home' %}">Home</a></li>
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-auth-item"><a href="{% url 'main_site:account' %}">Account</a></li>
+                    {% else %}
+                        <li class="nav-auth-item"><a href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-auth-item"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <div class="more-menu-wrapper">
+                <button class="more-toggle" aria-label="More navigation links" aria-expanded="false" onclick="toggleMoreDropdown(event)">...</button>
+                <ul class="more-dropdown-content">
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'main_site:account' %}">Account</a></li>
                     {% else %}
@@ -308,7 +425,7 @@
                         <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
                     {% endif %}
                 </ul>
-            </nav>
+            </div>
         </div>
     </header>
 
@@ -330,7 +447,7 @@
                 <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
             </div>
             <div class="contact-info">
-                <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
+                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p>
                 <p>123 Innovation Drive, Tech City, TX 75001</p>
             </div>
         </div>
@@ -342,15 +459,33 @@
 
             // Mobile navigation toggle
             const navToggle = document.querySelector('.nav-toggle');
-            const mainNav = document.querySelector('.main-nav');
+            const navbarLinks = document.querySelector('.navbar-links'); // Renamed for consistency
 
-            if (navToggle && mainNav) {
+            if (navToggle && navbarLinks) {
                 navToggle.addEventListener('click', () => {
                     const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
                     navToggle.setAttribute('aria-expanded', !expanded);
-                    mainNav.classList.toggle('is-open'); // Use 'is-open' for consistency
+                    navbarLinks.classList.toggle('is-open');
                 });
             }
+
+            // More menu dropdown toggle function (copied from index.html)
+            function toggleMoreDropdown(event) {
+                event.stopPropagation(); // Prevent document click from immediately closing
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                moreWrapper.classList.toggle('active'); // Toggle 'active' class to show/hide dropdown
+            }
+
+            // Close dropdowns when clicking outside (copied from index.html)
+            window.addEventListener('click', function(event) {
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                if (moreWrapper && moreWrapper.classList.contains('active') && !moreWrapper.contains(event.target)) {
+                    moreWrapper.classList.remove('active');
+                }
+            });
+
+            // Expose toggleMoreDropdown to global scope for onclick attribute
+            window.toggleMoreDropdown = toggleMoreDropdown;
         });
     </script>
 </body>
