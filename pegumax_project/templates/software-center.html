@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,11 +20,27 @@
             box-sizing: border-box;
         }
 
+        /* Root variables (assuming these are defined in style.css or globally) */
+        :root {
+            --bg-color: #0d0e12;
+            --bg-dark-1: #1a1c23;
+            --bg-dark-2: #22242b;
+            --card-bg: #16181d;
+            --text-color: #e0e0e0;
+            --text-light: #b0b0b0;
+            --highlight-color: #00efff;
+            --border-color: #333740;
+            --primary-font: 'Rajdhani', sans-serif;
+            --secondary-font: 'Orbitron', sans-serif;
+            --danger-color: #ff4d4f;
+            --success-color: #52c41a;
+        }
+
         /* General Page Styles */
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: #0d0e12; /* Assuming --bg-color from style.css */
-            color: #e0e0e0; /* Assuming --text-color from style.css */
+            font-family: var(--primary-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
             display: flex;
@@ -46,9 +61,9 @@
 
         /* Header Styles (unified for consistency) */
         .page-header {
-            background-color: #1a1a1a; /* Assuming --bg-dark-1 from style.css */
+            background-color: var(--bg-dark-1);
             padding: 1rem 0;
-            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1); /* Assuming --highlight-color */
+            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -60,16 +75,16 @@
             align-items: center;
         }
 
-        .header-logo-link {
+        .navbar-brand { /* Renamed for consistency */
             display: flex;
             align-items: center;
             text-decoration: none;
-            color: #e0e0e0; /* Assuming --text-color */
-            font-family: 'Orbitron', sans-serif; /* Assuming --secondary-font */
+            color: var(--text-color);
+            font-family: var(--secondary-font);
             font-size: 1.5rem;
         }
 
-        .header-logo-img {
+        .navbar-logo-img { /* Renamed for consistency */
             height: 2.5rem;
             margin-right: 0.5rem;
         }
@@ -86,65 +101,160 @@
             display: block;
             width: 1.5rem;
             height: 0.125rem;
-            background-color: #00ffff; /* Assuming --highlight-color */
+            background-color: var(--highlight-color);
             margin: 0.25rem 0;
             transition: all 0.3s ease;
         }
 
-        .main-nav ul {
+        .navbar-links { /* Renamed for consistency */
             list-style: none;
             margin: 0;
             padding: 0;
             display: flex;
-            gap: 1.5rem;
+            gap: 2.5rem; /* Increased spacing for desktop */
         }
 
-        .main-nav a {
-            color: #e0e0e0; /* Assuming --text-color */
+        .navbar-links a {
+            color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
-            /* Explicitly remove button-like styles from nav links */
-            background: none;
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        .navbar-links a:hover {
+            color: var(--highlight-color);
+        }
+
+        /* Specific styles for auth links that might be hidden */
+        .nav-auth-item {
+            display: list-item; /* Default to visible */
+        }
+
+        /* More menu wrapper */
+        .more-menu-wrapper {
+            position: relative;
+            display: none; /* Hidden by default, shown in specific breakpoint */
+        }
+
+        .more-toggle {
+            background-color: transparent;
             border: none;
+            color: var(--text-color);
+            font-size: 1.5rem; /* Size of the "..." icon */
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .more-toggle:hover {
+            color: var(--highlight-color);
+        }
+
+        .more-dropdown-content {
+            display: none; /* Hidden by default, toggled by JS */
+            position: absolute;
+            background-color: var(--card-bg);
+            min-width: 10rem;
+            box-shadow: 0px 0.5rem 1rem 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 0.3rem;
+            overflow: hidden;
+            top: calc(100% + 0.5rem); /* Position below the button */
+            right: 0; /* Align to the right of the button */
+            border: 0.0625rem solid var(--border-color);
+            list-style: none;
             padding: 0;
+            margin: 0;
         }
 
-        .main-nav a:hover {
-            color: #00ffff; /* Assuming --highlight-color */
+        .more-dropdown-content li a {
+            color: var(--text-color);
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            font-family: var(--primary-font);
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            white-space: nowrap; /* Ensure dropdown items don't wrap */
         }
 
-        /* Software Center Specific Styles */
+        .more-dropdown-content li a:hover {
+            background-color: var(--bg-dark-2);
+            color: var(--highlight-color);
+        }
+
+        .more-menu-wrapper.active .more-dropdown-content {
+            display: block;
+        }
+
+        /* New Hero Section for Software Center */
+        .software-hero-section {
+            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/img11.webp' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            padding: 6.25rem 0; /* 100px */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 25rem; /* Minimum height for the hero section */
+        }
+
+        .software-hero-section h1 {
+            font-family: var(--secondary-font);
+            font-size: 3.5rem; /* Large heading */
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .software-hero-section h1 .highlight {
+            color: var(--highlight-color);
+        }
+
+        .software-hero-section .section-intro {
+            max-width: 900px;
+            margin: 1.5rem auto 0 auto; /* Adjust margin for hero intro */
+            font-size: 1.1rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        /* Software Center Specific Styles (adjusted to be a content section) */
         #software-center-main .content-section {
             padding: 2.5rem 0 4rem 0; /* 40px top, 64px bottom */
             min-height: 70vh; /* Ensure section has some height on load */
-            background-color: #0d0e12; /* Assuming --bg-color */
+            background-color: var(--bg-color); /* Assuming --bg-color */
         }
 
         h2 {
-            font-family: 'Orbitron', sans-serif; /* Assuming --secondary-font */
+            font-family: var(--secondary-font);
             font-size: 2.8rem;
-            color: #e0e0e0; /* Assuming --text-color */
+            color: var(--text-color);
             margin-bottom: 1.5rem;
             text-align: center;
         }
 
         h2 .highlight {
-            color: #00ffff; /* Assuming --highlight-color */
+            color: var(--highlight-color);
         }
 
         .section-intro {
             max-width: 800px;
             margin: 0 auto 2.5rem auto; /* 40px */
             font-size: 1.1rem;
-            color: #b0b0b0; /* Assuming --text-light */
+            color: var(--text-light);
             text-align: center;
         }
 
         .cta-button {
             display: inline-block;
-            background-color: #00ffff; /* Assuming --highlight-color */
-            color: #0d0e12; /* Assuming --bg-color */
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
             padding: 0.75rem 1.5rem;
             border-radius: 0.3rem;
             text-decoration: none;
@@ -175,17 +285,17 @@
             border: none;
             background-color: transparent;
             color: #ccc;
-            font-family: 'Rajdhani', sans-serif;
+            font-family: var(--primary-font);
             font-size: 1.1rem; /* 1.1em */
             transition: color 0.3s, border-bottom 0.3s;
             white-space: nowrap; /* Prevent text wrapping within tab link */
         }
         .tab-link:hover:not(.active) {
-            color: #e0e0e0;
+            color: var(--text-color);
         }
         .tab-link.active {
-            color: #00ffff; /* Highlight color */
-            border-bottom: 0.125rem solid #00ffff; /* 2px */
+            color: var(--highlight-color);
+            border-bottom: 0.125rem solid var(--highlight-color); /* 2px */
         }
         .tab-content {
             display: none; /* Hide inactive tabs */
@@ -207,8 +317,8 @@
             margin-top: 1.25rem; /* 20px */
         }
         .software-card {
-            background-color: #1a1a1a; /* Darker card background */
-            border: 0.0625rem solid #333;
+            background-color: var(--bg-dark-1); /* Darker card background */
+            border: 0.0625rem solid var(--border-color);
             border-radius: 0.5rem; /* 8px */
             padding: 1.25rem; /* 20px */
             text-align: center;
@@ -224,33 +334,33 @@
         .software-card:hover {
             transform: translateY(-0.3125rem); /* 5px */
             box-shadow: 0 0.625rem 1.25rem rgba(0, 255, 255, 0.2); /* 10px 20px */
-            border-color: #00ffff; /* Highlight border on hover */
+            border-color: var(--highlight-color); /* Highlight border on hover */
         }
         .software-card.coming-soon:hover {
             transform: none; /* No transform for coming soon */
             box-shadow: none;
-            border-color: #333; /* No highlight border for coming soon */
+            border-color: var(--border-color); /* No highlight border for coming soon */
         }
         .software-card .card-icon {
             font-size: 3rem; /* 3em */
-            color: #00ffff; /* Highlight color */
+            color: var(--highlight-color);
             margin-bottom: 0.9375rem; /* 15px */
         }
         .software-card h4 {
-            color: #00ffff; /* Highlight color */
-            font-family: 'Orbitron', sans-serif; /* Secondary font */
+            color: var(--highlight-color);
+            font-family: var(--secondary-font);
             font-size: 1.25rem; /* 20px */
             margin-bottom: 0.625rem; /* 10px */
         }
         .software-card p {
             font-size: 0.9rem; /* 0.9em */
-            color: #bbb;
+            color: var(--text-light);
             margin-bottom: 0.9375rem; /* 15px */
             flex-grow: 1; /* Allow description to grow and push status to bottom */
         }
         .software-card .status {
             font-weight: bold;
-            color: #ffae00; /* Orange for "Coming Soon" */
+            color: var(--warning-color); /* Orange for "Coming Soon" */
             font-size: 0.9rem;
             margin-top: auto; /* Push to bottom */
         }
@@ -282,10 +392,10 @@
             padding: 1.25rem; /* 20px */
         }
         .modal-content {
-            background-color: #2a2a30; /* Darker background for modal */
+            background-color: var(--bg-dark-2); /* Darker background for modal */
             padding: 1.875rem; /* 30px */
             border-radius: 0.5rem; /* 8px */
-            color: #e0e0e0;
+            color: var(--text-color);
             width: 100%;
             max-width: 34.375rem; /* 550px */
             text-align: center;
@@ -295,8 +405,8 @@
             overflow-y: auto;
         }
         .modal-content h3 {
-            color: #00ffff; /* Highlight color */
-            font-family: 'Orbitron', sans-serif;
+            color: var(--highlight-color);
+            font-family: var(--secondary-font);
             margin-top: 0;
             margin-bottom: 1.25rem; /* 20px */
             font-size: 1.8rem;
@@ -306,12 +416,12 @@
             top: 0.625rem; /* 10px */
             right: 0.9375rem; /* 15px */
             font-size: 1.8rem; /* 1.8em */
-            color: #777;
+            color: var(--text-light);
             cursor: pointer;
             transition: color 0.3s ease;
         }
         .close-modal-btn:hover {
-            color: #fff;
+            color: var(--text-color);
         }
         .form-group {
             margin-bottom: 0.9375rem; /* 15px */
@@ -320,22 +430,22 @@
         .form-group label {
             display: block;
             margin-bottom: 0.3125rem; /* 5px */
-            color: #ccc;
+            color: var(--text-light);
             font-weight: 500;
             font-size: 0.95rem;
         }
         .form-control-dark {
             width: 100%;
             padding: 0.625rem 0.75rem; /* 10px 12px */
-            background-color: #1a1a1d; /* Darker input background */
-            border: 0.0625rem solid #444;
-            color: #e0e0e0;
+            background-color: var(--bg-dark-1); /* Darker input background */
+            border: 0.0625rem solid var(--border-color);
+            color: var(--text-color);
             border-radius: 0.25rem; /* 4px */
             box-sizing: border-box;
             font-size: 1rem;
         }
         .form-control-dark:focus {
-            border-color: #00ffff;
+            border-color: var(--highlight-color);
             outline: none;
             box-shadow: 0 0 0 0.125rem rgba(0, 255, 255, 0.25); /* 0.2rem */
         }
@@ -345,8 +455,8 @@
         }
         .btn { /* General button style for modals */
             display: inline-block;
-            background-color: #00ffff;
-            color: #0d0e12;
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
             padding: 0.75rem 1.5rem;
             border-radius: 0.3rem;
             text-decoration: none;
@@ -369,41 +479,41 @@
             text-align: center;
             font-size: 0.95rem;
         }
-        .modal-message-area.success { background-color: rgba(82, 196, 26, 0.2); color: #52c41a; border: 0.0625rem solid #52c41a; }
-        .modal-message-area.error { background-color: rgba(255, 77, 79, 0.2); color: #ff4d4f; border: 0.0625rem solid #ff4d4f; }
+        .modal-message-area.success { background-color: rgba(82, 196, 26, 0.2); color: var(--success-color); border: 0.0625rem solid var(--success-color); }
+        .modal-message-area.error { background-color: rgba(255, 77, 79, 0.2); color: var(--danger-color); border: 0.0625rem solid var(--danger-color); }
 
 
         /* Site Footer Styles (consistent with other pages) */
         .site-footer {
-            background-color: #1a1a1a;
-            color: #bbb;
-            padding: 1.25rem 1rem; /* Use rem for padding */
-            font-size: 0.85rem; /* Use rem for font size */
-            width: 100%; /* Ensure footer spans full width */
+            background-color: var(--bg-dark-1);
+            color: var(--text-light);
+            padding: 1.25rem 1rem;
+            font-size: 0.85rem;
+            width: 100%;
         }
         .site-footer .container {
-            max-width: 900px; /* Limit footer content width */
-            margin: 0 auto; /* Center footer content */
+            max-width: 900px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem; /* Space between elements */
+            gap: 0.5rem;
         }
         .social-links {
             margin-top: 0.5rem;
-            display: flex; /* Use flexbox for social links */
-            gap: 1rem; /* Space between social icons */
-            flex-wrap: wrap; /* Allow wrapping on small screens */
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
             justify-content: center;
         }
         .social-links a {
-            color: #bbb;
-            font-size: 1.2rem; /* Use rem for icon size */
+            color: inherit;
+            font-size: 1.2rem;
             transition: color 0.3s ease;
-            text-decoration: none; /* Remove underline from social links */
+            text-decoration: none;
         }
         .social-links a:hover {
-            color: #00ffff;
+            color: var(--highlight-color);
         }
         .contact-info {
             margin-top: 0.5rem;
@@ -413,34 +523,77 @@
             gap: 0.25rem;
         }
         .contact-info a {
-            color: #bbb;
+            color: inherit;
             text-decoration: none;
         }
         .contact-info a:hover {
-            color: #00ffff;
+            color: var(--highlight-color);
         }
 
         /* Media Queries for responsiveness */
+        @media (max-width: 1200px) {
+            .navbar-links {
+                gap: 1.5rem; /* Reduce gap for slightly smaller screens */
+            }
+            .navbar-links a {
+                font-size: 0.95rem; /* Shrink font to fit more items */
+            }
+
+            /* Hide login/signup/account from main nav and show in 'more' menu */
+            .nav-auth-item {
+                display: none;
+            }
+            .more-menu-wrapper {
+                display: block; /* Show the '...' button */
+            }
+        }
+
         @media (max-width: 768px) {
-            .page-header .main-nav {
+            .page-header .container {
+                flex-wrap: wrap; /* Allow logo and toggle to wrap */
+            }
+            .page-header .navbar-brand {
+                flex-grow: 1; /* Allow brand to take space */
+            }
+            .page-header .navbar-links {
                 display: none; /* Hide desktop nav */
                 width: 100%;
                 order: 2; /* Place below logo on mobile */
+                flex-direction: column; /* Stack vertically in mobile menu */
+                text-align: center;
+                gap: 0.5rem; /* Smaller gap for stacked items */
             }
             .page-header .nav-toggle {
                 display: block; /* Show hamburger icon */
             }
-            .page-header .main-nav.is-open {
+            .page-header .navbar-links.is-open {
                 display: flex; /* Show nav when open */
-                flex-direction: column;
-                text-align: center;
-                gap: 0.5rem;
             }
-            .header-logo-link {
+            .navbar-brand {
                 font-size: 1.2rem;
             }
-            .header-logo-img {
+            .navbar-logo-img {
                 height: 2rem;
+            }
+            /* Ensure auth items are visible in the mobile menu */
+            .nav-auth-item {
+                display: list-item; 
+            }
+            /* Hide the 'more' menu wrapper when hamburger is active */
+            .more-menu-wrapper {
+                display: none;
+            }
+
+            .software-hero-section {
+                padding: 4rem 0;
+                min-height: 20rem;
+            }
+            .software-hero-section h1 {
+                font-size: 2.8rem;
+            }
+            .software-hero-section .section-intro {
+                font-size: 1rem;
+                margin-top: 1rem;
             }
 
             #software-center-main .content-section {
@@ -528,11 +681,23 @@
         }
 
         @media (max-width: 480px) {
-            .header-logo-link {
+            .navbar-brand {
                 font-size: 1.1rem;
             }
-            .header-logo-img {
+            .navbar-logo-img {
                 height: 1.8rem;
+            }
+
+            .software-hero-section {
+                padding: 3rem 0;
+                min-height: 18rem;
+            }
+            .software-hero-section h1 {
+                font-size: 2.2rem;
+            }
+            .software-hero-section .section-intro {
+                font-size: 0.9rem;
+                margin-top: 0.8rem;
             }
 
             h2 {
@@ -577,8 +742,8 @@
     <header class="page-header">
         <div class="container">
             <div class="logo-container">
-                <a href="{% url 'main_site:home' %}" class="header-logo-link">
-                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="header-logo-img">
+                <a href="{% url 'main_site:home' %}" class="navbar-brand">
+                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
                     <span class="header-logo-text">Pegumax Inc.</span>
                 </a>
             </div>
@@ -587,13 +752,23 @@
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
             </button>
-            <nav class="main-nav">
+            <nav class="navbar-links">
                 <ul>
-                    <li><a href="{% url 'main_site:home' %}">Home</a></li>
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-auth-item"><a href="{% url 'main_site:account' %}">Account</a></li>
+                    {% else %}
+                        <li class="nav-auth-item"><a href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-auth-item"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            <div class="more-menu-wrapper">
+                <button class="more-toggle" aria-label="More navigation links" aria-expanded="false" onclick="toggleMoreDropdown(event)">...</button>
+                <ul class="more-dropdown-content">
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'main_site:account' %}">Account</a></li>
                     {% else %}
@@ -601,15 +776,20 @@
                         <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
                     {% endif %}
                 </ul>
-            </nav>
+            </div>
         </div>
     </header>
 
     <main id="software-center-main" class="js-scroll">
+        <section class="software-hero-section">
+            <div class="container">
+                <h1>Pegumax <span class="highlight">Software Center</span></h1>
+                <p class="section-intro">Explore our innovative tools, powerful suites, and engaging games designed to elevate your digital experience.</p>
+            </div>
+        </section>
+
         <section class="content-section">
             <div class="container">
-                <h2>Pegumax <span class="highlight">Software Center</span></h2>
-                <p class="section-intro">Explore our innovative tools, powerful suites, and engaging games designed to elevate your digital experience.</p>
                 <div style="text-align: center; margin-bottom: 1.875rem;"> {# 30px #}
                     <button class="cta-button" onclick="openSubmitIdeaForm()">Got an Idea? Submit It!</button>
                 </div>
@@ -765,7 +945,7 @@
                         <label for="interest-wants">Are there any specific types of tools or software you'd be most excited to see included?</label>
                         <textarea id="interest-wants" name="interest-wants" rows="3" class="form-control-dark" placeholder="e.g., Advanced video editors, specific game genres, AI-powered utilities..."></textarea>
                     </div>
-                    <button type="submit" class="btn" style="width: 100%; margin-top:0.9375rem;">Submit Feedback</button> {# 15px #}
+                    <button type="submit" class="btn" style="width: 100%; margin-top:0.9375rem;">Submit Interest</button>
                 </form>
             </div>
         </div>
@@ -781,7 +961,7 @@
                 <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
             </div>
             <div class="contact-info">
-                <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
+                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p>
                 <p>123 Innovation Drive, Tech City, TX 75001</p>
             </div>
         </div>
@@ -794,17 +974,37 @@
 
             // Mobile navigation toggle
             const navToggle = document.querySelector('.nav-toggle');
-            const mainNav = document.querySelector('.main-nav');
+            const navbarLinks = document.querySelector('.navbar-links');
 
-            if (navToggle && mainNav) {
+            if (navToggle && navbarLinks) {
                 navToggle.addEventListener('click', () => {
-                    mainNav.classList.toggle('is-open');
-                    navToggle.setAttribute('aria-expanded', mainNav.classList.contains('is-open'));
+                    const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+                    navToggle.setAttribute('aria-expanded', !expanded);
+                    navbarLinks.classList.toggle('is-open');
                 });
             }
 
-            // Tab functionality
-            function openTab(evt, tabName) {
+            // More menu dropdown toggle function
+            function toggleMoreDropdown(event) {
+                event.stopPropagation(); // Prevent document click from immediately closing
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                moreWrapper.classList.toggle('active'); // Toggle 'active' class to show/hide dropdown
+            }
+
+            // Close dropdowns when clicking outside
+            window.addEventListener('click', function(event) {
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                if (moreWrapper && moreWrapper.classList.contains('active') && !moreWrapper.contains(event.target)) {
+                    moreWrapper.classList.remove('active');
+                }
+            });
+
+            // Expose toggleMoreDropdown to global scope for onclick attribute
+            window.toggleMoreDropdown = toggleMoreDropdown;
+
+
+            // Function to open a specific tab
+            window.openTab = function(evt, tabName) {
                 var i, tabcontent, tablinks;
                 tabcontent = document.getElementsByClassName("tab-content");
                 for (i = 0; i < tabcontent.length; i++) {
@@ -817,133 +1017,128 @@
                 document.getElementById(tabName).style.display = "block";
                 evt.currentTarget.className += " active";
 
-                // Populate "All" tab dynamically
+                // Populate 'All' tab if it's the active one
                 if (tabName === 'all') {
-                    const allSoftwareGrid = document.querySelector('#all .software-grid');
-                    allSoftwareGrid.innerHTML = ''; // Clear existing content
-
-                    const toolCards = Array.from(document.querySelectorAll('#tools .software-card'));
-                    const suiteCards = Array.from(document.querySelectorAll('#suites .software-card'));
-                    const gameCards = Array.from(document.querySelectorAll('#games .software-card'));
-
-                    // Clone and append all cards
-                    toolCards.forEach(card => allSoftwareGrid.appendChild(card.cloneNode(true)));
-                    suiteCards.forEach(card => allSoftwareGrid.appendChild(card.cloneNode(true)));
-                    gameCards.forEach(card => allSoftwareGrid.appendChild(card.cloneNode(true)));
+                    populateAllTab();
                 }
+            };
+
+            // Function to populate the 'All' tab
+            function populateAllTab() {
+                const allTabGrid = document.querySelector('#all .software-grid');
+                allTabGrid.innerHTML = ''; // Clear existing content
+
+                const tools = Array.from(document.querySelectorAll('#tools .software-card'));
+                const suites = Array.from(document.querySelectorAll('#suites .software-card'));
+                const games = Array.from(document.querySelectorAll('#games .software-card'));
+
+                // Combine all cards and append them to the 'All' tab
+                const allCards = [...tools, ...suites, ...games];
+                allCards.forEach(card => {
+                    allTabGrid.appendChild(card.cloneNode(true)); // Clone to avoid moving elements
+                });
             }
 
-            // Initial tab load (show "All" tab by default)
-            const initialTabLink = document.querySelector('.tab-link.active');
-            if (initialTabLink) {
-                openTab({ currentTarget: initialTabLink }, 'all');
-            }
+            // Initial load: Open 'All' tab and populate it
+            populateAllTab();
+            // No need to explicitly click 'all' tab if populateAllTab is called on DOMContentLoaded
+            // document.querySelector('.tab-link.active').click(); // This line might be redundant if 'all' is default active
 
-            // Modal functions for Submit Idea
+            // Modal functions for "Submit Idea" and "Subscription Interest"
             window.openSubmitIdeaForm = function() {
                 document.getElementById('submit-idea-popup').style.display = 'flex';
-                document.getElementById('submitIdeaMessageArea').style.display = 'none'; // Hide messages on open
-                document.getElementById('submit-idea-form').reset(); // Clear form
+                document.getElementById('submitIdeaMessageArea').style.display = 'none'; // Clear previous messages
+                document.getElementById('submit-idea-form').reset(); // Clear form fields
             };
 
             window.closeSubmitIdeaForm = function() {
                 document.getElementById('submit-idea-popup').style.display = 'none';
             };
 
-            document.getElementById('submit-idea-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const form = e.target;
-                const formData = new FormData(form);
-                const messageArea = document.getElementById('submitIdeaMessageArea');
-
-                messageArea.style.display = 'block';
-                messageArea.className = 'modal-message-area'; // Reset classes
-                messageArea.textContent = 'Submitting idea...';
-
-                fetch(form.action, { // Assuming form.action is correctly set by Django
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        messageArea.textContent = data.message;
-                        messageArea.classList.add('success');
-                        setTimeout(() => {
-                            closeSubmitIdeaForm();
-                            messageArea.style.display = 'none';
-                        }, 2000);
-                    } else {
-                        messageArea.textContent = data.message || 'Error submitting idea.';
-                        messageArea.classList.add('error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    messageArea.textContent = 'An error occurred. Please try again.';
-                    messageArea.classList.add('error');
-                });
-            });
-
-            // Modal functions for Subscription Interest
             window.openSubscriptionInterestForm = function() {
                 document.getElementById('subscription-popup').style.display = 'none'; // Close the first popup
                 document.getElementById('subscription-interest-popup').style.display = 'flex';
-                document.getElementById('subscriptionInterestMessageArea').style.display = 'none'; // Hide messages on open
-                document.getElementById('subscription-interest-form').reset(); // Clear form
+                document.getElementById('subscriptionInterestMessageArea').style.display = 'none'; // Clear previous messages
+                document.getElementById('subscription-interest-form').reset(); // Clear form fields
             };
 
             window.closeSubscriptionInterestForm = function() {
                 document.getElementById('subscription-interest-popup').style.display = 'none';
             };
 
-            document.getElementById('subscription-interest-form').addEventListener('submit', function(e) {
+            // Handle form submission for Submit Idea
+            document.getElementById('submit-idea-form').addEventListener('submit', function(e) {
                 e.preventDefault();
-                const form = e.target;
+                const form = this;
                 const formData = new FormData(form);
-                const messageArea = document.getElementById('subscriptionInterestMessageArea');
+                const messageArea = document.getElementById('submitIdeaMessageArea');
+                messageArea.style.display = 'none'; // Hide message area initially
 
-                messageArea.style.display = 'block';
-                messageArea.className = 'modal-message-area'; // Reset classes
-                messageArea.textContent = 'Submitting feedback...';
-
-                // You'll need a Django URL for this form submission as well
-                fetch("{% url 'main_site:submit_subscription_interest' %}", { // Placeholder URL
+                fetch("{% url 'main_site:submit_idea' %}", {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                        'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value
                     }
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         messageArea.textContent = data.message;
-                        messageArea.classList.add('success');
-                        setTimeout(() => {
-                            closeSubscriptionInterestForm();
-                            messageArea.style.display = 'none';
-                        }, 2000);
+                        messageArea.className = 'modal-message-area success';
+                        messageArea.style.display = 'block';
+                        form.reset();
+                        setTimeout(() => closeSubmitIdeaForm(), 2000); // Close after 2 seconds
                     } else {
-                        messageArea.textContent = data.message || 'Error submitting feedback.';
-                        messageArea.classList.add('error');
+                        messageArea.textContent = data.message || 'An error occurred.';
+                        messageArea.className = 'modal-message-area error';
+                        messageArea.style.display = 'block';
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    messageArea.textContent = 'An error occurred. Please try again.';
-                    messageArea.classList.add('error');
+                    console.error('Error submitting idea:', error);
+                    messageArea.textContent = 'An unexpected error occurred. Please try again.';
+                    messageArea.className = 'modal-message-area error';
+                    messageArea.style.display = 'block';
                 });
             });
 
-            // Handle initial user name for subscription popup
-            const popupUserNameElement = document.getElementById('popup-user-name');
-            if (popupUserNameElement && '{{ user.username }}') {
-                popupUserNameElement.textContent = '{{ user.username|capfirst }}';
-            }
+            // Handle form submission for Subscription Interest
+            document.getElementById('subscription-interest-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = this;
+                const formData = new FormData(form);
+                const messageArea = document.getElementById('subscriptionInterestMessageArea');
+                messageArea.style.display = 'none'; // Hide message area initially
+
+                fetch("{% url 'main_site:submit_subscription_interest' %}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        messageArea.textContent = data.message;
+                        messageArea.className = 'modal-message-area success';
+                        messageArea.style.display = 'block';
+                        form.reset();
+                        setTimeout(() => closeSubscriptionInterestForm(), 2000); // Close after 2 seconds
+                    } else {
+                        messageArea.textContent = data.message || 'An error occurred.';
+                        messageArea.className = 'modal-message-area error';
+                        messageArea.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting subscription interest:', error);
+                    messageArea.textContent = 'An unexpected error occurred. Please try again.';
+                    messageArea.className = 'modal-message-area error';
+                    messageArea.style.display = 'block';
+                });
+            });
         });
     </script>
 </body>
