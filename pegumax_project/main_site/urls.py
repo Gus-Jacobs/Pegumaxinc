@@ -28,7 +28,7 @@ urlpatterns = [
     path('contact/', views.contact_page_view, name='contact'),
     path('admin-dashboard/live-bot-overview/', views.live_bot_overview_view, name='live_bot_overview'),
     path('admin-dashboard/live-bot-mode/<str:bot_id>/', views.bot_detail_view, name='bot_detail_page'),
-
+    path('policy/', views.policy_view, name='policy'),
     # --- NEW: URL for the Student Suite Launch Page ---
     # This renders the static HTML template for the launch page.
     path('software-center/student-suite-launch/', TemplateView.as_view(template_name='main_site/student-suite-launch.html'), name='student_suite_launch'),
