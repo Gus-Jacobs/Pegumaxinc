@@ -4,41 +4,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store - Pegumax Inc.</title>
+    <title>Store - Pegumax Inc. | Official Merchandise & Licenses</title>
+    <meta name="description" content="The official Pegumax Inc. store is coming soon! Get ready for exclusive merchandise, official software licenses, and more.">
+    <meta name="keywords" content="Pegumax Inc. store, official merchandise, software licenses, tech gear, coming soon, Pegumax shop">
+    
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-         /* Styles specific to the community page content area */
-        .store-hero-background {
+        /* Universal box-sizing for consistent layout */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* General Page Styles */
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #0d0e12; /* Assuming --bg-color from style.css */
+            color: #e0e0e0; /* Assuming --text-color from style.css */
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Make the entire page structure take full viewport height */
-            background-color: var(--bg-color); /* Fallback background for the page */
+            min-height: 100vh; /* Ensures body takes at least full viewport height */
+            line-height: 1.6; /* Improved readability */
         }
-        .store-hero-background > header.page-header,
-        .store-hero-background > footer.site-footer {
-            flex-shrink: 0; /* Prevent header and footer from shrinking */
-            position: relative; /* Ensure they are not overlapped by main's pseudo-elements */
-            z-index: 10; /* Above main content's pseudo-elements */
-        }
-        .store-hero-background > main {
-            flex-grow: 1; /* Allow main content to grow and push footer down */
+
+        main {
+            flex-grow: 1; /* Allows main content to take up available space */
             display: flex; /* For centering content within main */
             align-items: center;
             justify-content: center;
             position: relative; /* For overlay positioning */
             color: #fff;
             text-align: center;
-            background-image: url("{% static 'img/img10.webp' %}");
+            background-image: url("{% static 'img/img10.webp' %}"); /* Your specific background image */
             background-size: cover;
             background-position: center center;
-            background-attachment: fixed;
+            background-attachment: fixed; /* Parallax effect */
+            padding: 2rem 0; /* Add some padding even if content is centered */
         }
-        .store-hero-background > main::before { /* Overlay for the main content area only */
+
+        main::before { /* Overlay for the main content area only */
             content: "";
             position: absolute;
             top: 0;
@@ -48,32 +58,225 @@
             background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent overlay */
             z-index: 1; /* Behind the text content */
         }
-        .store-hero-background > main .container { /* Ensure content is above overlay */
+
+        main .container { /* Ensure content is above overlay */
             position: relative;
             z-index: 2;
-        }
-        .store-hero-background h2, .store-hero-background p {
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+            max-width: 900px; /* Limit content width */
+            padding: 0 1.5rem; /* Responsive horizontal padding */
         }
 
-        html, body {
-            height: 100%;
-            margin: 0; /* Reset default margin */
+        main h2, main p {
+            text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0,0,0,0.7); /* 1px 1px 2px */
         }
-        /* If store page is special, target its body specifically */
-        body.store-page { /* Assuming you add 'store-page' class to body for this page */
-            display: flex; /* If applying flex directly to body */
+
+        /* Header Styles (unified for consistency) */
+        .page-header {
+            background-color: #1a1a1a; /* Assuming --bg-dark-1 from style.css */
+            padding: 1rem 0;
+            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1); /* Assuming --highlight-color */
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .page-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #e0e0e0; /* Assuming --text-color */
+            font-family: 'Orbitron', sans-serif; /* Assuming --secondary-font */
+            font-size: 1.5rem;
+        }
+
+        .header-logo-img {
+            height: 2.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .nav-toggle {
+            display: none; /* Hidden by default, shown on smaller screens */
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .hamburger-line {
+            display: block;
+            width: 1.5rem;
+            height: 0.125rem;
+            background-color: #00ffff; /* Assuming --highlight-color */
+            margin: 0.25rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .main-nav a {
+            color: #e0e0e0; /* Assuming --text-color */
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav a:hover {
+            color: #00ffff; /* Assuming --highlight-color */
+        }
+
+        /* Store Page Specific Content Styling */
+        #store-main h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem; /* Larger for hero section */
+            color: #e0e0e0; /* text-color */
+            margin-bottom: 1rem;
+        }
+
+        #store-main h2 .highlight {
+            color: #00ffff; /* highlight-color */
+        }
+
+        #store-main .section-intro {
+            font-size: 1.5rem; /* 1.5em */
+            margin-top: 1.25rem; /* 20px */
+            margin-bottom: 0.625rem; /* 10px */
+            color: #ccc;
+        }
+
+        #store-main p {
+            font-size: 1.1rem;
+            margin-top: 0.625rem; /* 10px */
+            color: #bbb;
+        }
+
+        /* Site Footer Styles (consistent with other pages) */
+        .site-footer {
+            background-color: #1a1a1a;
+            color: #bbb;
+            padding: 1.25rem 1rem; /* Use rem for padding */
+            font-size: 0.85rem; /* Use rem for font size */
+            width: 100%; /* Ensure footer spans full width */
+        }
+        .site-footer .container {
+            max-width: 900px; /* Limit footer content width */
+            margin: 0 auto; /* Center footer content */
+            display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            align-items: center;
+            gap: 0.5rem; /* Space between elements */
         }
-        body.store-page > .store-hero-background { /* If .store-hero-background is a direct child wrapper */
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
+        .social-links {
+            margin-top: 0.5rem;
+            display: flex; /* Use flexbox for social links */
+            gap: 1rem; /* Space between social icons */
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            justify-content: center;
+        }
+        .social-links a {
+            color: #bbb;
+            font-size: 1.2rem; /* Use rem for icon size */
+            transition: color 0.3s ease;
+            text-decoration: none; /* Remove underline from social links */
+        }
+        .social-links a:hover {
+            color: #00ffff;
+        }
+        .contact-info {
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .contact-info a {
+            color: #bbb;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            color: #00ffff;
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 768px) {
+            .page-header .main-nav {
+                display: none; /* Hide desktop nav */
+                width: 100%;
+                order: 2; /* Place below logo on mobile */
+            }
+            .page-header .nav-toggle {
+                display: block; /* Show hamburger icon */
+            }
+            .page-header .main-nav.is-open {
+                display: flex; /* Show nav when open */
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            .header-logo-link {
+                font-size: 1.2rem;
+            }
+            .header-logo-img {
+                height: 2rem;
+            }
+
+            #store-main h2 {
+                font-size: 2.8rem;
+            }
+            #store-main .section-intro {
+                font-size: 1.3rem;
+            }
+            #store-main p {
+                font-size: 1rem;
+            }
+
+            .site-footer {
+                font-size: 0.8rem;
+                padding: 1rem 0.8rem;
+            }
+            .social-links {
+                gap: 0.8rem;
+            }
+            .social-links a {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-logo-link {
+                font-size: 1.1rem;
+            }
+            .header-logo-img {
+                height: 1.8rem;
+            }
+
+            #store-main h2 {
+                font-size: 2.2rem;
+            }
+            #store-main .section-intro {
+                font-size: 1.1rem;
+            }
+            #store-main p {
+                font-size: 0.9rem;
+            }
+            .site-footer .container {
+                padding: 0 1rem;
+            }
         }
     </style>
 </head>
-<body class="store-page store-hero-background"> <!-- Added store-page class -->
+<body>
     <header class="page-header">
         <div class="container">
             <div class="logo-container">
@@ -88,37 +291,63 @@
                 <span class="hamburger-line"></span>
             </button>
             <nav class="main-nav">
-                 <ul>
+                <ul>
                     <li><a href="{% url 'main_site:home' %}">Home</a></li>
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'main_site:account' %}">Account</a></li> {# Create account_view and URL later #}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li>
                     {% else %}
                         <li><a href="{% url 'login' %}">Login</a></li>
                         <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
                     {% endif %}
                 </ul>
-                </ul>
             </nav>
         </div>
     </header>
 
-    <main id="store-main"> <!-- js-scroll removed as page is not meant to scroll -->
-            <div class="container">
-                <h2>Pegumax <span class="highlight">Store</span></h2>
-                <p class="section-intro" style="font-size: 1.5em; margin-top: 20px;">Coming Soon!</p>
-                <p style="margin-top: 10px;">Get ready for exclusive Pegumax merchandise, software licenses, and more.</p>
-            </div>
+    <main id="store-main">
+        <div class="container">
+            <h2>Pegumax <span class="highlight">Store</span></h2>
+            <p class="section-intro">Coming Soon!</p>
+            <p>Get ready for exclusive Pegumax merchandise, software licenses, and more.</p>
+        </div>
     </main>
 
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; <span id="current-year"></span> Pegumax Inc. All rights reserved.</p>
+            <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
+            <p>Empowering the human spirit through technological transcendence.</p>
+            <div class="social-links">
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+            </div>
+            <div class="contact-info">
+                <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
+                <p>123 Innovation Drive, Tech City, TX 75001</p>
+            </div>
         </div>
     </footer>
     <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            // Mobile navigation toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const mainNav = document.querySelector('.main-nav');
+
+            if (navToggle && mainNav) {
+                navToggle.addEventListener('click', () => {
+                    const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+                    navToggle.setAttribute('aria-expanded', !expanded);
+                    mainNav.classList.toggle('is-open'); // Use 'is-open' for consistency
+                });
+            }
+        });
+    </script>
 </body>
 </html>
