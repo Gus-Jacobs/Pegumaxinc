@@ -21,11 +21,27 @@
             box-sizing: border-box;
         }
 
+        /* Root variables (assuming they are also in style.css) */
+        :root {
+            --bg-color: #0d0e12;
+            --bg-dark-1: #1a1c23;
+            --bg-dark-2: #22242b;
+            --card-bg: #16181d;
+            --text-color: #e0e0e0;
+            --text-light: #b0b0b0;
+            --highlight-color: #00efff;
+            --border-color: #333740;
+            --primary-font: 'Rajdhani', sans-serif;
+            --secondary-font: 'Orbitron', sans-serif;
+            --danger-color: #ff4d4f;
+            --success-color: #52c41a;
+        }
+
         /* General Page Styles */
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: #0d0e12; /* Dark background from your root vars */
-            color: #e0e0e0; /* Light text from your root vars */
+            font-family: var(--primary-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
             display: flex;
@@ -44,9 +60,9 @@
             padding: 0 1.5rem; /* Responsive horizontal padding */
         }
 
-        /* Header Styles (unified for consistency) */
-        .page-header { /* Renamed from .hero-section for header part */
-            background-color: #1a1c23; /* bg-dark-1 */
+        /* Header Styles */
+        .page-header {
+            background-color: var(--bg-dark-1);
             padding: 1rem 0;
             border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
             position: sticky;
@@ -54,7 +70,7 @@
             z-index: 1000;
         }
 
-        .main-navbar .container { /* Specific container for navbar elements */
+        .main-navbar .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -64,13 +80,13 @@
             display: flex;
             align-items: center;
             text-decoration: none;
-            color: #e0e0e0;
-            font-family: 'Orbitron', sans-serif;
+            color: var(--text-color);
+            font-family: var(--secondary-font);
             font-size: 1.5rem;
         }
 
         .navbar-logo-img {
-            height: 2.5rem; /* Responsive height */
+            height: 2.5rem;
             margin-right: 0.5rem;
         }
 
@@ -86,21 +102,21 @@
             display: block;
             width: 1.5rem;
             height: 0.125rem; /* 2px */
-            background-color: #00ffff; /* highlight-color */
+            background-color: var(--highlight-color);
             margin: 0.25rem 0;
             transition: all 0.3s ease;
         }
 
-        .navbar-links { /* Renamed from .main-nav ul */
+        .navbar-links {
             list-style: none;
             margin: 0;
             padding: 0;
             display: flex;
-            gap: 2rem; /* Increased spacing between nav items */
+            gap: 2.5rem; /* Increased spacing between nav items for desktop */
         }
 
         .navbar-links a {
-            color: #e0e0e0; /* text-color */
+            color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
@@ -108,25 +124,88 @@
         }
 
         .navbar-links a:hover {
-            color: #00ffff; /* highlight-color */
+            color: var(--highlight-color);
+        }
+
+        /* Specific styles for auth links that might be hidden */
+        .nav-auth-item {
+            display: list-item; /* Default to visible */
+        }
+
+        /* More menu wrapper */
+        .more-menu-wrapper {
+            position: relative;
+            display: none; /* Hidden by default, shown in specific breakpoint */
+        }
+
+        .more-toggle {
+            background-color: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem; /* Size of the "..." icon */
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .more-toggle:hover {
+            color: var(--highlight-color);
+        }
+
+        .more-dropdown-content {
+            display: none; /* Hidden by default, toggled by JS */
+            position: absolute;
+            background-color: var(--card-bg);
+            min-width: 10rem;
+            box-shadow: 0px 0.5rem 1rem 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 0.3rem;
+            overflow: hidden;
+            top: calc(100% + 0.5rem); /* Position below the button */
+            right: 0; /* Align to the right of the button */
+            border: 0.0625rem solid var(--border-color);
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .more-dropdown-content li a {
+            color: var(--text-color);
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            font-family: var(--primary-font);
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            white-space: nowrap; /* Ensure dropdown items don't wrap */
+        }
+
+        .more-dropdown-content li a:hover {
+            background-color: var(--bg-dark-2);
+            color: var(--highlight-color);
+        }
+
+        .more-menu-wrapper.active .more-dropdown-content {
+            display: block;
         }
 
         /* Hero Section (background and main content) */
-        .hero-section { /* Re-purposed for the full hero background */
-            background: linear-gradient(rgba(13, 14, 18, 0.7), rgba(13, 14, 18, 0.7)), url("{% static 'img/img2.webp' %}"); /* Corrected image path */
+        .hero-section {
+            background: linear-gradient(rgba(13, 14, 18, 0.7), rgba(13, 14, 18, 0.7)), url("{% static 'img/img2.webp' %}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed; /* Parallax effect */
             color: #fff;
-            padding: 8rem 0; /* Adjusted padding */
+            padding: 8rem 0;
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 80vh; /* Ensure it takes significant viewport height */
+            min-height: 80vh;
             position: relative;
-            overflow: hidden; /* For potential glow effects or animations */
+            overflow: hidden;
         }
 
         .hero-overlay {
@@ -135,50 +214,50 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent overlay */
-            z-index: 1; /* Behind the text content */
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
         }
 
         .hero-content {
             position: relative;
             z-index: 2;
-            max-width: 900px; /* Limit content width */
+            max-width: 900px;
             margin: 0 auto;
             padding: 0 1.5rem;
         }
 
         .hero-content h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 4.5rem; /* Large, impactful heading */
-            color: #00ffff; /* highlight-color */
+            font-family: var(--secondary-font);
+            font-size: 4.5rem;
+            color: var(--highlight-color);
             margin-bottom: 1rem;
             text-shadow: 0 0 1rem rgba(0, 255, 255, 0.7);
         }
 
         .hero-content h1 .highlight {
-            color: #fff; /* White highlight for contrast */
+            color: #fff;
         }
 
         .hero-content .tagline {
-            font-size: 1.8rem; /* Large tagline */
+            font-size: 1.8rem;
             font-weight: 300;
             margin-bottom: 2rem;
             color: #ccc;
         }
 
         .animated-text-container {
-            min-height: 2rem; /* Reserve space for animated text */
+            min-height: 2rem;
             margin-bottom: 2rem;
             font-size: 1.2rem;
-            color: #ffcc00; /* Another highlight color */
-            font-family: 'Rajdhani', sans-serif;
+            color: #ffcc00;
+            font-family: var(--primary-font);
             font-weight: 500;
         }
 
         .cta-button {
             display: inline-block;
-            background-color: #00ffff; /* highlight-color */
-            color: #0d0e12; /* bg-color */
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
             padding: 0.75rem 2rem;
             border-radius: 0.3rem;
             text-decoration: none;
@@ -196,45 +275,45 @@
 
         /* Content Sections */
         .content-section {
-            padding: 5rem 0; /* Consistent vertical padding for all sections */
+            padding: 5rem 0;
         }
 
         .overview-section {
-            background-color: #1a1c23; /* bg-dark-1 */
+            background-color: var(--bg-dark-1);
             text-align: center;
         }
 
         h2 {
-            font-family: 'Orbitron', sans-serif;
+            font-family: var(--secondary-font);
             font-size: 2.8rem;
-            color: #e0e0e0; /* text-color */
+            color: var(--text-color);
             margin-bottom: 2.5rem;
             text-align: center;
         }
 
         h2 .highlight {
-            color: #00ffff; /* highlight-color */
+            color: var(--highlight-color);
         }
 
         .section-intro {
             max-width: 800px;
             margin: 0 auto 3rem auto;
             font-size: 1.1rem;
-            color: #b0b0b0; /* text-light */
+            color: var(--text-light);
         }
 
         .about-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr)); /* 280px */
+            grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
             gap: 2rem;
             margin-top: 2rem;
         }
 
         .about-card {
-            background-color: #16181d; /* card-bg */
+            background-color: var(--card-bg);
             padding: 2rem;
             border-radius: 0.75rem;
-            border: 0.0625rem solid #333740; /* border-color */
+            border: 0.0625rem solid var(--border-color);
             box-shadow: 0 0.3125rem 0.9375rem rgba(0,0,0,0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             text-align: center;
@@ -248,43 +327,43 @@
         .about-card .card-icon {
             font-size: 3rem;
             margin-bottom: 1rem;
-            color: #00ffff; /* highlight-color */
+            color: var(--highlight-color);
         }
 
         .about-card h3 {
-            font-family: 'Orbitron', sans-serif;
+            font-family: var(--secondary-font);
             font-size: 1.5rem;
-            color: #e0e0e0; /* text-color */
+            color: var(--text-color);
             margin-bottom: 0.75rem;
         }
 
         .about-card p {
             font-size: 0.95rem;
-            color: #b0b0b0; /* text-light */
+            color: var(--text-light);
         }
 
         .site-heroes-section {
-            background-color: #22242b; /* bg-dark-2 */
+            background-color: var(--bg-dark-2);
             text-align: center;
         }
 
         .heroes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(15.625rem, 1fr)); /* 250px */
+            grid-template-columns: repeat(auto-fit, minmax(15.625rem, 1fr));
             gap: 2rem;
             margin-top: 2rem;
         }
 
         .hero-link-card {
-            background-color: #16181d; /* card-bg */
+            background-color: var(--card-bg);
             padding: 2rem;
             border-radius: 0.75rem;
-            border: 0.0625rem solid #333740; /* border-color */
+            border: 0.0625rem solid var(--border-color);
             box-shadow: 0 0.3125rem 0.9375rem rgba(0,0,0,0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             text-align: center;
             text-decoration: none;
-            color: #e0e0e0; /* text-color */
+            color: var(--text-color);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -298,29 +377,29 @@
 
         .hero-link-icon {
             font-size: 3rem;
-            color: #00ffff; /* highlight-color */
+            color: var(--highlight-color);
             margin-bottom: 1rem;
         }
 
         .hero-link-card h3 {
-            font-family: 'Orbitron', sans-serif;
+            font-family: var(--secondary-font);
             font-size: 1.4rem;
             margin-bottom: 0.5rem;
         }
 
         .hero-link-card p {
             font-size: 0.9rem;
-            color: #b0b0b0; /* text-light */
+            color: var(--text-light);
         }
 
         .engaging-section {
-            background-color: #1a1c23; /* bg-dark-1 */
+            background-color: var(--bg-dark-1);
             text-align: center;
         }
 
         .engaging-content {
             display: flex;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             gap: 2.5rem;
@@ -329,8 +408,8 @@
 
         .engaging-image-container {
             flex: 1;
-            min-width: 18.75rem; /* 300px */
-            max-width: 31.25rem; /* 500px */
+            min-width: 18.75rem;
+            max-width: 31.25rem;
         }
 
         .engaging-image-container img {
@@ -342,56 +421,56 @@
 
         .interactive-placeholder {
             flex: 1;
-            min-width: 18.75rem; /* 300px */
-            max-width: 31.25rem; /* 500px */
-            background-color: #22242b; /* bg-dark-2 */
+            min-width: 18.75rem;
+            max-width: 31.25rem;
+            background-color: var(--bg-dark-2);
             padding: 2.5rem;
             border-radius: 0.75rem;
-            border: 0.0625rem solid #333740; /* border-color */
+            border: 0.0625rem solid var(--border-color);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             gap: 1.5rem;
-            min-height: 12.5rem; /* 200px */
+            min-height: 12.5rem;
         }
 
         .interactive-placeholder p {
             font-size: 1rem;
-            color: #b0b0b0; /* text-light */
+            color: var(--text-light);
         }
 
-        /* Site Footer Styles (consistent with other pages) */
+        /* Site Footer Styles */
         .site-footer {
-            background-color: #1a1c23; /* bg-dark-1 */
-            color: #b0b0b0; /* text-light */
-            padding: 1.25rem 1rem; /* Use rem for padding */
-            font-size: 0.85rem; /* Use rem for font size */
-            width: 100%; /* Ensure footer spans full width */
+            background-color: var(--bg-dark-1);
+            color: var(--text-light);
+            padding: 1.25rem 1rem;
+            font-size: 0.85rem;
+            width: 100%;
         }
         .site-footer .container {
-            max-width: 900px; /* Limit footer content width */
-            margin: 0 auto; /* Center footer content */
+            max-width: 900px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem; /* Space between elements */
+            gap: 0.5rem;
         }
         .social-links {
             margin-top: 0.5rem;
-            display: flex; /* Use flexbox for social links */
-            gap: 1rem; /* Space between social icons */
-            flex-wrap: wrap; /* Allow wrapping on small screens */
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
             justify-content: center;
         }
         .social-links a {
             color: inherit;
-            font-size: 1.2rem; /* Use rem for icon size */
+            font-size: 1.2rem;
             transition: color 0.3s ease;
-            text-decoration: none; /* Remove underline from social links */
+            text-decoration: none;
         }
         .social-links a:hover {
-            color: #00ffff; /* highlight-color */
+            color: var(--highlight-color);
         }
         .contact-info {
             margin-top: 0.5rem;
@@ -405,13 +484,24 @@
             text-decoration: none;
         }
         .contact-info a:hover {
-            color: #00ffff; /* highlight-color */
+            color: var(--highlight-color);
         }
 
         /* Media Queries for responsiveness */
-        @media (max-width: 992px) { /* Adjust breakpoint for navbar */
+        @media (max-width: 1200px) {
             .navbar-links {
-                gap: 1.5rem; /* Slightly reduce gap for medium screens */
+                gap: 1.5rem; /* Reduce gap for slightly smaller screens */
+            }
+            .navbar-links a {
+                font-size: 0.95rem; /* Shrink font to fit more items */
+            }
+
+            /* Hide login/signup from main nav and show in 'more' menu */
+            .nav-auth-item {
+                display: none;
+            }
+            .more-menu-wrapper {
+                display: block; /* Show the '...' button */
             }
         }
 
@@ -420,15 +510,15 @@
                 display: none; /* Hide desktop nav */
                 width: 100%;
                 order: 2; /* Place below logo on mobile */
+                flex-direction: column; /* Stack vertically in mobile menu */
+                gap: 0.5rem; /* Smaller gap for stacked items */
+                text-align: center;
             }
             .page-header .main-navbar .nav-toggle {
                 display: block; /* Show hamburger icon */
             }
             .page-header .main-navbar .navbar-links.is-open {
                 display: flex; /* Show nav when open */
-                flex-direction: column;
-                text-align: center;
-                gap: 0.5rem;
             }
             .navbar-brand {
                 font-size: 1.2rem;
@@ -436,9 +526,13 @@
             .navbar-logo-img {
                 height: 2rem;
             }
-            /* Adjust font size for nav links on smaller screens */
-            .navbar-links a {
-                font-size: 0.95rem; /* Slightly smaller font */
+            /* Ensure auth items are visible in the mobile menu */
+            .nav-auth-item {
+                display: list-item; 
+            }
+            /* Hide the 'more' menu wrapper when hamburger is active */
+            .more-menu-wrapper {
+                display: none;
             }
 
             .hero-section {
@@ -471,7 +565,7 @@
                 margin-bottom: 2rem;
             }
             .about-grid, .heroes-grid {
-                grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); /* Adjust min width */
+                grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
                 gap: 1.5rem;
             }
             .about-card, .hero-link-card {
@@ -488,16 +582,16 @@
             }
 
             .engaging-content {
-                flex-direction: column; /* Stack image and placeholder */
+                flex-direction: column;
                 gap: 1.5rem;
             }
             .engaging-image-container, .interactive-placeholder {
-                min-width: unset; /* Remove min-width to allow full width */
+                min-width: unset;
                 max-width: 100%;
             }
             .interactive-placeholder {
                 padding: 1.5rem;
-                min-height: 9.375rem; /* 150px */
+                min-height: 9.375rem;
             }
             .interactive-placeholder p {
                 font-size: 0.9rem;
@@ -522,7 +616,6 @@
             .navbar-logo-img {
                 height: 1.8rem;
             }
-            /* Further adjust font size for nav links on very small screens */
             .navbar-links a {
                 font-size: 0.85rem;
             }
@@ -554,7 +647,7 @@
                 margin-bottom: 1.5rem;
             }
             .about-grid, .heroes-grid {
-                grid-template-columns: 1fr; /* Stack all cards */
+                grid-template-columns: 1fr;
                 gap: 1rem;
             }
             .about-card, .hero-link-card {
@@ -571,7 +664,7 @@
             }
             .interactive-placeholder {
                 padding: 1rem;
-                min-height: 7.5rem; /* 120px */
+                min-height: 7.5rem;
             }
             .interactive-placeholder p {
                 font-size: 0.85rem;
@@ -596,18 +689,31 @@
                     <span class="hamburger-line"></span>
                 </button>
                 <ul class="navbar-links">
-                    <li><a href="{% url 'main_site:home' %}">Home</a></li>
+                    {# Removed 'Home' link as per request #}
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {# These are the main auth links, conditionally displayed by CSS #}
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'main_site:account' %}">Account</a></li>
+                        <li class="nav-auth-item"><a href="{% url 'main_site:account' %}">Account</a></li>
                     {% else %}
-                        <li><a href="{% url 'login' %}">Login</a></li>
-                        <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                        <li class="nav-auth-item"><a href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-auth-item"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
                     {% endif %}
                 </ul>
+                {# This will be the "..." menu, appearing only in the specific breakpoint #}
+                <div class="more-menu-wrapper">
+                    <button class="more-toggle" aria-label="More navigation links" aria-expanded="false" onclick="toggleMoreDropdown(event)">...</button>
+                    <ul class="more-dropdown-content">
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'main_site:account' %}">Account</a></li>
+                        {% else %}
+                            <li><a href="{% url 'login' %}">Login</a></li>
+                            <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
         </nav>
         <div class="hero-content">
@@ -737,9 +843,9 @@
             let sloganIndex = 0;
             let charIndex = 0;
             const animatedSloganElement = document.getElementById('animated-slogan');
-            const typingSpeed = 100; // milliseconds per character (slower)
-            const deletingSpeed = 70; // milliseconds per character (slower)
-            const delayBetweenSlogans = 2500; // milliseconds (longer pause)
+            const typingSpeed = 100; // milliseconds per character (slower for smoother typing)
+            const deletingSpeed = 70; // milliseconds per character (slower for smoother deleting)
+            const delayBetweenSlogans = 2500; // milliseconds (longer pause between slogans)
 
             function typeSlogan() {
                 if (charIndex < slogans[sloganIndex].length) {
@@ -764,6 +870,24 @@
 
             // Start the typewriter effect when the page loads
             typeSlogan();
+
+            // More menu dropdown toggle function
+            function toggleMoreDropdown(event) {
+                event.stopPropagation(); // Prevent document click from immediately closing
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                moreWrapper.classList.toggle('active'); // Toggle 'active' class to show/hide dropdown
+            }
+
+            // Close dropdowns when clicking outside
+            window.addEventListener('click', function(event) {
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                if (moreWrapper && moreWrapper.classList.contains('active') && !moreWrapper.contains(event.target)) {
+                    moreWrapper.classList.remove('active');
+                }
+            });
+
+            // Expose toggleMoreDropdown to global scope for onclick attribute
+            window.toggleMoreDropdown = toggleMoreDropdown;
         });
     </script>
 </body>
