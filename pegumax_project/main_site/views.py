@@ -49,6 +49,9 @@ def account_view(request):
 def movie_word_scanner_view(request):
     return render(request, 'movie-word-scanner.html')
 
+def policy_view(request):
+    return render(request, 'main_site/policy.html')
+
 def signup_view(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
