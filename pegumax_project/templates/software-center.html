@@ -5,7 +5,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Software Center - Pegumax Inc.</title>
+    <title>Software Center - Pegumax Inc. | Innovative Apps & Tools</title>
+    <meta name="description" content="Explore Pegumax Inc.'s Software Center for innovative tools, powerful suites, and engaging games. Discover Movie Word Scanner, Student Suite, and upcoming applications designed to enhance your digital experience.">
+    <meta name="keywords" content="Pegumax Inc. software, software center, productivity tools, student suite, movie word scanner, games, applications, tech apps, download software">
+    
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,30 +16,172 @@
     <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        /* Basic Tab Styling - consider moving to style.css */
-        #software-center-main .content-section {
-            padding-top: 40px; /* Or your desired padding */
-            padding-bottom: 40px;
-            min-height: 60vh; /* Ensure section has some height on load */
+        /* Universal box-sizing for consistent layout */
+        *, *::before, *::after {
+            box-sizing: border-box;
         }
+
+        /* General Page Styles */
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #0d0e12; /* Assuming --bg-color from style.css */
+            color: #e0e0e0; /* Assuming --text-color from style.css */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensures body takes at least full viewport height */
+            line-height: 1.6; /* Improved readability */
+        }
+
+        main {
+            flex-grow: 1; /* Allows main content to take up available space */
+        }
+
+        .container {
+            max-width: 1200px; /* Max width for content on large screens */
+            margin: 0 auto; /* Center the container */
+            padding: 0 1.5rem; /* Responsive horizontal padding */
+        }
+
+        /* Header Styles (unified for consistency) */
+        .page-header {
+            background-color: #1a1a1a; /* Assuming --bg-dark-1 from style.css */
+            padding: 1rem 0;
+            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1); /* Assuming --highlight-color */
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .page-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #e0e0e0; /* Assuming --text-color */
+            font-family: 'Orbitron', sans-serif; /* Assuming --secondary-font */
+            font-size: 1.5rem;
+        }
+
+        .header-logo-img {
+            height: 2.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .nav-toggle {
+            display: none; /* Hidden by default, shown on smaller screens */
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .hamburger-line {
+            display: block;
+            width: 1.5rem;
+            height: 0.125rem;
+            background-color: #00ffff; /* Assuming --highlight-color */
+            margin: 0.25rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .main-nav a {
+            color: #e0e0e0; /* Assuming --text-color */
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav a:hover {
+            color: #00ffff; /* Assuming --highlight-color */
+        }
+
+        /* Software Center Specific Styles */
+        #software-center-main .content-section {
+            padding: 2.5rem 0 4rem 0; /* 40px top, 64px bottom */
+            min-height: 70vh; /* Ensure section has some height on load */
+            background-color: #0d0e12; /* Assuming --bg-color */
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif; /* Assuming --secondary-font */
+            font-size: 2.8rem;
+            color: #e0e0e0; /* Assuming --text-color */
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        h2 .highlight {
+            color: #00ffff; /* Assuming --highlight-color */
+        }
+
+        .section-intro {
+            max-width: 800px;
+            margin: 0 auto 2.5rem auto; /* 40px */
+            font-size: 1.1rem;
+            color: #b0b0b0; /* Assuming --text-light */
+            text-align: center;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: #00ffff; /* Assuming --highlight-color */
+            color: #0d0e12; /* Assuming --bg-color */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
+            font-size: 1rem;
+            margin-top: 1.25rem; /* 20px */
+        }
+        .cta-button:hover {
+            background-color: #00e6e6;
+            transform: translateY(-0.125rem);
+            box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
+        }
+
+        /* Tabs */
         .tabs {
             display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #444;
+            justify-content: center; /* Center the tabs */
+            flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
+            margin-bottom: 1.25rem; /* 20px */
+            border-bottom: 0.0625rem solid #444;
+            gap: 0.5rem; /* Space between tab links */
         }
         .tab-link {
-            padding: 10px 20px;
+            padding: 0.625rem 1.25rem; /* 10px 20px */
             cursor: pointer;
             border: none;
             background-color: transparent;
             color: #ccc;
             font-family: 'Rajdhani', sans-serif;
-            font-size: 1.1em;
+            font-size: 1.1rem; /* 1.1em */
             transition: color 0.3s, border-bottom 0.3s;
+            white-space: nowrap; /* Prevent text wrapping within tab link */
+        }
+        .tab-link:hover:not(.active) {
+            color: #e0e0e0;
         }
         .tab-link.active {
             color: #00ffff; /* Highlight color */
-            border-bottom: 2px solid #00ffff;
+            border-bottom: 0.125rem solid #00ffff; /* 2px */
         }
         .tab-content {
             display: none; /* Hide inactive tabs */
@@ -46,65 +191,78 @@
             display: block; /* CRITICAL: Show active tab */
         }
         @keyframes fadeInTab {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(0.625rem); } /* 10px */
             to { opacity: 1; transform: translateY(0); }
         }
-        #software-center-main .content-section {
-            padding-top: 20px; /* Reduced top padding if header is present */
-            padding-bottom: 40px;
-            min-height: 70vh; /* Ensure section has some height on load */
-        }
+
+        /* Software Grid */
         .software-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr)); /* 280px */
+            gap: 1.25rem; /* 20px */
+            margin-top: 1.25rem; /* 20px */
         }
-        /* Changed .software-card to an anchor tag for clickability */
         .software-card {
             background-color: #1a1a1a; /* Darker card background */
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 20px;
+            border: 0.0625rem solid #333;
+            border-radius: 0.5rem; /* 8px */
+            padding: 1.25rem; /* 20px */
             text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
             display: flex; /* Use flex for alignment */
             flex-direction: column;
             justify-content: space-between;
             text-decoration: none; /* Remove underline from link */
             color: inherit; /* Inherit text color */
+            position: relative;
+            overflow: hidden;
         }
         .software-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
+            transform: translateY(-0.3125rem); /* 5px */
+            box-shadow: 0 0.625rem 1.25rem rgba(0, 255, 255, 0.2); /* 10px 20px */
+            border-color: #00ffff; /* Highlight border on hover */
+        }
+        .software-card.coming-soon:hover {
+            transform: none; /* No transform for coming soon */
+            box-shadow: none;
+            border-color: #333; /* No highlight border for coming soon */
         }
         .software-card .card-icon {
-            font-size: 3em;
-            color: #00ffff;
-            margin-bottom: 15px;
+            font-size: 3rem; /* 3em */
+            color: #00ffff; /* Highlight color */
+            margin-bottom: 0.9375rem; /* 15px */
         }
         .software-card h4 {
-            color: #00ffff;
-            margin-bottom: 10px;
+            color: #00ffff; /* Highlight color */
+            font-family: 'Orbitron', sans-serif; /* Secondary font */
+            font-size: 1.25rem; /* 20px */
+            margin-bottom: 0.625rem; /* 10px */
         }
         .software-card p {
-            font-size: 0.9em;
+            font-size: 0.9rem; /* 0.9em */
             color: #bbb;
-            margin-bottom: 15px;
+            margin-bottom: 0.9375rem; /* 15px */
             flex-grow: 1; /* Allow description to grow and push status to bottom */
         }
         .software-card .status {
             font-weight: bold;
             color: #ffae00; /* Orange for "Coming Soon" */
+            font-size: 0.9rem;
+            margin-top: auto; /* Push to bottom */
         }
         .software-card .category-tag {
             display: inline-block;
-            background-color: #007bff;
+            background-color: #007bff; /* Example blue */
             color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            margin-top: 10px;
+            padding: 0.1875rem 0.5rem; /* 3px 8px */
+            border-radius: 0.25rem; /* 4px */
+            font-size: 0.8rem; /* 0.8em */
+            margin-top: 0.625rem; /* 10px */
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
+
+        /* Modal Styles (unified and responsive) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -112,65 +270,302 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(0.3125rem); /* 5px */
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            padding: 20px;
+            padding: 1.25rem; /* 20px */
         }
         .modal-content {
-            background-color: #2a2a30;
-            padding: 30px;
-            border-radius: 8px;
+            background-color: #2a2a30; /* Darker background for modal */
+            padding: 1.875rem; /* 30px */
+            border-radius: 0.5rem; /* 8px */
             color: #e0e0e0;
             width: 100%;
-            max-width: 550px;
+            max-width: 34.375rem; /* 550px */
             text-align: center;
             position: relative;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 0.3125rem 1.5625rem rgba(0,0,0,0.5); /* 5px 25px */
             max-height: 90vh;
             overflow-y: auto;
         }
         .modal-content h3 {
-            color: #00ffff;
+            color: #00ffff; /* Highlight color */
+            font-family: 'Orbitron', sans-serif;
             margin-top: 0;
+            margin-bottom: 1.25rem; /* 20px */
+            font-size: 1.8rem;
         }
         .close-modal-btn {
             position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 1.8em;
+            top: 0.625rem; /* 10px */
+            right: 0.9375rem; /* 15px */
+            font-size: 1.8rem; /* 1.8em */
             color: #777;
             cursor: pointer;
+            transition: color 0.3s ease;
         }
         .close-modal-btn:hover {
             color: #fff;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 0.9375rem; /* 15px */
+            text-align: left; /* Align labels/inputs left within group */
         }
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 0.3125rem; /* 5px */
             color: #ccc;
             font-weight: 500;
+            font-size: 0.95rem;
         }
         .form-control-dark {
             width: 100%;
-            padding: 10px;
-            background-color: #1a1a1d;
-            border: 1px solid #444;
+            padding: 0.625rem 0.75rem; /* 10px 12px */
+            background-color: #1a1a1d; /* Darker input background */
+            border: 0.0625rem solid #444;
             color: #e0e0e0;
-            border-radius: 4px;
+            border-radius: 0.25rem; /* 4px */
             box-sizing: border-box;
+            font-size: 1rem;
         }
         .form-control-dark:focus {
             border-color: #00ffff;
             outline: none;
-            box-shadow: 0 0 0 0.2rem rgba(0, 255, 255, 0.25);
+            box-shadow: 0 0 0 0.125rem rgba(0, 255, 255, 0.25); /* 0.2rem */
         }
         textarea.form-control-dark {
             resize: vertical;
+            min-height: 5rem; /* Minimum height for textareas */
+        }
+        .btn { /* General button style for modals */
+            display: inline-block;
+            background-color: #00ffff;
+            color: #0d0e12;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #00e6e6;
+            transform: translateY(-0.125rem);
+            box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
+        }
+        .modal-message-area {
+            padding: 0.625rem;
+            margin-bottom: 0.9375rem;
+            border-radius: 0.3125rem;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .modal-message-area.success { background-color: rgba(82, 196, 26, 0.2); color: #52c41a; border: 0.0625rem solid #52c41a; }
+        .modal-message-area.error { background-color: rgba(255, 77, 79, 0.2); color: #ff4d4f; border: 0.0625rem solid #ff4d4f; }
+
+
+        /* Site Footer Styles (consistent with other pages) */
+        .site-footer {
+            background-color: #1a1a1a;
+            color: #bbb;
+            padding: 1.25rem 1rem; /* Use rem for padding */
+            font-size: 0.85rem; /* Use rem for font size */
+            width: 100%; /* Ensure footer spans full width */
+        }
+        .site-footer .container {
+            max-width: 900px; /* Limit footer content width */
+            margin: 0 auto; /* Center footer content */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem; /* Space between elements */
+        }
+        .social-links {
+            margin-top: 0.5rem;
+            display: flex; /* Use flexbox for social links */
+            gap: 1rem; /* Space between social icons */
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            justify-content: center;
+        }
+        .social-links a {
+            color: #bbb;
+            font-size: 1.2rem; /* Use rem for icon size */
+            transition: color 0.3s ease;
+            text-decoration: none; /* Remove underline from social links */
+        }
+        .social-links a:hover {
+            color: #00ffff;
+        }
+        .contact-info {
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .contact-info a {
+            color: #bbb;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            color: #00ffff;
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 768px) {
+            .page-header .main-nav {
+                display: none; /* Hide desktop nav */
+                width: 100%;
+                order: 2; /* Place below logo on mobile */
+            }
+            .page-header .nav-toggle {
+                display: block; /* Show hamburger icon */
+            }
+            .page-header .main-nav.is-open {
+                display: flex; /* Show nav when open */
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            .header-logo-link {
+                font-size: 1.2rem;
+            }
+            .header-logo-img {
+                height: 2rem;
+            }
+
+            #software-center-main .content-section {
+                padding: 2rem 0;
+            }
+            h2 {
+                font-size: 2.2rem;
+                margin-bottom: 1.5rem;
+            }
+            .section-intro {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            .cta-button {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.95rem;
+            }
+            .tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.4rem;
+                margin-bottom: 1rem;
+            }
+            .tab-link {
+                padding: 0.5rem 1rem;
+                font-size: 1rem;
+            }
+            .software-grid {
+                grid-template-columns: 1fr; /* Stack cards vertically on smaller screens */
+                gap: 1rem;
+            }
+            .software-card {
+                padding: 1rem;
+            }
+            .software-card .card-icon {
+                font-size: 2.5rem;
+                margin-bottom: 0.8rem;
+            }
+            .software-card h4 {
+                font-size: 1.1rem;
+                margin-bottom: 0.5rem;
+            }
+            .software-card p {
+                font-size: 0.85rem;
+                margin-bottom: 0.8rem;
+            }
+            .software-card .category-tag {
+                font-size: 0.75rem;
+                padding: 0.15rem 0.4rem;
+            }
+            .modal-content {
+                padding: 1.5rem;
+                max-width: 90%;
+            }
+            .modal-content h3 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            .close-modal-btn {
+                font-size: 1.5rem;
+                top: 0.5rem;
+                right: 0.75rem;
+            }
+            .form-group label {
+                font-size: 0.9rem;
+            }
+            .form-control-dark {
+                padding: 0.5rem 0.6rem;
+                font-size: 0.9rem;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            .site-footer {
+                font-size: 0.8rem;
+                padding: 1rem 0.8rem;
+            }
+            .social-links {
+                gap: 0.8rem;
+            }
+            .social-links a {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-logo-link {
+                font-size: 1.1rem;
+            }
+            .header-logo-img {
+                height: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+            .section-intro {
+                font-size: 0.9rem;
+            }
+            .cta-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+            .tab-link {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            .software-card .card-icon {
+                font-size: 2rem;
+            }
+            .software-card h4 {
+                font-size: 1rem;
+            }
+            .software-card p {
+                font-size: 0.8rem;
+            }
+            .modal-content h3 {
+                font-size: 1.3rem;
+            }
+            .form-control-dark {
+                font-size: 0.85rem;
+            }
+            .btn {
+                font-size: 0.85rem;
+            }
+            .site-footer .container {
+                padding: 0 1rem;
+            }
         }
     </style>
 </head>
@@ -211,7 +606,7 @@
             <div class="container">
                 <h2>Pegumax <span class="highlight">Software Center</span></h2>
                 <p class="section-intro">Explore our innovative tools, powerful suites, and engaging games designed to elevate your digital experience.</p>
-                <div style="text-align: center; margin-bottom: 30px;">
+                <div style="text-align: center; margin-bottom: 1.875rem;"> {# 30px #}
                     <button class="cta-button" onclick="openSubmitIdeaForm()">Got an Idea? Submit It!</button>
                 </div>
                 <div class="tabs">
@@ -224,7 +619,7 @@
                 <div id="all" class="tab-content active">
                     <h3>All Offerings</h3>
                     <div class="software-grid">
-                        <!-- Items will be duplicated here by JS or you can list them all -->
+                        <!-- Items will be populated here by JS from other tabs -->
                     </div>
                 </div>
 
@@ -245,7 +640,7 @@
                             <p class="status">Coming Soon</p>
                             <span class="category-tag">Tool</span>
                         </div>
-                        <div class="software-card" data-category="tool">
+                        <div class="software-card coming-soon" data-category="tool">
                             <div class="card-icon"><i class="fas fa-pencil-ruler"></i></div>
                             <h4>Drawing Assist</h4>
                             <p>Intuitive tools for digital artists and illustrators.</p>
@@ -263,18 +658,17 @@
                             <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
                             <h4>Student Suite</h4>
                             <p>Essential applications for academic success and productivity.</p>
-                            {# <p class="status">Coming Soon</p> -- REMOVED #}
                             <span class="category-tag">Suite</span>
                         </a>
 
-                        <div class="software-card" data-category="suite">
+                        <div class="software-card coming-soon" data-category="suite">
                             <div class="card-icon"><i class="fas fa-edit"></i></div>
                             <h4>Editor Suite</h4>
                             <p>Professional tools for video, audio, and image editing.</p>
                             <p class="status">Coming Soon</p>
                             <span class="category-tag">Suite</span>
                         </div>
-                        <div class="software-card" data-category="suite">
+                        <div class="software-card coming-soon" data-category="suite">
                             <div class="card-icon"><i class="fas fa-briefcase"></i></div>
                             <h4>Office Suite</h4>
                             <p>A complete set of applications for all your office needs.</p>
@@ -287,7 +681,7 @@
                 <div id="games" class="tab-content">
                     <h3>Immersive Games</h3>
                     <div class="software-grid">
-                        <div class="software-card" data-category="game">
+                        <div class="software-card coming-soon" data-category="game">
                             <div class="card-icon"><i class="fas fa-chess-knight"></i></div>
                             <h4>Dominion</h4>
                             <p>Conquer realms in this upcoming strategy masterpiece.</p>
@@ -305,7 +699,7 @@
                 <p>Tired of managing different subscriptions? Hate signing up for new tools or cancelling old ones?</p>
                 <p>We will soon be offering you the unique ability to gain a <strong>master key</strong> to all our tools for just <strong>$100 a month!</strong></p>
                 <p>Interested?</p>
-                <button class="btn btn-primary" onclick="openSubscriptionInterestForm()">Let Us Know!</button>
+                <button class="btn" onclick="openSubscriptionInterestForm()">Let Us Know!</button>
             </div>
         </div>
         <!-- Submit Idea Modal -->
@@ -313,8 +707,9 @@
             <div class="modal-content">
                 <span class="close-modal-btn" onclick="closeSubmitIdeaForm()">&times;</span>
                 <h3>Submit Your Idea!</h3>
+                <div id="submitIdeaMessageArea" class="modal-message-area" style="display: none;"></div>
                 <p>Have a great idea for a new app, game, or suite? We'd love to hear it!</p>
-                <form id="submit-idea-form" style="text-align: left; margin-top: 20px;">
+                <form id="submit-idea-form" style="text-align: left; margin-top: 1.25rem;"> {# 20px #}
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="idea-name">Your Name (Optional):</label>
@@ -337,7 +732,7 @@
                         <label for="idea-description">Describe your idea:</label>
                         <textarea id="idea-description" name="idea-description" rows="5" class="form-control-dark" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top:15px;">Submit Idea</button>
+                    <button type="submit" class="btn" style="width: 100%; margin-top:0.9375rem;">Submit Idea</button> {# 15px #}
                 </form>
             </div>
         </div>
@@ -346,8 +741,9 @@
             <div class="modal-content">
                 <span class="close-modal-btn" onclick="closeSubscriptionInterestForm()">&times;</span>
                 <h3>All-Access Pass Interest</h3>
+                <div id="subscriptionInterestMessageArea" class="modal-message-area" style="display: none;"></div>
                 <p>Help us tailor the perfect all-access pass for you!</p>
-                <form id="subscription-interest-form" style="text-align: left; margin-top: 20px;">
+                <form id="subscription-interest-form" style="text-align: left; margin-top: 1.25rem;"> {# 20px #}
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="interest-email">Your Email (To notify you when it's live!):</label>
@@ -365,7 +761,7 @@
                         <label for="interest-wants">Are there any specific types of tools or software you'd be most excited to see included?</label>
                         <textarea id="interest-wants" name="interest-wants" rows="3" class="form-control-dark" placeholder="e.g., Advanced video editors, specific game genres, AI-powered utilities..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top:15px;">Submit Feedback</button>
+                    <button type="submit" class="btn" style="width: 100%; margin-top:0.9375rem;">Submit Feedback</button> {# 15px #}
                 </form>
             </div>
         </div>
@@ -373,7 +769,7 @@
 
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; <span id="current-year"></span> Pegumax Inc. All rights reserved.</p>
+            <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
             <p>Empowering the human spirit through technological transcendence.</p>
             <div class="social-links">
                 <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
@@ -388,14 +784,38 @@
     </footer>
     <script src="{% static 'js/script.js' %}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initial population of "All" tab
-            populateAllTab();
+        document.getElementById('current-year').textContent = new Date().getFullYear();
 
-            // Show subscription popup after a delay (e.g., 5 seconds)
+        // Mobile navigation toggle
+        const navToggle = document.querySelector('.nav-toggle');
+        const mainNav = document.querySelector('.main-nav');
+
+        if (navToggle && mainNav) {
+            navToggle.addEventListener('click', () => {
+                mainNav.classList.toggle('is-open');
+                navToggle.setAttribute('aria-expanded', mainNav.classList.contains('is-open'));
+            });
+        }
+
+        // Function to display messages within modals
+        function displayModalMessage(modalId, message, isSuccess) {
+            const messageArea = document.querySelector(`#${modalId} .modal-message-area`);
+            if (messageArea) {
+                messageArea.textContent = message;
+                messageArea.className = `modal-message-area ${isSuccess ? 'success' : 'error'}`;
+                messageArea.style.display = 'block';
+            }
+        }
+
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            populateAllTab(); // Populate "All" tab on initial load
+            openTab(null, 'all'); // Ensure 'All' tab is active on load
+
+            // Optional: Show subscription popup after a delay (e.g., 5 seconds)
             // setTimeout(() => {
             //     const popup = document.getElementById('subscription-popup');
-            //     if (popup.style.display === 'none') { // Only show if not already interacted with
+            //     if (popup && popup.style.display === 'none') { // Only show if not already interacted with
             //         const userNameSpan = document.getElementById('popup-user-name');
             //         {% if user.is_authenticated %}
             //             userNameSpan.textContent = "{{ user.username|escapejs }}";
@@ -423,12 +843,16 @@
             if (evt) { // Check if evt is passed (not null on initial load)
                 evt.currentTarget.classList.add("active");
             } else { // For initial load, find the 'all' tab link and activate it
-                document.querySelector('.tab-link[onclick*="\'all\'"]').classList.add('active');
+                const allTabLink = document.querySelector('.tab-link[onclick*="\'all\'"]');
+                if (allTabLink) {
+                    allTabLink.classList.add('active');
+                }
             }
         }
 
         function populateAllTab() {
             const allTabGrid = document.querySelector('#all .software-grid');
+            if (!allTabGrid) return; // Exit if grid element not found
             allTabGrid.innerHTML = ''; // Clear existing items
 
             const categories = ['tools', 'suites', 'games'];
@@ -443,28 +867,27 @@
             });
         }
 
-        // Initialize the first tab (All) on page load
-        openTab(null, 'all');
-
         // Modal functions
         function openSubmitIdeaForm() {
             document.getElementById('submit-idea-popup').style.display = 'flex';
+            document.querySelector('#submitIdeaMessageArea').style.display = 'none'; // Hide message area on open
         }
         function closeSubmitIdeaForm() {
             document.getElementById('submit-idea-popup').style.display = 'none';
-            // Optionally reset the form
-            // document.getElementById('submit-idea-form').reset();
+            document.getElementById('submit-idea-form').reset(); // Reset the form
+            document.querySelector('#submitIdeaMessageArea').style.display = 'none'; // Hide message area on close
         }
 
         function openSubscriptionInterestForm() {
             document.getElementById('subscription-popup').style.display = 'none'; // Hide the initial popup
             document.getElementById('subscription-interest-popup').style.display = 'flex';
+            document.querySelector('#subscriptionInterestMessageArea').style.display = 'none'; // Hide message area on open
         }
 
         function closeSubscriptionInterestForm() {
             document.getElementById('subscription-interest-popup').style.display = 'none';
-            // Optionally reset the form
-            // document.getElementById('subscription-interest-form').reset();
+            document.getElementById('subscription-interest-form').reset(); // Reset the form
+            document.querySelector('#subscriptionInterestMessageArea').style.display = 'none'; // Hide message area on close
         }
 
         // Handle Submit Idea Form
@@ -474,36 +897,30 @@
                 event.preventDefault();
                 const form = event.target;
                 const formData = new FormData(form);
-                // The view expects 'idea_text' and 'user_email_idea'
-                // FormData from HTML form has 'idea-description' and 'idea-email'
+                
                 const dataForBackend = new FormData();
                 dataForBackend.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
                 dataForBackend.append('idea_text', formData.get('idea-description'));
                 if (formData.get('idea-email')) {
                     dataForBackend.append('user_email_idea', formData.get('idea-email'));
                 }
-                // You can also append 'idea-name' and 'idea-type' if you want to use them in the email body
-                // dataForBackend.append('idea_name', formData.get('idea-name'));
-                // dataForBackend.append('idea_type', formData.get('idea-type'));
-
+                dataForBackend.append('idea_name', formData.get('idea-name') || ''); // Include optional fields
+                dataForBackend.append('idea_type', formData.get('idea-type'));
 
                 fetch("{% url 'main_site:submit_software_idea' %}", {
                     method: 'POST',
                     body: dataForBackend,
-                    // No 'Content-Type' header needed for FormData, browser sets it with boundary
-                    // headers: { 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value } // CSRF token is in FormData
                 })
                 .then(response => response.json())
                 .then(data => {
-                    alert(data.message); // Or update a message div in the modal
+                    displayModalMessage('submit-idea-popup', data.message, data.success);
                     if(data.success) {
-                        closeSubmitIdeaForm();
-                        form.reset();
+                        setTimeout(() => closeSubmitIdeaForm(), 2000); // Close after 2 seconds
                     }
                 })
                 .catch(error => {
                     console.error('Error submitting idea:', error);
-                    alert('An error occurred. Please try again.');
+                    displayModalMessage('submit-idea-popup', 'An error occurred. Please try again.', false);
                 });
             });
         }
@@ -516,7 +933,6 @@
                 const form = event.target;
                 const formData = new FormData(form);
 
-                // The view expects 'email_access' and 'interest_reason_access'
                 const dataForBackend = new FormData();
                 dataForBackend.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
                 dataForBackend.append('email_access', formData.get('interest-email'));
@@ -531,19 +947,17 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    alert(data.message); // Or update a message div
+                    displayModalMessage('subscription-interest-popup', data.message, data.success);
                     if(data.success) {
-                        closeSubscriptionInterestForm();
-                        form.reset();
+                        setTimeout(() => closeSubscriptionInterestForm(), 2000); // Close after 2 seconds
                     }
                 })
                 .catch(error => {
                     console.error('Error submitting interest:', error);
-                    alert('An error occurred. Please try again.');
+                    displayModalMessage('subscription-interest-popup', 'An error occurred. Please try again.', false);
                 });
             });
         }
-
     </script>
 </body>
 </html>
