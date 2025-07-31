@@ -4,8 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard - {{ user.username|capfirst }} - Pegumax Inc.</title>
+    <title>User Dashboard - {{ user.username|capfirst }} | Pegumax Inc. Account Management</title>
+    <meta name="description" content="Manage your Pegumax Inc. account settings, profile, security, and view login activity. Access your personalized dashboard.">
+    <meta name="keywords" content="Pegumax Inc. account, user dashboard, profile settings, account security, change password, login history, user management">
+    
     <link rel="stylesheet" href="{% static 'css/style.css' %}"> {# Your global styles #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/webp" href="{% static 'img/favicon.webp' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
@@ -34,52 +40,77 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            line-height: 1.6; /* Improved readability */
         }
 
+        /* Minimal Header Styles */
         .page-header-minimal {
             background-color: var(--bg-dark-1);
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 2px 10px rgba(0, 239, 255, 0.1);
+            padding: 0.9375rem 0; /* 15px */
+            border-bottom: 0.0625rem solid var(--border-color); /* 1px */
+            box-shadow: 0 0.125rem 0.625rem rgba(0, 239, 255, 0.1); /* 2px 10px */
+            position: sticky; /* Keep header visible on scroll */
+            top: 0;
+            z-index: 1000;
         }
-        .page-header-minimal .container { display: flex; justify-content: center; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .page-header-minimal .logo-link { display: flex; align-items: center; text-decoration: none; color: var(--text-color); font-family: var(--secondary-font); font-size: 1.5em; font-weight: bold; }
-        .page-header-minimal .logo-link img { height: 40px; margin-right: 10px; filter: drop-shadow(0 0 5px var(--highlight-color)); }
+        .page-header-minimal .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.25rem; /* 20px */
+        }
+        .page-header-minimal .logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-color);
+            font-family: var(--secondary-font);
+            font-size: 1.5rem; /* 1.5em */
+            font-weight: bold;
+        }
+        .page-header-minimal .logo-link img {
+            height: 2.5rem; /* 40px */
+            margin-right: 0.625rem; /* 10px */
+            filter: drop-shadow(0 0 0.3125rem var(--highlight-color)); /* 5px */
+        }
 
-
+        /* Dashboard Main Content */
         .dashboard-main {
             flex-grow: 1;
-            padding: 30px 20px;
+            padding: 1.875rem 1.25rem; /* 30px 20px */
         }
         .dashboard-container {
             max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr)); /* 300px */
+            gap: 1.5625rem; /* 25px */
         }
 
+        /* Dashboard Card Styles */
         .dashboard-card {
             background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px 30px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2), 0 0 0 1px transparent; /* Base shadow */
+            border-radius: 0.75rem; /* 12px */
+            padding: 1.5625rem 1.875rem; /* 25px 30px */
+            border: 0.0625rem solid var(--border-color); /* 1px */
+            box-shadow: 0 0.3125rem 0.9375rem rgba(0,0,0,0.2), 0 0 0 0.0625rem transparent; /* 5px 15px, 1px */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
         }
         .dashboard-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 10px 30px rgba(0, 239, 255, 0.15), 0 0 0 1px var(--highlight-color); /* Glow effect on hover */
+            transform: translateY(-0.3125rem) scale(1.02); /* 5px */
+            box-shadow: 0 0.625rem 1.875rem rgba(0, 239, 255, 0.15), 0 0 0 0.0625rem var(--highlight-color); /* 10px 30px, 1px */
         }
         .dashboard-card::before { /* Subtle animated gradient border */
             content: "";
             position: absolute;
-            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            top: -0.125rem; left: -0.125rem; right: -0.125rem; bottom: -0.125rem; /* 2px */
             background: conic-gradient(from 180deg at 50% 50%, var(--highlight-color) 0deg, var(--bg-dark-2) 60deg, var(--highlight-color) 120deg, var(--bg-dark-2) 180deg, var(--highlight-color) 240deg, var(--bg-dark-2) 300deg, var(--highlight-color) 360deg);
             z-index: -1;
-            border-radius: 14px; /* Slightly larger than card's border-radius */
+            border-radius: 0.875rem; /* 14px */
             opacity: 0;
             transition: opacity 0.4s ease;
         }
@@ -92,74 +123,119 @@
         .dashboard-card-header {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
+            margin-bottom: 1.25rem; /* 20px */
+            border-bottom: 0.0625rem solid var(--border-color); /* 1px */
+            padding-bottom: 0.9375rem; /* 15px */
         }
         .dashboard-card-header i {
-            font-size: 1.8em;
+            font-size: 1.8rem; /* 1.8em */
             color: var(--highlight-color);
-            margin-right: 15px;
-            text-shadow: 0 0 8px var(--highlight-color);
+            margin-right: 0.9375rem; /* 15px */
+            text-shadow: 0 0 0.5rem var(--highlight-color); /* 8px */
         }
         .dashboard-card-header h3 {
             font-family: var(--secondary-font);
-            font-size: 1.4em;
+            font-size: 1.4rem; /* 1.4em */
             color: var(--text-color);
             margin: 0;
         }
 
-        .profile-card { grid-column: 1 / -1; display: flex; align-items: center; gap: 30px; } /* Span full width */
+        /* Profile Card Specifics */
+        .profile-card {
+            grid-column: 1 / -1; /* Span full width */
+            display: flex;
+            align-items: center;
+            gap: 1.875rem; /* 30px */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            justify-content: center; /* Center content when wrapped */
+            text-align: center; /* Center text when wrapped */
+        }
         .profile-picture-wrapper {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%; /* Default circle */
-            /* Hexagon attempt - more complex, might need ::before/::after or clip-path */
-            /* For a simpler unique look, consider a glowing border or a non-standard shape if CSS allows easily */
+            width: 9.375rem; /* 150px */
+            height: 9.375rem; /* 150px */
+            border-radius: 50%;
             background-color: var(--bg-dark-2);
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid var(--highlight-color);
-            box-shadow: 0 0 15px var(--highlight-color), inset 0 0 10px rgba(0, 239, 255, 0.3);
-            overflow: hidden; /* if using an img tag */
+            border: 0.1875rem solid var(--highlight-color); /* 3px */
+            box-shadow: 0 0 0.9375rem var(--highlight-color), inset 0 0 0.625rem rgba(0, 239, 255, 0.3); /* 15px, 10px */
+            overflow: hidden;
+            flex-shrink: 0; /* Prevent shrinking on smaller screens */
         }
-        .profile-picture-wrapper i.fa-user-astronaut { font-size: 5em; color: var(--highlight-color); opacity: 0.8; }
-        .profile-info h2 { font-family: var(--secondary-font); font-size: 2em; color: var(--highlight-color); margin-bottom: 5px; }
-        .profile-info p { color: var(--text-light); margin: 5px 0; font-size: 1.1em; }
+        .profile-picture-wrapper i.fa-user-astronaut {
+            font-size: 5rem; /* 5em */
+            color: var(--highlight-color);
+            opacity: 0.8;
+        }
+        .profile-info {
+            flex-grow: 1; /* Allow info to take remaining space */
+            text-align: left; /* Default text alignment */
+        }
+        .profile-info h2 {
+            font-family: var(--secondary-font);
+            font-size: 2rem; /* 2em */
+            color: var(--highlight-color);
+            margin-bottom: 0.3125rem; /* 5px */
+        }
+        .profile-info p {
+            color: var(--text-light);
+            margin: 0.3125rem 0; /* 5px */
+            font-size: 1.1rem; /* 1.1em */
+        }
 
-        .info-item { margin-bottom: 12px; }
-        .info-item strong { color: var(--text-color); min-width: 100px; display: inline-block; }
-        .info-item span { color: var(--text-light); }
+        /* Info Items */
+        .info-item {
+            margin-bottom: 0.75rem; /* 12px */
+        }
+        .info-item strong {
+            color: var(--text-color);
+            min-width: 6.25rem; /* 100px */
+            display: inline-block;
+        }
+        .info-item span {
+            color: var(--text-light);
+        }
 
+        /* Buttons & Forms */
         .dashboard-button, .dashboard-form button {
             background-color: var(--highlight-color);
             color: var(--bg-color);
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 0.625rem 1.25rem; /* 10px 20px */
+            border-radius: 0.375rem; /* 6px */
             font-family: var(--secondary-font);
             font-weight: bold;
             text-decoration: none;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             display: inline-block;
-            margin-top: 10px;
+            margin-top: 0.625rem; /* 10px */
             text-align: center;
+            font-size: 0.9rem; /* Base font size */
         }
         .dashboard-button:hover, .dashboard-form button:hover {
             background-color: #00c0c0; /* Slightly darker highlight */
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 239, 255, 0.3);
+            transform: translateY(-0.125rem); /* 2px */
+            box-shadow: 0 0.3125rem 0.9375rem rgba(0, 239, 255, 0.3); /* 5px 15px */
         }
         .dashboard-button.danger { background-color: var(--danger-color); color: white; }
-        .dashboard-button.danger:hover { background-color: #cc3032; box-shadow: 0 5px 15px rgba(255, 77, 79, 0.4); }
-        .dashboard-button.secondary { background-color: var(--bg-dark-2); color: var(--text-light); border: 1px solid var(--border-color); }
-        .dashboard-button.secondary:hover { border-color: var(--highlight-color); color: var(--highlight-color); box-shadow: 0 5px 15px rgba(0, 239, 255, 0.2); }
+        .dashboard-button.danger:hover { background-color: #cc3032; box-shadow: 0 0.3125rem 0.9375rem rgba(255, 77, 79, 0.4); }
+        .dashboard-button.secondary { background-color: var(--bg-dark-2); color: var(--text-light); border: 0.0625rem solid var(--border-color); }
+        .dashboard-button.secondary:hover { border-color: var(--highlight-color); color: var(--highlight-color); box-shadow: 0 0.3125rem 0.9375rem rgba(0, 239, 255, 0.2); }
 
-        .dashboard-form { margin-top: 15px; }
+        .dashboard-form { margin-top: 0.9375rem; /* 15px */ }
 
-        .site-footer-minimal { text-align: center; padding: 30px 20px; border-top: 1px solid var(--border-color); color: var(--text-light); font-size: 0.9em; margin-top: 40px; }
+        /* Minimal Footer */
+        .site-footer-minimal {
+            text-align: center;
+            padding: 1.875rem 1.25rem; /* 30px 20px */
+            border-top: 0.0625rem solid var(--border-color); /* 1px */
+            color: var(--text-light);
+            font-size: 0.9rem; /* 0.9em */
+            margin-top: 2.5rem; /* 40px */
+        }
+        
         /* Modal Styles */
         .modal {
             display: none; /* Hidden by default */
@@ -172,37 +248,222 @@
             overflow: auto; /* Enable scroll if needed */
             background-color: rgba(0,0,0,0.7); /* Black w/ opacity */
             backdrop-filter: blur(5px);
+            display: flex; /* Use flex to center content */
             align-items: center;
             justify-content: center;
         }
         .modal-content {
             background-color: var(--card-bg);
             margin: auto;
-            padding: 30px 40px;
-            border: 1px solid var(--highlight-color);
-            border-radius: 10px;
+            padding: 1.875rem 2.5rem; /* 30px 40px */
+            border: 0.0625rem solid var(--highlight-color); /* 1px */
+            border-radius: 0.625rem; /* 10px */
             width: 90%;
-            max-width: 550px;
-            box-shadow: 0 10px 30px rgba(0, 239, 255, 0.2);
+            max-width: 34.375rem; /* 550px */
+            box-shadow: 0 0.625rem 1.875rem rgba(0, 239, 255, 0.2); /* 10px 30px */
             position: relative;
             color: var(--text-color);
         }
-        .modal-content h3 { font-family: var(--secondary-font); color: var(--highlight-color); margin-top: 0; margin-bottom: 25px; font-size: 1.8em; }
-        .close-button { color: var(--text-light); float: right; font-size: 28px; font-weight: bold; position: absolute; top: 15px; right: 25px; }
-        .close-button:hover, .close-button:focus { color: var(--highlight-color); text-decoration: none; cursor: pointer; }
-        .form-input { width: 100%; padding: 12px 15px; margin-bottom: 15px; background-color: var(--bg-dark-2); border: 1px solid var(--border-color); border-radius: 5px; color: var(--text-color); font-size: 1em; }
-        .form-input:focus { border-color: var(--highlight-color); box-shadow: 0 0 8px var(--highlight-color); outline: none; }
-        .form-error { color: var(--danger-color); font-size: 0.9em; margin-bottom: 10px; display: block; }
-        .login-history-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .login-history-table th, .login-history-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.95em; }
-        .login-history-table th { color: var(--highlight-color); font-family: var(--secondary-font); }
-        .login-history-table td { color: var(--text-light); }
-        .login-history-table tr.current-device td { background-color: rgba(0, 239, 255, 0.05); }
-        .login-history-table td .fa-check-circle { color: var(--success-color); margin-left: 5px; }
-        .message-area { padding: 10px; margin-bottom: 15px; border-radius: 5px; text-align: center; }
-        .message-area.success { background-color: rgba(82, 196, 26, 0.2); color: var(--success-color); border: 1px solid var(--success-color); }
-        .message-area.error { background-color: rgba(255, 77, 79, 0.2); color: var(--danger-color); border: 1px solid var(--danger-color); }
+        .modal-content h3 {
+            font-family: var(--secondary-font);
+            color: var(--highlight-color);
+            margin-top: 0;
+            margin-bottom: 1.5625rem; /* 25px */
+            font-size: 1.8rem; /* 1.8em */
+        }
+        .close-button {
+            color: var(--text-light);
+            float: right;
+            font-size: 1.75rem; /* 28px */
+            font-weight: bold;
+            position: absolute;
+            top: 0.9375rem; /* 15px */
+            right: 1.5625rem; /* 25px */
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .close-button:hover, .close-button:focus {
+            color: var(--highlight-color);
+            text-decoration: none;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 0.9375rem; /* 12px 15px */
+            margin-bottom: 0.9375rem; /* 15px */
+            background-color: var(--bg-dark-2);
+            border: 0.0625rem solid var(--border-color); /* 1px */
+            border-radius: 0.3125rem; /* 5px */
+            color: var(--text-color);
+            font-size: 1rem; /* 1em */
+        }
+        .form-input:focus {
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 0.5rem var(--highlight-color); /* 8px */
+            outline: none;
+        }
+        .form-error {
+            color: var(--danger-color);
+            font-size: 0.9rem; /* 0.9em */
+            margin-bottom: 0.625rem; /* 10px */
+            display: block;
+        }
+        .login-history-wrapper {
+            overflow-x: auto; /* Enable horizontal scrolling for table on small screens */
+            margin-top: 0.9375rem; /* 15px */
+        }
+        .login-history-table {
+            width: 100%;
+            min-width: 30rem; /* Ensure table has a minimum width to prevent squishing */
+            border-collapse: collapse;
+        }
+        .login-history-table th, .login-history-table td {
+            padding: 0.625rem; /* 10px */
+            text-align: left;
+            border-bottom: 0.0625rem solid var(--border-color); /* 1px */
+            font-size: 0.95rem; /* 0.95em */
+        }
+        .login-history-table th {
+            color: var(--highlight-color);
+            font-family: var(--secondary-font);
+        }
+        .login-history-table td {
+            color: var(--text-light);
+            word-break: break-word; /* Allow long user agents to wrap */
+        }
+        .login-history-table tr.current-device td {
+            background-color: rgba(0, 239, 255, 0.05);
+        }
+        .login-history-table td .fa-check-circle {
+            color: var(--success-color);
+            margin-left: 0.3125rem; /* 5px */
+        }
+        .message-area {
+            padding: 0.625rem; /* 10px */
+            margin-bottom: 0.9375rem; /* 15px */
+            border-radius: 0.3125rem; /* 5px */
+            text-align: center;
+        }
+        .message-area.success { background-color: rgba(82, 196, 26, 0.2); color: var(--success-color); border: 0.0625rem solid var(--success-color); }
+        .message-area.error { background-color: rgba(255, 77, 79, 0.2); color: var(--danger-color); border: 0.0625rem solid var(--danger-color); }
 
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .page-header-minimal .logo-link {
+                font-size: 1.3rem;
+            }
+            .page-header-minimal .logo-link img {
+                height: 2rem;
+            }
+            .dashboard-main {
+                padding: 1.5rem 1rem;
+            }
+            .dashboard-container {
+                grid-template-columns: 1fr; /* Stack cards on smaller screens */
+                gap: 1.25rem;
+            }
+            .profile-card {
+                flex-direction: column; /* Stack profile picture and info */
+                gap: 1rem;
+                text-align: center;
+            }
+            .profile-info {
+                text-align: center; /* Center text when stacked */
+            }
+            .profile-info h2 {
+                font-size: 1.8rem;
+            }
+            .profile-info p {
+                font-size: 1rem;
+            }
+            .dashboard-card {
+                padding: 1.25rem 1.5rem;
+            }
+            .dashboard-card-header i {
+                font-size: 1.6rem;
+                margin-right: 0.75rem;
+            }
+            .dashboard-card-header h3 {
+                font-size: 1.2rem;
+            }
+            .dashboard-button, .dashboard-form button {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+            .site-footer-minimal {
+                padding: 1.5rem 1rem;
+                font-size: 0.8rem;
+                margin-top: 2rem;
+            }
+            .modal-content {
+                padding: 1.5rem 1.875rem;
+                max-width: 90%; /* Ensure it doesn't get too wide on small screens */
+            }
+            .modal-content h3 {
+                font-size: 1.5rem;
+                margin-bottom: 1.25rem;
+            }
+            .close-button {
+                font-size: 1.5rem;
+                top: 0.75rem;
+                right: 1.25rem;
+            }
+            .form-input {
+                padding: 0.625rem 0.75rem;
+                font-size: 0.9rem;
+            }
+            .login-history-table th, .login-history-table td {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header-minimal .logo-link {
+                font-size: 1.1rem;
+            }
+            .page-header-minimal .logo-link img {
+                height: 1.8rem;
+            }
+            .profile-picture-wrapper {
+                width: 7.5rem; /* Smaller profile picture */
+                height: 7.5rem;
+            }
+            .profile-picture-wrapper i.fa-user-astronaut {
+                font-size: 4rem;
+            }
+            .profile-info h2 {
+                font-size: 1.5rem;
+            }
+            .profile-info p {
+                font-size: 0.9rem;
+            }
+            .dashboard-card-header h3 {
+                font-size: 1.1rem;
+            }
+            .dashboard-button, .dashboard-form button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            .site-footer-minimal {
+                padding: 1rem 0.8rem;
+                font-size: 0.75rem;
+                margin-top: 1.5rem;
+            }
+            .modal-content {
+                padding: 1rem 1.25rem;
+            }
+            .modal-content h3 {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+            .form-input {
+                padding: 0.5rem 0.6rem;
+                font-size: 0.85rem;
+            }
+            .login-history-table {
+                min-width: 25rem; /* Adjust min-width if needed for very small screens */
+            }
+        }
     </style>
 </head>
 <body>
@@ -214,7 +475,7 @@
         </div>
     </header>
     <main class="dashboard-main">
-        <div id="message-container" style="max-width: 1200px; margin: 0 auto 20px auto;">
+        <div id="message-container" style="max-width: 1200px; margin: 0 auto 1.25rem auto;"> {# 20px #}
             {# Django messages will be injected here by JS if not using AJAX for all, or use for JS-driven messages #}
         </div>
         <div class="dashboard-container">
@@ -227,7 +488,7 @@
                 <div class="profile-info">
                     <h2>{{ user.username|capfirst }}</h2>
                     <p><i class="fas fa-envelope fa-fw"></i> {{ user.email|default:"No email provided" }}</p>
-                    <p><i class="fas fa-calendar-alt fa-fw"></i> Joined: {{ user.date_joined|date:"M d, Y" }}</p>
+                    <p><i class="fas fa-calendar-alt fa-fw"></i> Joined: {{ user.date_joined|date:"M d, Y" }}</p> {# Added Timezone T #}
                 </div>
             </div>
             <div class="dashboard-card">
@@ -258,7 +519,7 @@
             {% endif %}
 
             <div class="dashboard-card logout-card">
-                 <div class="dashboard-card-header">
+                   <div class="dashboard-card-header">
                     <i class="fas fa-sign-out-alt"></i><h3>Session</h3>
                 </div>
                 <form method="post" action="{% url 'logout' %}" class="dashboard-form">
@@ -291,7 +552,7 @@
                     <input type="email" name="email" value="{{ user.email }}" required id="id_email_edit" class="form-input">
                     <span class="form-error" id="error_email_edit"></span>
                 </div>
-                <button type="submit" class="dashboard-button" style="width: 100%; margin-top: 20px;">Save Changes</button>
+                <button type="submit" class="dashboard-button" style="width: 100%; margin-top: 1.25rem;">Save Changes</button> {# 20px #}
             </form>
         </div>
     </div>
@@ -319,7 +580,7 @@
                     <input type="password" name="new_password2" required id="id_new_password2" class="form-input">
                     <span class="form-error" id="error_new_password2"></span>
                 </div>
-                <button type="submit" class="dashboard-button" style="width: 100%; margin-top: 20px;">Update Password</button>
+                <button type="submit" class="dashboard-button" style="width: 100%; margin-top: 1.25rem;">Update Password</button> {# 20px #}
             </form>
         </div>
     </div>
@@ -329,7 +590,7 @@
         <div class="modal-content">
             <span class="close-button" onclick="closeModal('loginHistoryModal')">&times;</span>
             <h3>Recent Login Activity</h3>
-            <div id="loginHistoryContent">
+            <div id="loginHistoryContent" class="login-history-wrapper"> {# Added wrapper for overflow-x #}
                 <p>Loading history...</p>
             </div>
         </div>
@@ -359,6 +620,8 @@
         area.innerHTML = `<div class="message-area ${isSuccess ? 'success' : 'error'}">${message}</div>`;
     }
     function displayFormErrors(formId, errors) {
+        // Clear all existing errors first
+        document.querySelectorAll(`#${formId} .form-error`).forEach(el => el.textContent = '');
         for (const field in errors) {
             const errorEl = document.getElementById(`error_${field}_edit`) || document.getElementById(`error_${field}`);
             if (errorEl) errorEl.textContent = errors[field];
@@ -369,18 +632,26 @@
     document.getElementById('changePasswordBtn').onclick = () => openModal('changePasswordModal');
     document.getElementById('loginHistoryBtn').onclick = () => {
         openModal('loginHistoryModal');
+        // Clear previous content and show loading message
+        document.getElementById('loginHistoryContent').innerHTML = '<p>Loading history...</p>';
+
         fetch("{% url 'main_site:get_login_history' %}")
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 const contentEl = document.getElementById('loginHistoryContent');
                 if (data.history && data.history.length > 0) {
                     let tableHtml = '<table class="login-history-table"><thead><tr><th>Timestamp</th><th>IP Address</th><th>Device/Browser</th></tr></thead><tbody>';
                     data.history.forEach(item => {
                         tableHtml += `<tr class="${item.is_current_device ? 'current-device' : ''}">
-                                        <td>${item.timestamp} ${item.is_current_device ? '<i class="fas fa-check-circle"></i>' : ''}</td>
-                                        <td>${item.ip_address}</td>
-                                        <td>${item.user_agent.substring(0, 50)}${item.user_agent.length > 50 ? '...' : ''}</td>
-                                      </tr>`;
+                                            <td>${item.timestamp} ${item.is_current_device ? '<i class="fas fa-check-circle"></i>' : ''}</td>
+                                            <td>${item.ip_address}</td>
+                                            <td>${item.user_agent ? item.user_agent.substring(0, 50) + (item.user_agent.length > 50 ? '...' : '') : 'N/A'}</td>
+                                        </tr>`;
                     });
                     tableHtml += '</tbody></table>';
                     contentEl.innerHTML = tableHtml;
@@ -396,6 +667,10 @@
 
     document.getElementById('editProfileForm').onsubmit = function(e) {
         e.preventDefault();
+        // Clear previous messages and errors
+        displayMessage('editProfileMessageArea', '', true); // Clear success/error message
+        displayFormErrors('editProfileForm', {}); // Clear form-specific errors
+
         fetch("{% url 'main_site:edit_profile' %}", {
             method: 'POST',
             body: new FormData(this),
@@ -410,11 +685,18 @@
                 displayMessage('editProfileMessageArea', body.message || 'Error updating profile.', false);
                 if(body.errors) displayFormErrors('editProfileForm', body.errors);
             }
-        }).catch(error => displayMessage('editProfileMessageArea', 'An unexpected error occurred.', false));
+        }).catch(error => {
+            console.error('Fetch error:', error);
+            displayMessage('editProfileMessageArea', 'An unexpected error occurred.', false);
+        });
     };
 
     document.getElementById('changePasswordForm').onsubmit = function(e) {
         e.preventDefault();
+        // Clear previous messages and errors
+        displayMessage('changePasswordMessageArea', '', true); // Clear success/error message
+        displayFormErrors('changePasswordForm', {}); // Clear form-specific errors
+
         fetch("{% url 'main_site:change_password_popup' %}", {
             method: 'POST',
             body: new FormData(this),
@@ -430,7 +712,10 @@
                 displayMessage('changePasswordMessageArea', body.message || 'Error changing password.', false);
                 if(body.errors) displayFormErrors('changePasswordForm', body.errors);
             }
-        }).catch(error => displayMessage('changePasswordMessageArea', 'An unexpected error occurred.', false));
+        }).catch(error => {
+            console.error('Fetch error:', error);
+            displayMessage('changePasswordMessageArea', 'An unexpected error occurred.', false);
+        });
     };
     </script>
 </body>
