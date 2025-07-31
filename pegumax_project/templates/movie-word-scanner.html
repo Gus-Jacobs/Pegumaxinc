@@ -70,7 +70,7 @@
         }
 
         .header-logo-img {
-            height: 2.5rem;
+            height: 2.5rem; /* Responsive height */
             margin-right: 0.5rem;
         }
 
@@ -104,6 +104,10 @@
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
+            /* Explicitly remove button-like styles from nav links */
+            background: none;
+            border: none;
+            padding: 0;
         }
 
         .main-nav a:hover {
@@ -159,14 +163,15 @@
             text-align: center;
         }
 
-        ul {
+        /* Target only feature lists for checkmarks */
+        ul.feature-list { /* Added .feature-list class */
             list-style: none;
             padding: 0;
             margin: 0 auto 2.5rem auto; /* 40px */
             max-width: 700px;
         }
 
-        ul li {
+        ul.feature-list li { /* Added .feature-list class */
             background-color: #1a1c23; /* Assuming --bg-dark-1 */
             padding: 0.8rem 1.2rem;
             margin-bottom: 0.625rem; /* 10px */
@@ -178,7 +183,7 @@
             align-items: center;
         }
 
-        ul li::before {
+        ul.feature-list li::before { /* Added .feature-list class */
             content: "\f00c"; /* Font Awesome checkmark icon */
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
@@ -337,10 +342,10 @@
                 margin-top: 2rem;
                 margin-bottom: 1rem;
             }
-            ul {
+            ul.feature-list { /* Targeted for media query */
                 margin-bottom: 2rem;
             }
-            ul li {
+            ul.feature-list li { /* Targeted for media query */
                 font-size: 0.95rem;
                 padding: 0.7rem 1rem;
             }
@@ -399,7 +404,7 @@
                 margin-top: 1.5rem;
                 margin-bottom: 0.8rem;
             }
-            ul li {
+            ul.feature-list li { /* Targeted for media query */
                 font-size: 0.9rem;
                 padding: 0.6rem 0.8rem;
             }
@@ -447,7 +452,7 @@
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'main_site:account' %}">Account</a></li> {# Create account_view and URL later #}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li>
                     {% else %}
                         <li><a href="{% url 'login' %}">Login</a></li>
                         <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
@@ -467,7 +472,7 @@
                 <p class="section-intro">Unlock insights from screenplays and movie scripts with our powerful analysis tool. Movie Word Scanner helps writers, researchers, and enthusiasts delve deep into textual data, identifying word frequencies, character dialogue patterns, and thematic elements with ease.</p>
                 
                 <h3>Key Features:</h3>
-                <ul>
+                <ul class="feature-list"> {# Added class "feature-list" here #}
                     <li>Detailed word frequency analysis.</li>
                     <li>Character-specific dialogue extraction.</li>
                     <li>Customizable stop-word lists.</li>
@@ -493,9 +498,9 @@
             <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
             <p>Empowering the human spirit through technological transcendence.</p>
             <div class="social-links">
-                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
             </div>
             <div class="contact-info">
                 <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
