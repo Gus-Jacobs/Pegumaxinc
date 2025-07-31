@@ -104,6 +104,10 @@
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
+            /* Explicitly remove button-like styles from nav links */
+            background: none;
+            border: none;
+            padding: 0;
         }
 
         .main-nav a:hover {
@@ -772,9 +776,9 @@
             <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
             <p>Empowering the human spirit through technological transcendence.</p>
             <div class="social-links">
-                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
             </div>
             <div class="contact-info">
                 <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
@@ -782,182 +786,165 @@
             </div>
         </div>
     </footer>
+
     <script src="{% static 'js/script.js' %}"></script>
     <script>
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-
-        // Mobile navigation toggle
-        const navToggle = document.querySelector('.nav-toggle');
-        const mainNav = document.querySelector('.main-nav');
-
-        if (navToggle && mainNav) {
-            navToggle.addEventListener('click', () => {
-                mainNav.classList.toggle('is-open');
-                navToggle.setAttribute('aria-expanded', mainNav.classList.contains('is-open'));
-            });
-        }
-
-        // Function to display messages within modals
-        function displayModalMessage(modalId, message, isSuccess) {
-            const messageArea = document.querySelector(`#${modalId} .modal-message-area`);
-            if (messageArea) {
-                messageArea.textContent = message;
-                messageArea.className = `modal-message-area ${isSuccess ? 'success' : 'error'}`;
-                messageArea.style.display = 'block';
-            }
-        }
-
-        // Tab functionality
         document.addEventListener('DOMContentLoaded', function() {
-            populateAllTab(); // Populate "All" tab on initial load
-            openTab(null, 'all'); // Ensure 'All' tab is active on load
+            document.getElementById('current-year').textContent = new Date().getFullYear();
 
-            // Optional: Show subscription popup after a delay (e.g., 5 seconds)
-            // setTimeout(() => {
-            //     const popup = document.getElementById('subscription-popup');
-            //     if (popup && popup.style.display === 'none') { // Only show if not already interacted with
-            //         const userNameSpan = document.getElementById('popup-user-name');
-            //         {% if user.is_authenticated %}
-            //             userNameSpan.textContent = "{{ user.username|escapejs }}";
-            //         {% else %}
-            //             userNameSpan.textContent = "Explorer"; // Default for guests
-            //         {% endif %}
-            //         popup.style.display = 'flex';
-            //     }
-            // }, 5000);
+            // Mobile navigation toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const mainNav = document.querySelector('.main-nav');
+
+            if (navToggle && mainNav) {
+                navToggle.addEventListener('click', () => {
+                    mainNav.classList.toggle('is-open');
+                    navToggle.setAttribute('aria-expanded', mainNav.classList.contains('is-open'));
+                });
+            }
+
+            // Tab functionality
+            function openTab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tab-content");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+                tablinks = document.getElementsByClassName("tab-link");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+                document.getElementById(tabName).style.display = "block";
+                evt.currentTarget.className += " active";
+
+                // Populate "All" tab dynamically
+                if (tabName === 'all') {
+                    const allSoftwareGrid = document.querySelector('#all .software-grid');
+                    allSoftwareGrid.innerHTML = ''; // Clear existing content
+
+                    const toolCards = Array.from(document.querySelectorAll('#tools .software-card'));
+                    const suiteCards = Array.from(document.querySelectorAll('#suites .software-card'));
+                    const gameCards = Array.from(document.querySelectorAll('#games .software-card'));
+
+                    // Clone and append all cards
+                    toolCards.forEach(card => allSoftwareGrid.appendChild(card.cloneNode(true)));
+                    suiteCards.forEach(card => allSoftwareGrid.appendChild(card.cloneNode(true)));
+                    gameCards.forEach(card => allSoftwareGrid.appendChild(card.cloneNode(true)));
+                }
+            }
+
+            // Initial tab load (show "All" tab by default)
+            const initialTabLink = document.querySelector('.tab-link.active');
+            if (initialTabLink) {
+                openTab({ currentTarget: initialTabLink }, 'all');
+            }
+
+            // Modal functions for Submit Idea
+            window.openSubmitIdeaForm = function() {
+                document.getElementById('submit-idea-popup').style.display = 'flex';
+                document.getElementById('submitIdeaMessageArea').style.display = 'none'; // Hide messages on open
+                document.getElementById('submit-idea-form').reset(); // Clear form
+            };
+
+            window.closeSubmitIdeaForm = function() {
+                document.getElementById('submit-idea-popup').style.display = 'none';
+            };
+
+            document.getElementById('submit-idea-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+                const messageArea = document.getElementById('submitIdeaMessageArea');
+
+                messageArea.style.display = 'block';
+                messageArea.className = 'modal-message-area'; // Reset classes
+                messageArea.textContent = 'Submitting idea...';
+
+                fetch(form.action, { // Assuming form.action is correctly set by Django
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        messageArea.textContent = data.message;
+                        messageArea.classList.add('success');
+                        setTimeout(() => {
+                            closeSubmitIdeaForm();
+                            messageArea.style.display = 'none';
+                        }, 2000);
+                    } else {
+                        messageArea.textContent = data.message || 'Error submitting idea.';
+                        messageArea.classList.add('error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    messageArea.textContent = 'An error occurred. Please try again.';
+                    messageArea.classList.add('error');
+                });
+            });
+
+            // Modal functions for Subscription Interest
+            window.openSubscriptionInterestForm = function() {
+                document.getElementById('subscription-popup').style.display = 'none'; // Close the first popup
+                document.getElementById('subscription-interest-popup').style.display = 'flex';
+                document.getElementById('subscriptionInterestMessageArea').style.display = 'none'; // Hide messages on open
+                document.getElementById('subscription-interest-form').reset(); // Clear form
+            };
+
+            window.closeSubscriptionInterestForm = function() {
+                document.getElementById('subscription-interest-popup').style.display = 'none';
+            };
+
+            document.getElementById('subscription-interest-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+                const messageArea = document.getElementById('subscriptionInterestMessageArea');
+
+                messageArea.style.display = 'block';
+                messageArea.className = 'modal-message-area'; // Reset classes
+                messageArea.textContent = 'Submitting feedback...';
+
+                // You'll need a Django URL for this form submission as well
+                fetch("{% url 'main_site:submit_subscription_interest' %}", { // Placeholder URL
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        messageArea.textContent = data.message;
+                        messageArea.classList.add('success');
+                        setTimeout(() => {
+                            closeSubscriptionInterestForm();
+                            messageArea.style.display = 'none';
+                        }, 2000);
+                    } else {
+                        messageArea.textContent = data.message || 'Error submitting feedback.';
+                        messageArea.classList.add('error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    messageArea.textContent = 'An error occurred. Please try again.';
+                    messageArea.classList.add('error');
+                });
+            });
+
+            // Handle initial user name for subscription popup
+            const popupUserNameElement = document.getElementById('popup-user-name');
+            if (popupUserNameElement && '{{ user.username }}') {
+                popupUserNameElement.textContent = '{{ user.username|capfirst }}';
+            }
         });
-
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-                tabcontent[i].classList.remove("active");
-            }
-            tablinks = document.getElementsByClassName("tab-link");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].classList.remove("active");
-            }
-            document.getElementById(tabName).style.display = "block";
-            document.getElementById(tabName).classList.add("active");
-            if (evt) { // Check if evt is passed (not null on initial load)
-                evt.currentTarget.classList.add("active");
-            } else { // For initial load, find the 'all' tab link and activate it
-                const allTabLink = document.querySelector('.tab-link[onclick*="\'all\'"]');
-                if (allTabLink) {
-                    allTabLink.classList.add('active');
-                }
-            }
-        }
-
-        function populateAllTab() {
-            const allTabGrid = document.querySelector('#all .software-grid');
-            if (!allTabGrid) return; // Exit if grid element not found
-            allTabGrid.innerHTML = ''; // Clear existing items
-
-            const categories = ['tools', 'suites', 'games'];
-            categories.forEach(category => {
-                const categoryGrid = document.querySelector(`#${category} .software-grid`);
-                if (categoryGrid) {
-                    const items = categoryGrid.querySelectorAll('.software-card');
-                    items.forEach(item => {
-                        allTabGrid.appendChild(item.cloneNode(true));
-                    });
-                }
-            });
-        }
-
-        // Modal functions
-        function openSubmitIdeaForm() {
-            document.getElementById('submit-idea-popup').style.display = 'flex';
-            document.querySelector('#submitIdeaMessageArea').style.display = 'none'; // Hide message area on open
-        }
-        function closeSubmitIdeaForm() {
-            document.getElementById('submit-idea-popup').style.display = 'none';
-            document.getElementById('submit-idea-form').reset(); // Reset the form
-            document.querySelector('#submitIdeaMessageArea').style.display = 'none'; // Hide message area on close
-        }
-
-        function openSubscriptionInterestForm() {
-            document.getElementById('subscription-popup').style.display = 'none'; // Hide the initial popup
-            document.getElementById('subscription-interest-popup').style.display = 'flex';
-            document.querySelector('#subscriptionInterestMessageArea').style.display = 'none'; // Hide message area on open
-        }
-
-        function closeSubscriptionInterestForm() {
-            document.getElementById('subscription-interest-popup').style.display = 'none';
-            document.getElementById('subscription-interest-form').reset(); // Reset the form
-            document.querySelector('#subscriptionInterestMessageArea').style.display = 'none'; // Hide message area on close
-        }
-
-        // Handle Submit Idea Form
-        const submitIdeaForm = document.getElementById('submit-idea-form');
-        if (submitIdeaForm) {
-            submitIdeaForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const form = event.target;
-                const formData = new FormData(form);
-                
-                const dataForBackend = new FormData();
-                dataForBackend.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
-                dataForBackend.append('idea_text', formData.get('idea-description'));
-                if (formData.get('idea-email')) {
-                    dataForBackend.append('user_email_idea', formData.get('idea-email'));
-                }
-                dataForBackend.append('idea_name', formData.get('idea-name') || ''); // Include optional fields
-                dataForBackend.append('idea_type', formData.get('idea-type'));
-
-                fetch("{% url 'main_site:submit_software_idea' %}", {
-                    method: 'POST',
-                    body: dataForBackend,
-                })
-                .then(response => response.json())
-                .then(data => {
-                    displayModalMessage('submit-idea-popup', data.message, data.success);
-                    if(data.success) {
-                        setTimeout(() => closeSubmitIdeaForm(), 2000); // Close after 2 seconds
-                    }
-                })
-                .catch(error => {
-                    console.error('Error submitting idea:', error);
-                    displayModalMessage('submit-idea-popup', 'An error occurred. Please try again.', false);
-                });
-            });
-        }
-
-        // Handle Subscription Interest Form
-        const subInterestForm = document.getElementById('subscription-interest-form');
-        if (subInterestForm) {
-            subInterestForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const form = event.target;
-                const formData = new FormData(form);
-
-                const dataForBackend = new FormData();
-                dataForBackend.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
-                dataForBackend.append('email_access', formData.get('interest-email'));
-                let reason = `Tools worth: ${formData.get('interest-tools-worth') || 'N/A'}\n`;
-                reason += `Could replace: ${formData.get('interest-replaces') || 'N/A'}\n`;
-                reason += `Wants included: ${formData.get('interest-wants') || 'N/A'}`;
-                dataForBackend.append('interest_reason_access', reason);
-
-                fetch("{% url 'main_site:full_access_inquiry' %}", {
-                    method: 'POST',
-                    body: dataForBackend,
-                })
-                .then(response => response.json())
-                .then(data => {
-                    displayModalMessage('subscription-interest-popup', data.message, data.success);
-                    if(data.success) {
-                        setTimeout(() => closeSubscriptionInterestForm(), 2000); // Close after 2 seconds
-                    }
-                })
-                .catch(error => {
-                    console.error('Error submitting interest:', error);
-                    displayModalMessage('subscription-interest-popup', 'An error occurred. Please try again.', false);
-                });
-            });
-        }
     </script>
 </body>
 </html>
