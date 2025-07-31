@@ -118,6 +118,11 @@
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
+            /* Explicitly remove button-like styles from nav links */
+            background: none;
+            border: none;
+            padding: 0;
+            white-space: nowrap; /* Prevent text wrapping */
         }
 
         .main-nav a:hover {
@@ -328,6 +333,10 @@
             .header-logo-img {
                 height: 2rem;
             }
+            /* Adjust font size for nav links on smaller screens */
+            .main-nav a {
+                font-size: 0.95rem;
+            }
 
             .main-content {
                 padding: 1rem;
@@ -383,6 +392,10 @@
             }
             .header-logo-img {
                 height: 1.8rem;
+            }
+            /* Further adjust font size for nav links on very small screens */
+            .main-nav a {
+                font-size: 0.85rem;
             }
 
             .auth-form-container {
@@ -505,12 +518,12 @@
             <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
             <p>Empowering the human spirit through technological transcendence.</p>
             <div class="social-links">
-                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
             </div>
             <div class="contact-info">
-                <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
+                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p> {# Updated to link to contact page #}
                 <p>123 Innovation Drive, Tech City, TX 75001</p>
             </div>
         </div>
