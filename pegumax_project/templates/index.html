@@ -505,7 +505,7 @@
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 768px) { /* Changed from 769px to 768px for consistency */
             .page-header .main-navbar .navbar-links {
                 display: none; /* Hide desktop nav */
                 width: 100%;
@@ -689,7 +689,6 @@
                     <span class="hamburger-line"></span>
                 </button>
                 <ul class="navbar-links">
-                    {# Removed 'Home' link as per request #}
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
@@ -848,8 +847,9 @@
             const delayBetweenSlogans = 2500; // milliseconds (longer pause between slogans)
 
             function typeSlogan() {
-                if (charIndex < slogans[sloganIndex].length) {
-                    animatedSloganElement.textContent += slogans[sloganIndex].charAt(charIndex);
+                const currentSlogan = slogans[sloganIndex];
+                if (charIndex < currentSlogan.length) {
+                    animatedSloganElement.textContent += currentSlogan.charAt(charIndex);
                     charIndex++;
                     setTimeout(typeSlogan, typingSpeed);
                 } else {
@@ -858,8 +858,9 @@
             }
 
             function deleteSlogan() {
+                const currentSlogan = slogans[sloganIndex];
                 if (charIndex > 0) {
-                    animatedSloganElement.textContent = slogans[sloganIndex].substring(0, charIndex - 1);
+                    animatedSloganElement.textContent = currentSlogan.substring(0, charIndex - 1);
                     charIndex--;
                     setTimeout(deleteSlogan, deletingSpeed);
                 } else {
