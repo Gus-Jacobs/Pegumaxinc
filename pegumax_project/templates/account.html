@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/webp" href="{% static 'img/favicon.webp' %}">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}"> {# Changed to .png for consistency #}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
@@ -238,7 +238,7 @@
         
         /* Modal Styles */
         .modal {
-            display: none; /* Hidden by default */
+            display: none; /* Hidden by default - THIS IS THE KEY CHANGE */
             position: fixed; /* Stay in place */
             z-index: 1000; /* Sit on top */
             left: 0;
@@ -477,6 +477,14 @@
     <main class="dashboard-main">
         <div id="message-container" style="max-width: 1200px; margin: 0 auto 1.25rem auto;"> {# 20px #}
             {# Django messages will be injected here by JS if not using AJAX for all, or use for JS-driven messages #}
+            {# This is where Django's messages framework messages would typically appear on initial page load #}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message-area {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
         </div>
         <div class="dashboard-container">
             
@@ -488,7 +496,7 @@
                 <div class="profile-info">
                     <h2>{{ user.username|capfirst }}</h2>
                     <p><i class="fas fa-envelope fa-fw"></i> {{ user.email|default:"No email provided" }}</p>
-                    <p><i class="fas fa-calendar-alt fa-fw"></i> Joined: {{ user.date_joined|date:"M d, Y" }}</p> {# Added Timezone T #}
+                    <p><i class="fas fa-calendar-alt fa-fw"></i> Joined: {{ user.date_joined|date:"M d, Y" }}</p>
                 </div>
             </div>
             <div class="dashboard-card">
@@ -504,7 +512,7 @@
                 <div class="dashboard-card-header">
                     <i class="fas fa-shield-alt"></i><h3>Security &amp; Activity</h3>
                 </div>
-                <p>Last Login: {{ user.last_login|date:"M d, Y, P T"|default:"N/A" }}</p> {# Added Timezone T #}
+                <p>Last Login: {{ user.last_login|date:"M d, Y, P T"|default:"N/A" }}</p>
                 {# <p>Recent Activity: (Placeholder for activity log)</p> #}
                 <button type="button" id="loginHistoryBtn" class="dashboard-button secondary">View Login History</button>
             </div>
@@ -513,13 +521,13 @@
                 <div class="dashboard-card-header">
                     <i class="fas fa-user-shield"></i><h3>Admin Tools</h3>
                 </div>
-                <a href="{% url 'admin:index' %}" class="dashboard-button" target="_blank">Django Admin Panel</a>
+                <a href="{% url 'admin:index' %}" class="dashboard-button" target="_blank" rel="noopener noreferrer">Django Admin Panel</a>
                 <a href="{% url 'main_site:admin_dashboard' %}" class="dashboard-button">Site Admin Dashboard</a>
             </div>
             {% endif %}
 
             <div class="dashboard-card logout-card">
-                   <div class="dashboard-card-header">
+                    <div class="dashboard-card-header">
                     <i class="fas fa-sign-out-alt"></i><h3>Session</h3>
                 </div>
                 <form method="post" action="{% url 'logout' %}" class="dashboard-form">
@@ -532,7 +540,7 @@
     </main>
 
     <footer class="site-footer-minimal">
-        <p>&copy; {% now "Y" %} Pegumax Inc. All rights reserved. Empowering the Future.</p>
+        <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved. Empowering the Future.</p>
     </footer>
     <!-- Edit Profile Modal -->
     <div id="editProfileModal" class="modal">
