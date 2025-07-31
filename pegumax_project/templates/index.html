@@ -46,7 +46,7 @@
 
         /* Header Styles (unified for consistency) */
         .page-header { /* Renamed from .hero-section for header part */
-            background-color: #1a1a1a; /* bg-dark-1 */
+            background-color: #1a1c23; /* bg-dark-1 */
             padding: 1rem 0;
             border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
             position: sticky;
@@ -85,7 +85,7 @@
         .hamburger-line {
             display: block;
             width: 1.5rem;
-            height: 0.125rem;
+            height: 0.125rem; /* 2px */
             background-color: #00ffff; /* highlight-color */
             margin: 0.25rem 0;
             transition: all 0.3s ease;
@@ -112,7 +112,7 @@
 
         /* Hero Section (background and main content) */
         .hero-section { /* Re-purposed for the full hero background */
-            background: linear-gradient(rgba(13, 14, 18, 0.7), rgba(13, 14, 18, 0.7)), url("{% static 'img/hero_background_main.webp' %}"); /* Placeholder image */
+            background: linear-gradient(rgba(13, 14, 18, 0.7), rgba(13, 14, 18, 0.7)), url("{% static 'img/img2.webp' %}"); /* Corrected image path */
             background-size: cover;
             background-position: center;
             background-attachment: fixed; /* Parallax effect */
@@ -224,7 +224,7 @@
 
         .about-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr)); /* 280px */
             gap: 2rem;
             margin-top: 2rem;
         }
@@ -269,7 +269,7 @@
 
         .heroes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(15.625rem, 1fr)); /* 250px */
             gap: 2rem;
             margin-top: 2rem;
         }
@@ -328,8 +328,8 @@
 
         .engaging-image-container {
             flex: 1;
-            min-width: 300px; /* Ensure image container doesn't get too small */
-            max-width: 500px;
+            min-width: 18.75rem; /* 300px */
+            max-width: 31.25rem; /* 500px */
         }
 
         .engaging-image-container img {
@@ -341,8 +341,8 @@
 
         .interactive-placeholder {
             flex: 1;
-            min-width: 300px; /* Ensure placeholder doesn't get too small */
-            max-width: 500px;
+            min-width: 18.75rem; /* 300px */
+            max-width: 31.25rem; /* 500px */
             background-color: #22242b; /* bg-dark-2 */
             padding: 2.5rem;
             border-radius: 0.75rem;
@@ -352,7 +352,7 @@
             justify-content: center;
             align-items: center;
             gap: 1.5rem;
-            min-height: 200px; /* Ensure some height for content */
+            min-height: 12.5rem; /* 200px */
         }
 
         .interactive-placeholder p {
@@ -362,8 +362,8 @@
 
         /* Site Footer Styles (consistent with other pages) */
         .site-footer {
-            background-color: #1a1a1a;
-            color: #bbb;
+            background-color: #1a1c23; /* bg-dark-1 */
+            color: #b0b0b0; /* text-light */
             padding: 1.25rem 1rem; /* Use rem for padding */
             font-size: 0.85rem; /* Use rem for font size */
             width: 100%; /* Ensure footer spans full width */
@@ -384,13 +384,13 @@
             justify-content: center;
         }
         .social-links a {
-            color: #bbb;
+            color: inherit;
             font-size: 1.2rem; /* Use rem for icon size */
             transition: color 0.3s ease;
             text-decoration: none; /* Remove underline from social links */
         }
         .social-links a:hover {
-            color: #00ffff;
+            color: #00ffff; /* highlight-color */
         }
         .contact-info {
             margin-top: 0.5rem;
@@ -400,11 +400,11 @@
             gap: 0.25rem;
         }
         .contact-info a {
-            color: #bbb;
+            color: inherit;
             text-decoration: none;
         }
         .contact-info a:hover {
-            color: #00ffff;
+            color: #00ffff; /* highlight-color */
         }
 
         /* Media Queries for responsiveness */
@@ -460,7 +460,7 @@
                 margin-bottom: 2rem;
             }
             .about-grid, .heroes-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust min width */
+                grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); /* Adjust min width */
                 gap: 1.5rem;
             }
             .about-card, .hero-link-card {
@@ -486,7 +486,7 @@
             }
             .interactive-placeholder {
                 padding: 1.5rem;
-                min-height: 150px;
+                min-height: 9.375rem; /* 150px */
             }
             .interactive-placeholder p {
                 font-size: 0.9rem;
@@ -556,7 +556,7 @@
             }
             .interactive-placeholder {
                 padding: 1rem;
-                min-height: 120px;
+                min-height: 7.5rem; /* 120px */
             }
             .interactive-placeholder p {
                 font-size: 0.85rem;
@@ -587,7 +587,7 @@
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'main_site:account' %}">Account</a></li> {# Create account_view and URL later #}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li>
                     {% else %}
                         <li><a href="{% url 'login' %}">Login</a></li>
                         <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
@@ -674,7 +674,7 @@
                     <div class="interactive-placeholder">
                         <p>Imagine a space here for a small, interactive WebGL demo, a video, or a live feed.</p>
                         <a href="#" class="cta-button">Explore Demos (Soon)</a>
-                    </div> 
+                    </div>
                 </div>
             </div>
         </section>
@@ -685,9 +685,9 @@
             <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
             <p>Empowering the human spirit through technological transcendence.</p>
             <div class="social-links">
-                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
             </div>
             <div class="contact-info">
                 <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
@@ -698,55 +698,58 @@
 
     <script src="{% static 'js/script.js' %}"></script>
     <script>
-        document.getElementById('current-year').textContent = new Date().getFullYear();
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
 
-        // Mobile navigation toggle
-        const navToggle = document.querySelector('.nav-toggle');
-        const navbarLinks = document.querySelector('.navbar-links'); // Corrected selector
+            // Mobile navigation toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const navbarLinks = document.querySelector('.navbar-links');
 
-        if (navToggle && navbarLinks) {
-            navToggle.addEventListener('click', () => {
-                navbarLinks.classList.toggle('is-open');
-                navToggle.setAttribute('aria-expanded', navbarLinks.classList.contains('is-open'));
-            });
-        }
-
-        // Typewriter effect for animated slogan
-        const slogans = [
-            "Innovation at Your Fingertips.",
-            "Seamless Solutions, Limitless Possibilities.",
-            "Technology Designed for You."
-        ];
-        let sloganIndex = 0;
-        let charIndex = 0;
-        const animatedSloganElement = document.getElementById('animated-slogan');
-        const typingSpeed = 70; // milliseconds per character
-        const deletingSpeed = 40; // milliseconds per character
-        const delayBetweenSlogans = 2000; // milliseconds
-
-        function typeSlogan() {
-            if (charIndex < slogans[sloganIndex].length) {
-                animatedSloganElement.textContent += slogans[sloganIndex].charAt(charIndex);
-                charIndex++;
-                setTimeout(typeSlogan, typingSpeed);
-            } else {
-                setTimeout(deleteSlogan, delayBetweenSlogans);
+            if (navToggle && navbarLinks) {
+                navToggle.addEventListener('click', () => {
+                    const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+                    navToggle.setAttribute('aria-expanded', !expanded);
+                    navbarLinks.classList.toggle('is-open');
+                });
             }
-        }
 
-        function deleteSlogan() {
-            if (charIndex > 0) {
-                animatedSloganElement.textContent = slogans[sloganIndex].substring(0, charIndex - 1);
-                charIndex--;
-                setTimeout(deleteSlogan, deletingSpeed);
-            } else {
-                sloganIndex = (sloganIndex + 1) % slogans.length;
-                setTimeout(typeSlogan, 500); // Small delay before typing next slogan
+            // Typewriter effect for animated slogan
+            const slogans = [
+                "Vision. Innovation. Impact.",
+                "Seamless Solutions, Limitless Possibilities.",
+                "Technology Designed for You."
+            ];
+            let sloganIndex = 0;
+            let charIndex = 0;
+            const animatedSloganElement = document.getElementById('animated-slogan');
+            const typingSpeed = 70; // milliseconds per character
+            const deletingSpeed = 50; // milliseconds per character (slightly slower for better readability)
+            const delayBetweenSlogans = 2000; // milliseconds
+
+            function typeSlogan() {
+                if (charIndex < slogans[sloganIndex].length) {
+                    animatedSloganElement.textContent += slogans[sloganIndex].charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeSlogan, typingSpeed);
+                } else {
+                    setTimeout(deleteSlogan, delayBetweenSlogans);
+                }
             }
-        }
 
-        // Start the typewriter effect when the page loads
-        window.onload = typeSlogan;
+            function deleteSlogan() {
+                if (charIndex > 0) {
+                    animatedSloganElement.textContent = slogans[sloganIndex].substring(0, charIndex - 1);
+                    charIndex--;
+                    setTimeout(deleteSlogan, deletingSpeed);
+                } else {
+                    sloganIndex = (sloganIndex + 1) % slogans.length;
+                    setTimeout(typeSlogan, 500); // Small delay before typing next slogan
+                }
+            }
+
+            // Start the typewriter effect when the page loads
+            typeSlogan();
+        });
     </script>
 </body>
 </html>
