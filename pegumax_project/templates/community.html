@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community - Pegumax Inc. | Connect, Share, Innovate</title>
-    <meta name="description" content="Join the Pegumax Inc. community to connect with fellow innovators, share ideas, and collaborate on projects. Forums and discussions are coming soon!">
-    <meta name="keywords" content="Pegumax Inc. community, tech community, software community, innovation, collaboration, forums, discussions, user support">
+    <title>Community - Pegumax Inc. | Connect & Collaborate</title>
+    <meta name="description" content="Join the Pegumax Inc. community! Connect with other users, share ideas, get support, and collaborate on projects. Your hub for discussions, forums, and events.">
+    <meta name="keywords" content="Pegumax Inc. community, user forum, tech community, software discussion, collaboration, user support, Pegumax events, share ideas">
     
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,15 +20,31 @@
             box-sizing: border-box;
         }
 
-        /* General Page Styles */
+        /* Root variables (assuming these are defined in style.css or globally) */
+        :root {
+            --bg-color: #0d0e12;
+            --bg-dark-1: #1a1c23;
+            --bg-dark-2: #22242b;
+            --card-bg: #16181d;
+            --text-color: #e0e0e0;
+            --text-light: #b0b0b0;
+            --highlight-color: #00efff;
+            --border-color: #333740;
+            --primary-font: 'Rajdhani', sans-serif;
+            --secondary-font: 'Orbitron', sans-serif;
+            --danger-color: #ff4d4f;
+            --success-color: #52c41a;
+        }
+
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: #0d0d0d; /* Dark background */
-            color: #e0e0e0; /* Light text */
+            font-family: var(--primary-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Ensures body takes at least full viewport height */
-            margin: 0;
+            min-height: 100vh;
             line-height: 1.6; /* Improved readability */
         }
 
@@ -42,11 +58,11 @@
             padding: 0 1.5rem; /* Responsive horizontal padding */
         }
 
-        /* Header Styles (assuming these are in style.css, but adding basic responsive support) */
+        /* Header Styles (unified for consistency) */
         .page-header {
-            background-color: #1a1a1a;
+            background-color: var(--bg-dark-1);
             padding: 1rem 0;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1); /* 1px */
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -62,13 +78,13 @@
             display: flex;
             align-items: center;
             text-decoration: none;
-            color: #e0e0e0;
-            font-family: 'Orbitron', sans-serif;
+            color: var(--text-color);
+            font-family: var(--secondary-font);
             font-size: 1.5rem;
         }
 
         .header-logo-img {
-            height: 2.5rem; /* Responsive height */
+            height: 2.5rem;
             margin-right: 0.5rem;
         }
 
@@ -83,8 +99,8 @@
         .hamburger-line {
             display: block;
             width: 1.5rem;
-            height: 0.125rem;
-            background-color: #00ffff;
+            height: 0.125rem; /* 2px */
+            background-color: var(--highlight-color);
             margin: 0.25rem 0;
             transition: all 0.3s ease;
         }
@@ -98,99 +114,227 @@
         }
 
         .main-nav a {
-            color: #e0e0e0;
+            color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
         }
 
         .main-nav a:hover {
-            color: #00ffff;
+            color: var(--highlight-color);
         }
 
-        /* Community Hero Section */
-        .community-hero-background {
-            background-image: url("{% static 'img/img11.webp' %}");
-            background-size: cover;
-            background-position: center center;
-            background-attachment: fixed; /* Parallax effect */
+        /* Hero Section - Community Page Specific */
+        .hero-section {
+            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/community_hero_background.webp' %}");
+            background-size: cover; /* Ensures image covers the entire area */
+            background-position: center; /* Centers the image */
+            background-attachment: fixed; /* Optional: for parallax effect */
+            color: #fff;
             padding: 6.25rem 0; /* 100px */
             text-align: center;
-            color: #fff;
-            min-height: 50vh; /* Ensure it takes significant viewport height */
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative; /* For overlay positioning */
-        }
-        .community-hero-background::before { /* Overlay */
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent overlay */
-            z-index: 1; /* Behind the text content */
-        }
-        .community-hero-background .container { /* Ensure content is above overlay */
-            position: relative;
-            z-index: 2;
-        }
-        .community-hero-background h1, 
-        .community-hero-background p { /* Keep text shadow for extra pop if needed */
-            text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0,0,0,0.7); /* 1px 1px 2px */
-        }
-        .community-hero-background h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 4.5rem; /* Adjusted from 48px to rem, made larger for hero */
-            letter-spacing: 0.625rem; /* 10px */
-            margin-bottom: 1rem;
-            color: #00ffff; /* Highlight color */
-            text-shadow: 0 0.625rem 0.5rem rgba(0, 255, 255, 0.7), 0 0 0.75rem rgba(0, 255, 255, 0.5); /* 10px 8px, 12px */
-        }
-        .community-hero-background .section-intro {
-            font-size: 1.5rem; /* 1.5em */
-            margin-top: 1.25rem; /* 20px */
-            margin-bottom: 0.625rem; /* 10px */
-        }
-        .community-hero-background .tagline-small {
-            margin-top: 0.625rem; /* 10px */
-            font-size: 1.1rem;
-            color: #ccc;
+            min-height: 25rem; /* Minimum height for the hero section */
         }
 
-        /* Site Footer Styles (consistent with other pages) */
+        .hero-content h1 {
+            font-size: 3.8rem; /* Larger heading for impact */
+            font-family: var(--secondary-font);
+            margin-bottom: 1rem;
+            text-shadow: 0.125rem 0.125rem 0.25rem rgba(0,0,0,0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto 2rem auto;
+            opacity: 0.9;
+        }
+
+        .hero-button {
+            display: inline-block;
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            padding: 0.8rem 2rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
+        }
+
+        .hero-button:hover {
+            background-color: #00cccc;
+            transform: translateY(-0.125rem);
+            box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
+        }
+
+        /* Content Sections */
+        .content-section {
+            padding: 4rem 0; /* Consistent vertical padding */
+            background-color: var(--bg-color); /* Default background for sections */
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.8rem;
+            font-family: var(--secondary-font);
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 .highlight {
+            color: var(--highlight-color);
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            color: var(--text-light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr)); /* 300px */
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            border: 0.0625rem solid var(--border-color);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-0.3125rem);
+            box-shadow: 0 0.5rem 1.5625rem rgba(0, 255, 255, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            color: var(--highlight-color);
+            margin-bottom: 1.25rem;
+        }
+
+        .feature-card h3 {
+            font-family: var(--secondary-font);
+            font-size: 1.6rem;
+            color: var(--text-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        /* Call to Action Section */
+        .cta-section {
+            background-color: var(--bg-dark-1);
+            padding: 5rem 0;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2.8rem;
+            font-family: var(--secondary-font);
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-section h2 .highlight {
+            color: var(--highlight-color);
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
+            color: var(--text-light);
+        }
+
+        .cta-button-group {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap; /* Allow buttons to wrap */
+        }
+
+        .cta-button-group .button {
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            padding: 0.8rem 2rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button-group .button:hover {
+            background-color: #00cccc;
+            transform: translateY(-0.125rem);
+            box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
+        }
+
+        .cta-button-group .button.secondary {
+            background-color: transparent;
+            color: var(--highlight-color);
+            border: 0.0625rem solid var(--highlight-color);
+            box-shadow: none;
+        }
+
+        .cta-button-group .button.secondary:hover {
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
+        }
+
+        /* Site Footer Styles (unified for consistency) */
         .site-footer {
-            background-color: #1a1a1a;
-            color: #bbb;
-            padding: 1.25rem 1rem; /* Use rem for padding */
-            font-size: 0.85rem; /* Use rem for font size */
-            width: 100%; /* Ensure footer spans full width */
+            background-color: var(--bg-dark-1);
+            color: var(--text-light);
+            padding: 1.25rem 1rem;
+            font-size: 0.85rem;
+            width: 100%;
         }
         .site-footer .container {
-            max-width: 900px; /* Limit footer content width */
-            margin: 0 auto; /* Center footer content */
+            max-width: 900px;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem; /* Space between elements */
+            gap: 0.5rem;
         }
         .social-links {
             margin-top: 0.5rem;
-            display: flex; /* Use flexbox for social links */
-            gap: 1rem; /* Space between social icons */
-            flex-wrap: wrap; /* Allow wrapping on small screens */
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
             justify-content: center;
         }
         .social-links a {
-            color: #bbb;
-            font-size: 1.2rem; /* Use rem for icon size */
+            color: inherit;
+            font-size: 1.2rem;
             transition: color 0.3s ease;
-            text-decoration: none; /* Remove underline from social links */
+            text-decoration: none;
         }
         .social-links a:hover {
-            color: #00ffff;
+            color: var(--highlight-color);
         }
         .contact-info {
             margin-top: 0.5rem;
@@ -200,14 +344,14 @@
             gap: 0.25rem;
         }
         .contact-info a {
-            color: #bbb;
+            color: inherit;
             text-decoration: none;
         }
         .contact-info a:hover {
-            color: #00ffff;
+            color: var(--highlight-color);
         }
 
-        /* Media Queries for smaller screens */
+        /* Media Queries for responsiveness */
         @media (max-width: 768px) {
             .page-header .main-nav {
                 display: none; /* Hide desktop nav */
@@ -218,9 +362,7 @@
                 display: block; /* Show hamburger icon */
             }
             .page-header .main-nav.is-open {
-                display: block; /* Show nav when open */
-            }
-            .page-header .main-nav ul {
+                display: flex; /* Show nav when open */
                 flex-direction: column;
                 text-align: center;
                 gap: 0.5rem;
@@ -232,21 +374,66 @@
                 height: 2rem;
             }
 
-            .community-hero-background {
+            .hero-section {
                 padding: 4rem 0;
-                min-height: 40vh;
+                min-height: 20rem;
             }
-            .community-hero-background h1 {
-                font-size: 3.5rem;
-                letter-spacing: 0.4rem;
+            .hero-content h1 {
+                font-size: 3rem;
             }
-            .community-hero-background .section-intro {
-                font-size: 1.3rem;
+            .hero-content p {
+                font-size: 1.1rem;
+                margin-bottom: 1.5rem;
             }
-            .community-hero-background .tagline-small {
+            .hero-button {
+                padding: 0.7rem 1.5rem;
                 font-size: 1rem;
             }
-
+            .content-section {
+                padding: 3rem 0;
+            }
+            .section-header {
+                margin-bottom: 2rem;
+            }
+            .section-header h2 {
+                font-size: 2.2rem;
+            }
+            .section-header p {
+                font-size: 1rem;
+            }
+            .features-grid {
+                grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); /* Adjust min width for smaller screens */
+                gap: 1.5rem;
+            }
+            .feature-card {
+                padding: 1.5rem;
+            }
+            .feature-icon {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+            }
+            .feature-card h3 {
+                font-size: 1.4rem;
+            }
+            .feature-card p {
+                font-size: 0.9rem;
+            }
+            .cta-section {
+                padding: 4rem 0;
+            }
+            .cta-section h2 {
+                font-size: 2.2rem;
+            }
+            .cta-section p {
+                font-size: 1rem;
+            }
+            .cta-button-group {
+                gap: 1rem;
+            }
+            .cta-button-group .button {
+                padding: 0.7rem 1.5rem;
+                font-size: 1rem;
+            }
             .site-footer {
                 font-size: 0.8rem;
                 padding: 1rem 0.8rem;
@@ -260,25 +447,73 @@
         }
 
         @media (max-width: 480px) {
-            .page-header .logo-link {
+            .header-logo-link {
                 font-size: 1.1rem;
             }
-            .page-header .logo-link img {
+            .header-logo-img {
                 height: 1.8rem;
             }
 
-            .community-hero-background {
+            .hero-section {
                 padding: 3rem 0;
-                min-height: 30vh;
+                min-height: 18rem;
             }
-            .community-hero-background h1 {
+            .hero-content h1 {
                 font-size: 2.5rem;
-                letter-spacing: 0.2rem;
             }
-            .community-hero-background .section-intro {
-                font-size: 1.1rem;
+            .hero-content p {
+                font-size: 1rem;
+                margin-bottom: 1rem;
             }
-            .community-hero-background .tagline-small {
+            .hero-button {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            .content-section {
+                padding: 2rem 0;
+            }
+            .section-header {
+                margin-bottom: 1.5rem;
+            }
+            .section-header h2 {
+                font-size: 1.8rem;
+            }
+            .section-header p {
+                font-size: 0.9rem;
+            }
+            .features-grid {
+                grid-template-columns: 1fr; /* Stack cards on very small screens */
+                gap: 1rem;
+            }
+            .feature-card {
+                padding: 1rem;
+            }
+            .feature-icon {
+                font-size: 2.5rem;
+                margin-bottom: 0.8rem;
+            }
+            .feature-card h3 {
+                font-size: 1.2rem;
+            }
+            .feature-card p {
+                font-size: 0.85rem;
+            }
+            .cta-section {
+                padding: 3rem 0;
+            }
+            .cta-section h2 {
+                font-size: 1.8rem;
+            }
+            .cta-section p {
+                font-size: 0.9rem;
+            }
+            .cta-button-group {
+                flex-direction: column; /* Stack buttons vertically */
+                gap: 0.8rem;
+            }
+            .cta-button-group .button {
+                width: 90%; /* Make buttons wider */
+                padding: 0.6rem 1.2rem;
                 font-size: 0.9rem;
             }
             .site-footer .container {
@@ -287,7 +522,7 @@
         }
     </style>
 </head>
-<body class="community-page">
+<body>
     <header class="page-header">
         <div class="container">
             <div class="logo-container">
@@ -309,7 +544,7 @@
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'main_site:account' %}">Account</a></li> {# Create account_view and URL later #}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li>
                     {% else %}
                         <li><a href="{% url 'login' %}">Login</a></li>
                         <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
@@ -320,11 +555,65 @@
     </header>
 
     <main>
-        <section id="community-main" class="community-hero-background js-scroll">
+        <section class="hero-section">
             <div class="container">
-                <h1><span class="highlight">Pegumax</span> Community</h1>
-                <p class="section-intro">Connect, Share, and Innovate Together!</p>
-                <p class="tagline-small">Forums, discussions, and collaborative projects are on the horizon. Stay tuned!</p>
+                <div class="hero-content">
+                    <h1>Join Our <span class="highlight">Community</span></h1>
+                    <p>Connect with fellow Pegumax users, share ideas, get support, and help shape the future of our software.</p>
+                    <a href="#" class="hero-button">Explore Forums</a> {# Placeholder link #}
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>What Our Community <span class="highlight">Offers</span></h2>
+                    <p>Our vibrant community is designed to foster collaboration, learning, and mutual support among Pegumax users.</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                        <h3>Active Forums</h3>
+                        <p>Engage in discussions, ask questions, and share your insights with a dedicated community of users.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-lightbulb"></i></div>
+                        <h3>Idea Sharing</h3>
+                        <p>Submit your ideas for new features and improvements, and vote on suggestions from other community members.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-hands-helping"></i></div>
+                        <h3>Peer Support</h3>
+                        <p>Get help from experienced users and offer your expertise to others facing similar challenges.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <h3>Events & Webinars</h3>
+                        <p>Participate in online events, workshops, and webinars to enhance your skills and connect with experts.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-code-branch"></i></div>
+                        <h3>Beta Programs</h3>
+                        <p>Get early access to new features and provide valuable feedback before public release.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-trophy"></i></div>
+                        <h3>Recognition</h3>
+                        <p>Become a top contributor and earn recognition for your valuable insights and support.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <h2>Ready to <span class="highlight">Connect</span>?</h2>
+                <p>Join the Pegumax Inc. community today and start collaborating, learning, and growing with us.</p>
+                <div class="cta-button-group">
+                    <a href="{% url 'main_site:signup' %}" class="button">Sign Up Now</a>
+                    <a href="{% url 'login' %}" class="button secondary">Log In</a>
+                </div>
             </div>
         </section>
     </main>
@@ -334,9 +623,9 @@
             <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
             <p>Empowering the human spirit through technological transcendence.</p>
             <div class="social-links">
-                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
             </div>
             <div class="contact-info">
                 <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
@@ -346,18 +635,21 @@
     </footer>
     <script src="{% static 'js/script.js' %}"></script>
     <script>
-        document.getElementById('current-year').textContent = new Date().getFullYear();
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
 
-        // Basic mobile navigation toggle (if not handled by style.css or script.js)
-        const navToggle = document.querySelector('.nav-toggle');
-        const mainNav = document.querySelector('.main-nav');
+            // Basic mobile navigation toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const mainNav = document.querySelector('.main-nav');
 
-        if (navToggle && mainNav) {
-            navToggle.addEventListener('click', () => {
-                mainNav.classList.toggle('is-open');
-                navToggle.setAttribute('aria-expanded', mainNav.classList.contains('is-open'));
-            });
-        }
+            if (navToggle && mainNav) {
+                navToggle.addEventListener('click', () => {
+                    const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+                    navToggle.setAttribute('aria-expanded', !expanded);
+                    mainNav.classList.toggle('is-open');
+                });
+            }
+        });
     </script>
 </body>
 </html>
