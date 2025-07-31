@@ -4,90 +4,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - Pegumax Inc.</title>
+    <title>Sign Up - Create Your Pegumax Inc. Account</title>
+    <meta name="description" content="Create your free Pegumax Inc. account to access our software center, community features, and more. Join the future of innovation!">
+    <meta name="keywords" content="Pegumax Inc. signup, create account, register, new user, sign up, tech account, software account">
+    
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" type="image/webp" href="{% static 'img/favicon.webp' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}"> {# Changed to .png for consistency #}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
+        /* Universal box-sizing for consistent layout */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* Root variables (assuming they are also in style.css) */
+        :root {
+            --bg-color: #0d0e12;
+            --bg-dark-1: #1a1c23;
+            --bg-dark-2: #22242b;
+            --card-bg: #16181d;
+            --text-color: #e0e0e0;
+            --text-light: #b0b0b0;
+            --highlight-color: #00efff;
+            --border-color: #333740;
+            --primary-font: 'Rajdhani', sans-serif;
+            --secondary-font: 'Orbitron', sans-serif;
+            --danger-color: #ff4d4f;
+            --success-color: #52c41a;
+        }
+
         body {
+            font-family: var(--primary-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: var(--bg-color);
+            line-height: 1.6; /* Improved readability */
         }
-        .page-header.minimal-header {
-            box-shadow: none;
-            border-bottom: 1px solid var(--border-color);
+
+        main {
+            flex-grow: 1; /* Allows main content to take up available space */
         }
+
+        .container {
+            max-width: 1200px; /* Max width for content on large screens */
+            margin: 0 auto; /* Center the container */
+            padding: 0 1.5rem; /* Responsive horizontal padding */
+        }
+
+        /* Header Styles (unified for consistency with other pages) */
+        .page-header {
+            background-color: var(--bg-dark-1);
+            padding: 1rem 0;
+            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .page-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-color);
+            font-family: var(--secondary-font);
+            font-size: 1.5rem;
+        }
+
+        .header-logo-img {
+            height: 2.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .nav-toggle {
+            display: none; /* Hidden by default, shown on smaller screens */
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .hamburger-line {
+            display: block;
+            width: 1.5rem;
+            height: 0.125rem;
+            background-color: var(--highlight-color);
+            margin: 0.25rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .main-nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav a:hover {
+            color: var(--highlight-color);
+        }
+
+        /* Main Content for Auth Pages */
         .main-content {
             flex-grow: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 1.25rem; /* 20px */
         }
+
         .auth-form-container {
-            max-width: 450px;
+            max-width: 28.125rem; /* 450px */
             width: 100%;
             margin: 0 auto;
-            padding: 35px 40px;
-            background-color: var(--card-bg, #2a2a30);
-            border-radius: 10px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.3), 0 0 0 1px var(--border-color, #444);
-            color: var(--text-color, #e0e0e0);
+            padding: 2.1875rem 2.5rem; /* 35px 40px */
+            background-color: var(--card-bg);
+            border-radius: 0.625rem; /* 10px */
+            box-shadow: 0 0.3125rem 1.5625rem rgba(0,0,0,0.3), 0 0 0 0.0625rem var(--border-color); /* 5px 25px, 1px */
+            color: var(--text-color);
         }
-        .auth-form-container h2 { text-align: center; color: var(--highlight-color); margin-bottom: 25px; font-family: var(--secondary-font); }
-        .auth-form-container form p { margin-bottom: 15px; }
-        .auth-form-container label { display: block; margin-bottom: 5px; color: var(--text-light); font-weight: 500; }
+        .auth-form-container h2 {
+            text-align: center;
+            color: var(--highlight-color);
+            margin-bottom: 1.5625rem; /* 25px */
+            font-family: var(--secondary-font);
+            font-size: 2rem;
+        }
+        .auth-form-container form p {
+            margin-bottom: 0.9375rem; /* 15px */
+        }
+        .auth-form-container label {
+            display: block;
+            margin-bottom: 0.3125rem; /* 5px */
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 1rem;
+        }
         .auth-form-container input[type="text"],
         .auth-form-container input[type="email"],
         .auth-form-container input[type="password"] {
             width: 100%;
-            padding: 12px 15px;
-            background-color: var(--bg-dark-2, #1f1f24);
-            border: 1px solid var(--border-color, #444);
-            border-radius: 5px;
-            color: var(--text-color, #e0e0e0);
-            font-size: 1em;
-            margin-bottom: 5px;
+            padding: 0.75rem 0.9375rem; /* 12px 15px */
+            background-color: var(--bg-dark-2);
+            border: 0.0625rem solid var(--border-color);
+            border-radius: 0.3125rem; /* 5px */
+            color: var(--text-color);
+            font-size: 1rem; /* 1em */
+            margin-bottom: 0.3125rem; /* 5px */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        .auth-form-container .helptext { font-size: 0.85em; color: var(--text-light); margin-top: 2px; margin-bottom: 10px; display: block; line-height: 1.4; }
-        .auth-form-container ul.errorlist { list-style-type: none; padding: 10px; color: #ff6b6b; margin-bottom: 10px; font-size: 0.9em; background-color: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.3); border-radius: 4px; }
-        .auth-form-container button { display: block; width: 100%; padding: 12px; background-color: var(--highlight-color); color: var(--bg-color, #121212); border: none; border-radius: 5px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; }
-        .auth-form-container button:hover { background-color: #00cccc; transform: translateY(-2px); }
-        .auth-form-container .form-footer-links { text-align: center; margin-top: 20px; }
-        .auth-form-container .form-footer-links p { margin-bottom: 10px; font-size: 0.95em; }
-        .auth-form-container .form-footer-links a { color: var(--highlight-color); text-decoration: none; }
-        .auth-form-container .form-footer-links a:hover { text-decoration: underline; }
-        .page-header.minimal-header .main-nav { display: none; }
-        .page-header.minimal-header .logo-container { margin: 0 auto; }
-        .site-footer.minimal-footer {
+        .auth-form-container input[type="text"]:focus,
+        .auth-form-container input[type="email"]:focus,
+        .auth-form-container input[type="password"]:focus {
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 0 0.125rem rgba(0, 239, 255, 0.3);
+            outline: none;
+        }
+        .auth-form-container .helptext {
+            font-size: 0.85rem; /* 0.85em */
+            color: var(--text-light);
+            margin-top: 0.125rem; /* 2px */
+            margin-bottom: 0.625rem; /* 10px */
+            display: block;
+            line-height: 1.4;
+        }
+        .auth-form-container ul.errorlist {
+            list-style-type: none;
+            padding: 0.625rem; /* 10px */
+            color: var(--danger-color);
+            margin-bottom: 0.625rem; /* 10px */
+            font-size: 0.9rem; /* 0.9em */
+            background-color: rgba(255, 107, 107, 0.1);
+            border: 0.0625rem solid rgba(255, 107, 107, 0.3); /* 1px */
+            border-radius: 0.25rem; /* 4px */
+        }
+        .auth-form-container button {
+            display: block;
+            width: 100%;
+            padding: 0.75rem; /* 12px */
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 0.3125rem; /* 5px */
+            font-size: 1.1rem; /* 1.1em */
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
+        }
+        .auth-form-container button:hover {
+            background-color: #00cccc;
+            transform: translateY(-0.125rem); /* 2px */
+            box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
+        }
+        .auth-form-container .form-footer-links {
             text-align: center;
-            padding: 20px 0;
-            font-size: 0.9em;
-            border-top: 1px solid var(--border-color);
+            margin-top: 1.25rem; /* 20px */
         }
-        .site-footer.minimal-footer p { margin: 5px 0; }
+        .auth-form-container .form-footer-links p {
+            margin-bottom: 0.625rem; /* 10px */
+            font-size: 0.95rem; /* 0.95em */
+        }
+        .auth-form-container .form-footer-links a {
+            color: var(--highlight-color);
+            text-decoration: none;
+        }
+        .auth-form-container .form-footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Site Footer Styles (unified for consistency) */
+        .site-footer {
+            background-color: var(--bg-dark-1);
+            color: var(--text-light);
+            padding: 1.25rem 1rem;
+            font-size: 0.85rem;
+            width: 100%;
+        }
+        .site-footer .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .social-links {
+            margin-top: 0.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .social-links a {
+            color: inherit;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+            text-decoration: none;
+        }
+        .social-links a:hover {
+            color: var(--highlight-color);
+        }
+        .contact-info {
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .contact-info a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            color: var(--highlight-color);
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 768px) {
+            .page-header .main-nav {
+                display: none;
+                width: 100%;
+                order: 2;
+            }
+            .page-header .nav-toggle {
+                display: block;
+            }
+            .page-header .main-nav.is-open {
+                display: flex;
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            .header-logo-link {
+                font-size: 1.2rem;
+            }
+            .header-logo-img {
+                height: 2rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+            .auth-form-container {
+                padding: 1.5rem 1.875rem; /* 24px 30px */
+            }
+            .auth-form-container h2 {
+                font-size: 1.75rem;
+                margin-bottom: 1.25rem;
+            }
+            .auth-form-container label {
+                font-size: 0.9rem;
+            }
+            .auth-form-container input[type="text"],
+            .auth-form-container input[type="email"],
+            .auth-form-container input[type="password"] {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            .auth-form-container .helptext {
+                font-size: 0.8rem;
+            }
+            .auth-form-container ul.errorlist {
+                padding: 0.5rem;
+                font-size: 0.85rem;
+            }
+            .auth-form-container button {
+                padding: 0.6rem;
+                font-size: 1rem;
+            }
+            .auth-form-container .form-footer-links {
+                margin-top: 1rem;
+            }
+            .auth-form-container .form-footer-links p {
+                font-size: 0.9rem;
+            }
+            .site-footer {
+                font-size: 0.8rem;
+                padding: 1rem 0.8rem;
+            }
+            .social-links {
+                gap: 0.8rem;
+            }
+            .social-links a {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-logo-link {
+                font-size: 1.1rem;
+            }
+            .header-logo-img {
+                height: 1.8rem;
+            }
+
+            .auth-form-container {
+                padding: 1.25rem 1.5rem; /* 20px 24px */
+            }
+            .auth-form-container h2 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            .auth-form-container label {
+                font-size: 0.85rem;
+            }
+            .auth-form-container input, .auth-form-container button {
+                font-size: 0.85rem;
+            }
+            .auth-form-container .helptext {
+                font-size: 0.75rem;
+            }
+            .auth-form-container ul.errorlist {
+                font-size: 0.8rem;
+            }
+            .auth-form-container .form-footer-links p {
+                font-size: 0.85rem;
+            }
+            .site-footer .container {
+                padding: 0 1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <header class="page-header minimal-header">
+    <header class="page-header">
         <div class="container">
             <div class="logo-container">
-                <a href="{% url 'main_site:home' %}" class="navbar-brand">
-                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img"> <!-- Corrected, was fine -->
-                    Pegumax Inc.
+                <a href="{% url 'main_site:home' %}" class="header-logo-link">
+                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="header-logo-img">
+                    <span class="header-logo-text">Pegumax Inc.</span>
                 </a>
             </div>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'main_site:home' %}">Home</a></li>
+                    <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
+                    <li><a href="{% url 'main_site:about' %}">About Us</a></li>
+                    <li><a href="{% url 'main_site:community' %}">Community</a></li>
+                    <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
         </div>
     </header>
 
     <main id="main-content" class="main-content">
-        <div class="auth-form-container js-scroll">
+        <div class="auth-form-container">
             <h2>Create Your Pegumax Account</h2>
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {# Render form fields manually for better control over styling #}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <span class="helptext">{{ field.help_text }}</span>
+                        {% endif %}
+                        {% if field.errors %}
+                            <ul class="errorlist">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
                 <button type="submit">Sign Up</button>
             </form>
             <div class="form-footer-links">
@@ -96,12 +449,39 @@
         </div>
     </main>
 
-    <footer class="site-footer minimal-footer">
+    <footer class="site-footer">
         <div class="container">
-            <p>&copy; {% now "Y" %} Pegumax Inc. All rights reserved.</p>
+            <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
+            <p>Empowering the human spirit through technological transcendence.</p>
+            <div class="social-links">
+                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub"><i class="fab fa-github"></i></a>
+            </div>
+            <div class="contact-info">
+                <p>Contact Us: <a href="mailto:info@pegumax.com">info@pegumax.com</a></p>
+                <p>123 Innovation Drive, Tech City, TX 75001</p>
+            </div>
         </div>
     </footer>
 
     <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            // Mobile navigation toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const mainNav = document.querySelector('.main-nav');
+
+            if (navToggle && mainNav) {
+                navToggle.addEventListener('click', () => {
+                    const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+                    navToggle.setAttribute('aria-expanded', !expanded);
+                    mainNav.classList.toggle('is-open'); // Use 'is-open' for consistency
+                });
+            }
+        });
+    </script>
 </body>
 </html>
