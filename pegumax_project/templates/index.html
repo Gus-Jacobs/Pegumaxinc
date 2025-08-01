@@ -60,14 +60,22 @@
             padding: 0 1.5rem; /* Responsive horizontal padding */
         }
 
-        /* Header Styles */
-        .page-header {
-            background-color: var(--bg-dark-1); /* This header is actually the hero section background */
-            padding: 1rem 0;
-            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
-            position: sticky; /* Sticky for the actual navbar, not the whole hero */
-            top: 0;
-            z-index: 1000;
+        /* Header Styles (Hero Section background) */
+        .hero-section {
+            background: linear-gradient(rgba(13, 14, 18, 0.7), rgba(13, 14, 18, 0.7)), url("{% static 'img/img2.webp' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Parallax effect */
+            color: #fff;
+            padding: 8rem 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            position: relative;
+            overflow: hidden;
         }
 
         /* Navbar specific styles within the header */
@@ -202,24 +210,6 @@
             display: block;
         }
 
-        /* Hero Section (background and main content) */
-        .hero-section {
-            background: linear-gradient(rgba(13, 14, 18, 0.7), rgba(13, 14, 18, 0.7)), url("{% static 'img/img2.webp' %}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed; /* Parallax effect */
-            color: #fff;
-            padding: 8rem 0;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 80vh;
-            position: relative;
-            overflow: hidden;
-        }
-
         .hero-overlay {
             position: absolute;
             top: 0;
@@ -236,6 +226,11 @@
             max-width: 900px;
             margin: 0 auto;
             padding: 0 1.5rem;
+            display: flex; /* Use flexbox for vertical alignment */
+            flex-direction: column;
+            align-items: center; /* Center horizontally */
+            justify-content: center; /* Center vertically */
+            text-align: center; /* Ensure text is centered */
         }
 
         .hero-content h1 {
@@ -257,24 +252,38 @@
             color: #ccc;
         }
 
-        .animated-text-container {
-            min-height: 2.5rem; /* Increased min-height to prevent cutoff */
+        /* Slogan Animation Styling */
+        .slogan-animation-wrapper {
+            min-height: 2.5rem; /* Ensure enough height for the slogan */
             margin-bottom: 2rem;
+            display: flex; /* Use flex to center the text and cursor */
+            justify-content: center;
+            align-items: center;
+            white-space: nowrap; /* Keep text and cursor on one line */
+            overflow: hidden; /* Hide overflow during animation */
             font-size: 1.8rem; /* Increased font size for better visibility */
             color: #ffcc00;
             font-family: var(--primary-font);
             font-weight: 500;
-            display: inline-block; /* Ensure it takes only as much width as content */
-            white-space: nowrap; /* Prevent text wrapping during animation */
-            overflow: hidden; /* Hide overflow during animation */
-            border-right: 0.15em solid #ffcc00; /* Cursor effect */
-            animation: blink-caret 0.75s step-end infinite;
         }
 
-        /* Cursor blinking animation */
-        @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: #ffcc00; }
+        .animated-text {
+            /* Text content will be appended here by JS */
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            vertical-align: middle; /* Align with text */
+            width: 0.15em; /* Width of the cursor */
+            height: 1.2em; /* Height of the cursor, relative to font-size */
+            background-color: #ffcc00; /* Yellow color */
+            animation: blink-cursor 0.75s step-end infinite;
+            margin-left: 0.1em; /* Small gap between text and cursor */
+        }
+
+        @keyframes blink-cursor {
+            from, to { opacity: 0; }
+            50% { opacity: 1; }
         }
 
         .cta-button {
@@ -325,9 +334,10 @@
             color: var(--text-light);
         }
 
-        .about-grid {
+        /* Grid Layouts - Fixed for 2x2 or 1x4 */
+        .about-grid, .heroes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
+            grid-template-columns: repeat(2, 1fr); /* Default to 2x2 for 4 items */
             gap: 2rem;
             margin-top: 2rem;
         }
@@ -368,13 +378,6 @@
         .site-heroes-section {
             background-color: var(--bg-dark-2);
             text-align: center;
-        }
-
-        .heroes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(15.625rem, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
         }
 
         .hero-link-card {
@@ -530,20 +533,31 @@
             }
         }
 
-        @media (max-width: 768px) { /* Changed from 769px to 768px for consistency */
-            .page-header .main-navbar .navbar-links { /* Corrected selector */
+        @media (max-width: 768px) {
+            .main-navbar .container {
+                flex-wrap: wrap; /* Allow logo and toggle to wrap */
+            }
+            .main-navbar .navbar-brand {
+                flex-grow: 1; /* Allow brand to take space */
+            }
+            .main-nav { /* Target the nav wrapper */
                 display: none; /* Hide desktop nav */
                 width: 100%;
                 order: 2; /* Place below logo on mobile */
-                flex-direction: column; /* Stack vertically in mobile menu */
-                gap: 0.5rem; /* Smaller gap for stacked items */
-                text-align: center;
             }
-            .page-header .main-navbar .nav-toggle {
+            .main-navbar .nav-toggle {
                 display: block; /* Show hamburger icon */
             }
-            .page-header .main-navbar .navbar-links.is-open { /* Corrected selector */
-                display: flex; /* Show nav when open */
+            .main-nav.is-open { /* When mobile nav is open */
+                display: flex;
+                flex-direction: column; /* Stack vertically in mobile menu */
+                text-align: center;
+                gap: 0.5rem; /* Smaller gap for stacked items */
+            }
+            .main-nav ul.navbar-links { /* The ul inside main-nav */
+                flex-direction: column; /* Stack items */
+                width: 100%;
+                gap: 0.5rem;
             }
             .navbar-brand {
                 font-size: 1.2rem;
@@ -570,7 +584,7 @@
             .hero-content .tagline {
                 font-size: 1.5rem;
             }
-            .animated-text-container {
+            .slogan-animation-wrapper {
                 font-size: 1.4rem; /* Adjusted for mobile */
             }
             .cta-button {
@@ -590,7 +604,7 @@
                 margin-bottom: 2rem;
             }
             .about-grid, .heroes-grid {
-                grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+                grid-template-columns: 1fr; /* Stack on smaller screens (1x4) */
                 gap: 1.5rem;
             }
             .about-card, .hero-link-card {
@@ -641,7 +655,7 @@
             .navbar-logo-img {
                 height: 1.8rem;
             }
-            .main-nav ul.navbar-links li a { /* Corrected selector */
+            .main-nav ul.navbar-links li a {
                 font-size: 0.85rem;
             }
 
@@ -655,7 +669,7 @@
             .hero-content .tagline {
                 font-size: 1.2rem;
             }
-            .animated-text-container {
+            .slogan-animation-wrapper {
                 font-size: 1.1rem; /* Further adjusted for very small screens */
             }
             .cta-button {
@@ -745,8 +759,8 @@
         <div class="hero-content">
             <h1>Welcome to <span class="highlight">Pegumax Inc.</span></h1>
             <p class="tagline">Architecting Tomorrow's Reality. We Forge Advanced Solutions for a Smarter, Connected World.</p>
-            <div class="animated-text-container">
-                <span id="animated-slogan"></span>
+            <div class="slogan-animation-wrapper"> {# New wrapper for slogan and cursor #}
+                <span id="animated-slogan" class="animated-text"></span><span class="typing-cursor"></span> {# Separate cursor #}
             </div>
             <a href="#overview" class="cta-button hero-cta">Discover Our Vision</a>
         </div>
@@ -887,6 +901,7 @@
             let sloganIndex = 0;
             let charIndex = 0;
             const animatedSloganElement = document.getElementById('animated-slogan');
+            const typingCursorElement = document.querySelector('.typing-cursor'); // Get the cursor element
             const typingSpeed = 120; // milliseconds per character (slower for smoother typing)
             const deletingSpeed = 60; // milliseconds per character (faster for smoother deleting)
             const delayBetweenSlogans = 2000; // milliseconds (longer pause between slogans)
@@ -898,7 +913,7 @@
                     charIndex++;
                     setTimeout(typeSlogan, typingSpeed);
                 } else {
-                    // Pause after typing
+                    // Pause after typing, then start deleting
                     setTimeout(deleteSlogan, delayBetweenSlogans);
                 }
             }
