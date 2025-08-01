@@ -105,7 +105,8 @@
             transition: all 0.3s ease;
         }
 
-        .navbar-links { /* Renamed for consistency */
+        /* Main Navigation Links (Desktop) */
+        .main-nav ul.navbar-links { /* Corrected selector to target the ul within main-nav */
             list-style: none;
             margin: 0;
             padding: 0;
@@ -113,7 +114,7 @@
             gap: 2.5rem; /* Increased spacing for desktop */
         }
 
-        .navbar-links a {
+        .main-nav ul.navbar-links li a { /* Corrected selector for links */
             color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
@@ -121,13 +122,13 @@
             white-space: nowrap; /* Prevent text wrapping */
         }
 
-        .navbar-links a:hover {
+        .main-nav ul.navbar-links li a:hover {
             color: var(--highlight-color);
         }
 
         /* Specific styles for auth links that might be hidden */
-        .nav-auth-item {
-            display: list-item; /* Default to visible */
+        .nav-auth-item.desktop-only { /* Added desktop-only to target specific items */
+            display: list-item; /* Default to visible on desktop */
         }
 
         /* More menu wrapper */
@@ -418,15 +419,15 @@
 
         /* Media Queries for responsiveness */
         @media (max-width: 1200px) {
-            .navbar-links {
+            .main-nav ul.navbar-links { /* Target the ul inside main-nav */
                 gap: 1.5rem; /* Reduce gap for slightly smaller screens */
             }
-            .navbar-links a {
+            .main-nav ul.navbar-links li a {
                 font-size: 0.95rem; /* Shrink font to fit more items */
             }
 
             /* Hide login/signup/account from main nav and show in 'more' menu */
-            .nav-auth-item {
+            .nav-auth-item.desktop-only { /* Added desktop-only to target specific items */
                 display: none;
             }
             .more-menu-wrapper {
@@ -441,19 +442,24 @@
             .page-header .navbar-brand {
                 flex-grow: 1; /* Allow brand to take space */
             }
-            .page-header .navbar-links {
+            .page-header .main-nav { /* Target the nav wrapper */
                 display: none; /* Hide desktop nav */
                 width: 100%;
                 order: 2; /* Place below logo on mobile */
-                flex-direction: column; /* Stack vertically in mobile menu */
-                text-align: center;
-                gap: 0.5rem; /* Smaller gap for stacked items */
             }
             .page-header .nav-toggle {
                 display: block; /* Show hamburger icon */
             }
-            .page-header .navbar-links.is-open {
-                display: flex; /* Show nav when open */
+            .page-header .main-nav.is-open { /* When mobile nav is open */
+                display: flex;
+                flex-direction: column; /* Stack vertically in mobile menu */
+                text-align: center;
+                gap: 0.5rem; /* Smaller gap for stacked items */
+            }
+            .main-nav ul.navbar-links { /* The ul inside main-nav */
+                flex-direction: column; /* Stack items */
+                width: 100%;
+                gap: 0.5rem;
             }
             .navbar-brand {
                 font-size: 1.2rem;
@@ -462,7 +468,7 @@
                 height: 2rem;
             }
             /* Ensure auth items are visible in the mobile menu */
-            .nav-auth-item {
+            .nav-auth-item.desktop-only { /* Override the display:none from 1200px breakpoint */
                 display: list-item; 
             }
             /* Hide the 'more' menu wrapper when hamburger is active */
@@ -538,7 +544,7 @@
                 height: 1.8rem;
             }
             /* Further adjust font size for nav links on very small screens */
-            .navbar-links a {
+            .main-nav ul.navbar-links { /* Target the ul inside main-nav */
                 font-size: 0.85rem;
             }
 
@@ -593,28 +599,28 @@
 <body>
     <header class="page-header">
         <div class="container">
-            <div class="logo-container">
-                <a href="{% url 'main_site:home' %}" class="navbar-brand">
-                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
-                    <span class="header-logo-text">Pegumax Inc.</span>
-                </a>
-            </div>
+            {# Removed .logo-container div for consistency #}
+            <a href="{% url 'main_site:home' %}" class="navbar-brand">
+                <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
+                <span class="header-logo-text">Pegumax Inc.</span>
+            </a>
             <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
             </button>
-            <nav class="navbar-links">
-                <ul>
+            <nav class="main-nav"> {# Changed class from navbar-links to main-nav #}
+                <ul class="navbar-links"> {# Moved navbar-links class here #}
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {# These are the main auth links, conditionally displayed by CSS #}
                     {% if user.is_authenticated %}
-                        <li class="nav-auth-item"><a href="{% url 'main_site:account' %}">Account</a></li>
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:account' %}">Account</a></li>
                     {% else %}
-                        <li class="nav-auth-item"><a href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-auth-item"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -683,7 +689,10 @@
                 <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
             </div>
             <div class="contact-info">
-                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p>
+                <p>
+                    <a href="{% url 'main_site:contact' %}">Contact Us</a> | 
+                    <a href="{% url 'main_site:policy' %}">Policy</a> {# Added Policy link #}
+                </p>
                 <p>123 Innovation Drive, Tech City, TX 75001</p>
             </div>
         </div>
@@ -697,13 +706,13 @@
 
             // Mobile navigation toggle
             const navToggle = document.querySelector('.nav-toggle');
-            const navbarLinks = document.querySelector('.navbar-links'); // Renamed for consistency
+            const mainNav = document.querySelector('.main-nav'); // Target the nav wrapper
 
-            if (navToggle && navbarLinks) {
+            if (navToggle && mainNav) {
                 navToggle.addEventListener('click', () => {
                     const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
                     navToggle.setAttribute('aria-expanded', !expanded);
-                    navbarLinks.classList.toggle('is-open'); // Use 'is-open' for consistency
+                    mainNav.classList.toggle('is-open'); // Use 'is-open' for consistency
                 });
             }
 
@@ -724,24 +733,24 @@
 
             // Expose toggleMoreDropdown to global scope for onclick attribute
             window.toggleMoreDropdown = toggleMoreDropdown;
+
+            // Android Dropdown Toggle Function
+            function toggleAndroidDropdown(event) {
+                event.stopPropagation(); // Prevent click from immediately closing dropdown via window click
+                const dropdownContainer = event.currentTarget.closest('.android-dropdown-container');
+                dropdownContainer.classList.toggle('active');
+            }
+
+            // Close the dropdown if the user clicks outside of it
+            window.onclick = function(event) {
+                const dropdowns = document.querySelectorAll('.android-dropdown-container');
+                dropdowns.forEach(dropdown => {
+                    if (dropdown.classList.contains('active') && !dropdown.contains(event.target)) {
+                        dropdown.classList.remove('active');
+                    }
+                });
+            }
         });
-
-        // Android Dropdown Toggle Function
-        function toggleAndroidDropdown(event) {
-            event.stopPropagation(); // Prevent click from immediately closing dropdown via window click
-            const dropdownContainer = event.currentTarget.closest('.android-dropdown-container');
-            dropdownContainer.classList.toggle('active');
-        }
-
-        // Close the dropdown if the user clicks outside of it
-        window.onclick = function(event) {
-            const dropdowns = document.querySelectorAll('.android-dropdown-container');
-            dropdowns.forEach(dropdown => {
-                if (dropdown.classList.contains('active') && !dropdown.contains(event.target)) {
-                    dropdown.classList.remove('active');
-                }
-            });
-        }
     </script>
 </body>
 </html>
