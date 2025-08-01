@@ -296,3 +296,62 @@ def bot_detail_view(request, bot_id: str):
     return render(request, 'main_site/bot_detail_page.html', context)
 
 # ... (your other views like edit_profile_view, etc.) ...
+
+# --- NEW: View for submitting software ideas ---
+@require_POST
+@csrf_exempt # For testing, remove in production and handle CSRF properly
+def submit_software_idea_view(request):
+    if request.method == 'POST':
+        # You would typically process the form data here, e.g., save to a database
+        # For now, we'll just return a success message
+        idea_name = request.POST.get('idea-name', 'Anonymous')
+        idea_email = request.POST.get('idea-email', 'N/A')
+        idea_type = request.POST.get('idea-type', 'Other')
+        idea_description = request.POST.get('idea-description', '')
+
+        print(f"New Idea Submitted by {idea_name} ({idea_email}):")
+        print(f"Type: {idea_type}")
+        print(f"Description: {idea_description}")
+
+        return JsonResponse({'success': True, 'message': 'Thanks for your idea! We\'ll review it.'})
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+# --- NEW: View for full access pass inquiry (if not already present) ---
+@require_POST
+@csrf_exempt # For testing, remove in production and handle CSRF properly
+def full_access_pass_inquiry_view(request):
+    if request.method == 'POST':
+        # Process the form data here
+        email = request.POST.get('email', 'N/A')
+        message = request.POST.get('message', '')
+
+        print(f"Full Access Pass Inquiry from {email}:")
+        print(f"Message: {message}")
+
+        return JsonResponse({'success': True, 'message': 'Your inquiry has been sent! We\'ll be in touch.'})
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+# --- NEW: View for submitting subscription interest ---
+@require_POST
+@csrf_exempt # For testing, remove in production and handle CSRF properly
+def submit_subscription_interest_view(request):
+    if request.method == 'POST':
+        # Extract data from the form
+        interest_email = request.POST.get('interest-email', '')
+        interest_tools_worth = request.POST.get('interest-tools-worth', '')
+        interest_replaces = request.POST.get('interest-replaces', '')
+        interest_wants = request.POST.get('interest-wants', '')
+
+        # You would typically save this data to a database or send an email
+        print(f"New Subscription Interest from: {interest_email}")
+        print(f"Tools worth: {interest_tools_worth}")
+        print(f"Replaces: {interest_replaces}")
+        print(f"Wants: {interest_wants}")
+
+        # Return a success JSON response
+        return JsonResponse({'success': True, 'message': 'Thanks for your interest! We\'ll notify you when it\'s live.'})
+    
+    # If not a POST request, return an error
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+
