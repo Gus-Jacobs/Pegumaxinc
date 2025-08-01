@@ -273,24 +273,6 @@
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
-        .animated-text {
-            /* Text content will be appended here by JS */
-        }
-
-        .typing-cursor {
-            display: inline-block;
-            vertical-align: middle; /* Align with text */
-            width: 0.15em; /* Width of the cursor */
-            height: 1.2em; /* Height of the cursor, relative to font-size */
-            background-color: var(--highlight-color); /* Changed to blue highlight color */
-            animation: blink-cursor 0.75s step-end infinite;
-            margin-left: 0.1em; /* Small gap between text and cursor */
-        }
-
-        @keyframes blink-cursor {
-            from, to { opacity: 0; }
-            50% { opacity: 1; }
-        }
 
         .cta-button {
             display: inline-block;
