@@ -265,6 +265,12 @@
             color: #ffcc00;
             font-family: var(--primary-font);
             font-weight: 500;
+            /* Added background for techy feel */
+            background-color: rgba(0, 255, 255, 0.1); /* Semi-transparent light blue */
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
         .animated-text {
@@ -276,7 +282,7 @@
             vertical-align: middle; /* Align with text */
             width: 0.15em; /* Width of the cursor */
             height: 1.2em; /* Height of the cursor, relative to font-size */
-            background-color: #ffcc00; /* Yellow color */
+            background-color: var(--highlight-color); /* Changed to blue highlight color */
             animation: blink-cursor 0.75s step-end infinite;
             margin-left: 0.1em; /* Small gap between text and cursor */
         }
@@ -858,6 +864,6 @@
     </footer>
 
     <script src="{% static 'js/script.js' %}"></script>
-
+    {# Removed the duplicate inline JavaScript block #}
 </body>
 </html>
