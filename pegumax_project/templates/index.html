@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" 
-             crossorigin="anonymous" referrerpolicy="no-referrer" />
+                crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Universal box-sizing for consistent layout */
         *, *::before, *::after {
@@ -62,12 +62,23 @@
 
         /* Header Styles */
         .page-header {
-            background-color: var(--bg-dark-1);
+            background-color: var(--bg-dark-1); /* This header is actually the hero section background */
             padding: 1rem 0;
             border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
-            position: sticky;
+            position: sticky; /* Sticky for the actual navbar, not the whole hero */
             top: 0;
             z-index: 1000;
+        }
+
+        /* Navbar specific styles within the header */
+        .main-navbar {
+            position: absolute; /* Position the navbar over the hero image */
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: transparent; /* Make it transparent over the hero */
+            padding: 1rem 0;
+            z-index: 1001; /* Higher z-index than hero-overlay */
         }
 
         .main-navbar .container {
@@ -107,7 +118,8 @@
             transition: all 0.3s ease;
         }
 
-        .navbar-links {
+        /* Main Navigation Links (Desktop) */
+        .main-nav ul.navbar-links { /* Corrected selector to target the ul within main-nav */
             list-style: none;
             margin: 0;
             padding: 0;
@@ -115,7 +127,7 @@
             gap: 2.5rem; /* Increased spacing between nav items for desktop */
         }
 
-        .navbar-links a {
+        .main-nav ul.navbar-links li a { /* Corrected selector for links */
             color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
@@ -123,13 +135,13 @@
             white-space: nowrap; /* Prevent text wrapping */
         }
 
-        .navbar-links a:hover {
+        .main-nav ul.navbar-links li a:hover {
             color: var(--highlight-color);
         }
 
         /* Specific styles for auth links that might be hidden */
-        .nav-auth-item {
-            display: list-item; /* Default to visible */
+        .nav-auth-item.desktop-only { /* Added desktop-only to target specific items */
+            display: list-item; /* Default to visible on desktop */
         }
 
         /* More menu wrapper */
@@ -246,12 +258,23 @@
         }
 
         .animated-text-container {
-            min-height: 2rem;
+            min-height: 2.5rem; /* Increased min-height to prevent cutoff */
             margin-bottom: 2rem;
-            font-size: 1.2rem;
+            font-size: 1.8rem; /* Increased font size for better visibility */
             color: #ffcc00;
             font-family: var(--primary-font);
             font-weight: 500;
+            display: inline-block; /* Ensure it takes only as much width as content */
+            white-space: nowrap; /* Prevent text wrapping during animation */
+            overflow: hidden; /* Hide overflow during animation */
+            border-right: 0.15em solid #ffcc00; /* Cursor effect */
+            animation: blink-caret 0.75s step-end infinite;
+        }
+
+        /* Cursor blinking animation */
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #ffcc00; }
         }
 
         .cta-button {
@@ -395,6 +418,8 @@
         .engaging-section {
             background-color: var(--bg-dark-1);
             text-align: center;
+            padding-bottom: 5rem; /* Increased padding at the bottom */
+            margin-bottom: 4rem; /* Added margin before the footer */
         }
 
         .engaging-content {
@@ -489,15 +514,15 @@
 
         /* Media Queries for responsiveness */
         @media (max-width: 1200px) {
-            .navbar-links {
+            .main-nav ul.navbar-links {
                 gap: 1.5rem; /* Reduce gap for slightly smaller screens */
             }
-            .navbar-links a {
+            .main-nav ul.navbar-links li a {
                 font-size: 0.95rem; /* Shrink font to fit more items */
             }
 
             /* Hide login/signup from main nav and show in 'more' menu */
-            .nav-auth-item {
+            .nav-auth-item.desktop-only {
                 display: none;
             }
             .more-menu-wrapper {
@@ -506,7 +531,7 @@
         }
 
         @media (max-width: 768px) { /* Changed from 769px to 768px for consistency */
-            .page-header .main-navbar .navbar-links {
+            .page-header .main-navbar .navbar-links { /* Corrected selector */
                 display: none; /* Hide desktop nav */
                 width: 100%;
                 order: 2; /* Place below logo on mobile */
@@ -517,7 +542,7 @@
             .page-header .main-navbar .nav-toggle {
                 display: block; /* Show hamburger icon */
             }
-            .page-header .main-navbar .navbar-links.is-open {
+            .page-header .main-navbar .navbar-links.is-open { /* Corrected selector */
                 display: flex; /* Show nav when open */
             }
             .navbar-brand {
@@ -527,7 +552,7 @@
                 height: 2rem;
             }
             /* Ensure auth items are visible in the mobile menu */
-            .nav-auth-item {
+            .nav-auth-item.desktop-only {
                 display: list-item; 
             }
             /* Hide the 'more' menu wrapper when hamburger is active */
@@ -546,7 +571,7 @@
                 font-size: 1.5rem;
             }
             .animated-text-container {
-                font-size: 1rem;
+                font-size: 1.4rem; /* Adjusted for mobile */
             }
             .cta-button {
                 padding: 0.6rem 1.5rem;
@@ -616,7 +641,7 @@
             .navbar-logo-img {
                 height: 1.8rem;
             }
-            .navbar-links a {
+            .main-nav ul.navbar-links li a { /* Corrected selector */
                 font-size: 0.85rem;
             }
 
@@ -631,7 +656,7 @@
                 font-size: 1.2rem;
             }
             .animated-text-container {
-                font-size: 0.9rem;
+                font-size: 1.1rem; /* Further adjusted for very small screens */
             }
             .cta-button {
                 padding: 0.5rem 1.2rem;
@@ -676,7 +701,7 @@
     </style>
 </head>
 <body>
-    <header class="page-header hero-section" id="page-top">
+    <header class="hero-section" id="page-top">
         <nav class="main-navbar">
             <div class="container">
                 <a href="{% url 'main_site:home' %}" class="navbar-brand">
@@ -688,19 +713,21 @@
                     <span class="hamburger-line"></span>
                     <span class="hamburger-line"></span>
                 </button>
-                <ul class="navbar-links">
-                    <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
-                    <li><a href="{% url 'main_site:about' %}">About Us</a></li>
-                    <li><a href="{% url 'main_site:community' %}">Community</a></li>
-                    <li><a href="{% url 'main_site:store' %}">Store</a></li>
-                    {# These are the main auth links, conditionally displayed by CSS #}
-                    {% if user.is_authenticated %}
-                        <li class="nav-auth-item"><a href="{% url 'main_site:account' %}">Account</a></li>
-                    {% else %}
-                        <li class="nav-auth-item"><a href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-auth-item"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
-                    {% endif %}
-                </ul>
+                <nav class="main-nav"> {# This is the actual nav element #}
+                    <ul class="navbar-links"> {# Moved navbar-links class here #}
+                        <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
+                        <li><a href="{% url 'main_site:about' %}">About Us</a></li>
+                        <li><a href="{% url 'main_site:community' %}">Community</a></li>
+                        <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                        {# These are the main auth links, conditionally displayed by CSS #}
+                        {% if user.is_authenticated %}
+                            <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:account' %}">Account</a></li>
+                        {% else %}
+                            <li class="nav-auth-item desktop-only"><a href="{% url 'login' %}">Login</a></li>
+                            <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
                 {# This will be the "..." menu, appearing only in the specific breakpoint #}
                 <div class="more-menu-wrapper">
                     <button class="more-toggle" aria-label="More navigation links" aria-expanded="false" onclick="toggleMoreDropdown(event)">...</button>
@@ -810,7 +837,7 @@
                 <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
             </div>
             <div class="contact-info">
-                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p> {# Updated to link to contact page #}
+                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p>
                 <p>123 Innovation Drive, Tech City, TX 75001</p>
             </div>
         </div>
@@ -823,54 +850,15 @@
 
             // Mobile navigation toggle
             const navToggle = document.querySelector('.nav-toggle');
-            const navbarLinks = document.querySelector('.navbar-links');
+            const mainNav = document.querySelector('.main-nav'); // Target the nav wrapper
 
-            if (navToggle && navbarLinks) {
+            if (navToggle && mainNav) {
                 navToggle.addEventListener('click', () => {
                     const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
                     navToggle.setAttribute('aria-expanded', !expanded);
-                    navbarLinks.classList.toggle('is-open');
+                    mainNav.classList.toggle('is-open'); // Toggle class on the nav wrapper
                 });
             }
-
-            // Typewriter effect for animated slogan
-            const slogans = [
-                "Vision. Innovation. Impact.",
-                "Seamless Solutions, Limitless Possibilities.",
-                "Technology Designed for You."
-            ];
-            let sloganIndex = 0;
-            let charIndex = 0;
-            const animatedSloganElement = document.getElementById('animated-slogan');
-            const typingSpeed = 100; // milliseconds per character (slower for smoother typing)
-            const deletingSpeed = 70; // milliseconds per character (slower for smoother deleting)
-            const delayBetweenSlogans = 2500; // milliseconds (longer pause between slogans)
-
-            function typeSlogan() {
-                const currentSlogan = slogans[sloganIndex];
-                if (charIndex < currentSlogan.length) {
-                    animatedSloganElement.textContent += currentSlogan.charAt(charIndex);
-                    charIndex++;
-                    setTimeout(typeSlogan, typingSpeed);
-                } else {
-                    setTimeout(deleteSlogan, delayBetweenSlogans);
-                }
-            }
-
-            function deleteSlogan() {
-                const currentSlogan = slogans[sloganIndex];
-                if (charIndex > 0) {
-                    animatedSloganElement.textContent = currentSlogan.substring(0, charIndex - 1);
-                    charIndex--;
-                    setTimeout(deleteSlogan, deletingSpeed);
-                } else {
-                    sloganIndex = (sloganIndex + 1) % slogans.length;
-                    setTimeout(typeSlogan, 500); // Small delay before typing next slogan
-                }
-            }
-
-            // Start the typewriter effect when the page loads
-            typeSlogan();
 
             // More menu dropdown toggle function
             function toggleMoreDropdown(event) {
@@ -889,6 +877,47 @@
 
             // Expose toggleMoreDropdown to global scope for onclick attribute
             window.toggleMoreDropdown = toggleMoreDropdown;
+
+            // Typewriter effect for animated slogan
+            const slogans = [
+                "Vision. Innovation. Impact.",
+                "Seamless Solutions, Limitless Possibilities.",
+                "Technology Designed for You."
+            ];
+            let sloganIndex = 0;
+            let charIndex = 0;
+            const animatedSloganElement = document.getElementById('animated-slogan');
+            const typingSpeed = 120; // milliseconds per character (slower for smoother typing)
+            const deletingSpeed = 60; // milliseconds per character (faster for smoother deleting)
+            const delayBetweenSlogans = 2000; // milliseconds (longer pause between slogans)
+
+            function typeSlogan() {
+                const currentSlogan = slogans[sloganIndex];
+                if (charIndex < currentSlogan.length) {
+                    animatedSloganElement.textContent += currentSlogan.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeSlogan, typingSpeed);
+                } else {
+                    // Pause after typing
+                    setTimeout(deleteSlogan, delayBetweenSlogans);
+                }
+            }
+
+            function deleteSlogan() {
+                const currentSlogan = slogans[sloganIndex];
+                if (charIndex > 0) {
+                    animatedSloganElement.textContent = currentSlogan.substring(0, charIndex - 1);
+                    charIndex--;
+                    setTimeout(deleteSlogan, deletingSpeed);
+                } else {
+                    // Move to next slogan after deleting
+                    sloganIndex = (sloganIndex + 1) % slogans.length;
+                    setTimeout(typeSlogan, 500); // Small delay before typing next slogan
+                }
+            }
+
+            // Start the typewriter effect
+            typeSlogan();
         });
     </script>
 </body>
