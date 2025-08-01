@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy & Terms of Service - Pegumax Inc.</title>
-    <meta name="description" content="Read Pegumax Inc.'s Privacy Policy and Terms of Service. Learn how we handle your data, our use of third-party services like Google, OpenAI, and Stripe, and your responsibilities when using our software tools.">
-    <meta name="keywords" content="Pegumax Inc. privacy policy, terms of service, data handling, user agreement, software liability, Google AI, OpenAI, Stripe payments, user data, legal policy">
+    <title>Contact Us - Pegumax Inc. | Support & Inquiries</title>
+    <meta name="description" content="Contact Pegumax Inc. for support, inquiries, feedback, or partnership opportunities. Reach out to our team via our online form.">
+    <meta name="keywords" content="Pegumax Inc. contact, contact form, customer support, tech inquiries, business partnerships, feedback, Pegumax email">
     
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,7 +50,6 @@
 
         main {
             flex-grow: 1; /* Allows main content to take up available space */
-            padding: 2.5rem 0; /* 40px */
         }
 
         .container {
@@ -59,7 +58,7 @@
             padding: 0 1.5rem; /* Responsive horizontal padding */
         }
 
-        /* Header Styles (unified for consistency) */
+        /* Header Styles (unified for consistency with other pages) */
         .page-header {
             background-color: var(--bg-dark-1);
             padding: 1rem 0;
@@ -85,7 +84,7 @@
         }
 
         .navbar-logo-img { /* Renamed for consistency */
-            height: 2.5rem;
+            height: 2.5rem; /* Controlled height for the logo image */
             margin-right: 0.5rem;
         }
 
@@ -106,7 +105,8 @@
             transition: all 0.3s ease;
         }
 
-        .navbar-links { /* Renamed for consistency */
+        /* Main Navigation Links (Desktop) */
+        .main-nav ul.navbar-links { /* Corrected selector to target the ul within main-nav */
             list-style: none;
             margin: 0;
             padding: 0;
@@ -114,7 +114,7 @@
             gap: 2.5rem; /* Increased spacing for desktop */
         }
 
-        .navbar-links a {
+        .main-nav ul.navbar-links li a { /* Corrected selector for links */
             color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
@@ -122,13 +122,13 @@
             white-space: nowrap; /* Prevent text wrapping */
         }
 
-        .navbar-links a:hover {
+        .main-nav ul.navbar-links li a:hover {
             color: var(--highlight-color);
         }
 
         /* Specific styles for auth links that might be hidden */
-        .nav-auth-item {
-            display: list-item; /* Default to visible */
+        .nav-auth-item.desktop-only { /* Added desktop-only to target specific items */
+            display: list-item; /* Default to visible on desktop */
         }
 
         /* More menu wrapper */
@@ -189,93 +189,107 @@
             display: block;
         }
 
-        /* Policy Specific Styles */
-        .policy-content {
+        /* Contact Main Content */
+        .contact-main {
+            padding: 2.5rem 1.25rem; /* 40px 20px */
+        }
+        .contact-container {
+            max-width: 50rem; /* 800px */
+            margin: 0 auto;
             background-color: var(--card-bg);
-            padding: 2.5rem; /* 40px */
+            padding: 1.875rem 2.5rem; /* 30px 40px */
             border-radius: 0.625rem; /* 10px */
             border: 0.0625rem solid var(--border-color); /* 1px */
             box-shadow: 0 0.3125rem 1.25rem rgba(0,0,0,0.2); /* 5px 20px */
-            max-width: 1000px;
-            margin: 0 auto;
         }
-
-        .policy-content h1 {
+        .contact-container h1 {
             font-family: var(--secondary-font);
-            font-size: 3rem;
             color: var(--highlight-color);
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 0.9375rem; /* 15px */
+            font-size: 2.5rem; /* 2.5em */
         }
-
-        .policy-content h2 {
-            font-family: var(--secondary-font);
-            font-size: 2rem;
-            color: var(--text-color);
-            margin-top: 2.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 0.0625rem solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
-
-        .policy-content h3 {
-            font-family: var(--primary-font);
-            font-size: 1.5rem;
-            color: var(--highlight-color);
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .policy-content p {
-            font-size: 1rem;
-            color: var(--text-light);
-            margin-bottom: 1rem;
-        }
-
-        .policy-content ul {
-            list-style: disc;
-            margin-left: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--text-light);
-        }
-
-        .policy-content ul li {
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-        }
-
-        .policy-content strong {
-            color: var(--text-color);
-        }
-
-        .policy-content a {
-            color: var(--highlight-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .policy-content a:hover {
-            text-decoration: underline;
-            color: #00e6e6;
-        }
-
-        .policy-content .disclaimer {
-            background-color: rgba(255, 77, 79, 0.1);
-            border: 0.0625rem solid var(--danger-color);
-            padding: 1rem;
-            border-radius: 0.3rem;
-            margin-top: 1.5rem;
-            font-style: italic;
-            color: var(--danger-color);
-        }
-
-        .policy-content .final-agreement {
+        .contact-container .tagline {
             text-align: center;
-            margin-top: 2.5rem;
-            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 1.875rem; /* 30px */
+            font-size: 1.1rem; /* 1.1em */
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.25rem; /* 20px */
+        }
+        .form-group label {
+            display: block;
+            color: var(--text-light);
+            margin-bottom: 0.5rem; /* 8px */
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 0.9375rem; /* 12px 15px */
+            background-color: var(--bg-dark-2);
+            border: 0.0625rem solid var(--border-color);
+            border-radius: 0.375rem; /* 6px */
+            color: var(--text-color);
+            font-size: 1rem; /* 1em */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group textarea:focus {
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 0 0.125rem rgba(0, 239, 255, 0.3); /* 2px */
+            outline: none;
+        }
+        .form-group textarea {
+            min-height: 7.5rem; /* 120px */
+            resize: vertical;
+        }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            padding: 0.75rem; /* 12px */
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 0.375rem; /* 6px */
+            font-family: var(--secondary-font);
+            font-size: 1.2rem; /* 1.2em */
             font-weight: bold;
-            color: var(--highlight-color);
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
         }
+        .submit-button:hover {
+            background-color: #00c0c0;
+            transform: translateY(-0.125rem); /* 2px */
+            box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
+        }
+        .submit-button i {
+            margin-left: 0.5rem;
+        }
+
+        /* Django Messages */
+        .django-messages {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.25rem 0; /* 20px */
+        }
+        .django-messages li {
+            padding: 0.625rem 0.9375rem; /* 10px 15px */
+            margin-bottom: 0.625rem; /* 10px */
+            border-radius: 0.3125rem; /* 5px */
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .django-messages li.success { background-color: rgba(82, 196, 26, 0.2); color: var(--success-color); border: 0.0625rem solid var(--success-color); }
+        .django-messages li.error { background-color: rgba(255, 77, 79, 0.2); color: var(--danger-color); border: 0.0625rem solid var(--danger-color); }
 
         /* Site Footer Styles (unified for consistency) */
         .site-footer {
@@ -326,15 +340,15 @@
 
         /* Media Queries for responsiveness */
         @media (max-width: 1200px) {
-            .navbar-links {
+            .main-nav ul.navbar-links { /* Target the ul inside main-nav */
                 gap: 1.5rem; /* Reduce gap for slightly smaller screens */
             }
-            .navbar-links a {
+            .main-nav ul.navbar-links li a {
                 font-size: 0.95rem; /* Shrink font to fit more items */
             }
 
             /* Hide login/signup/account from main nav and show in 'more' menu */
-            .nav-auth-item {
+            .nav-auth-item.desktop-only { /* Added desktop-only to target specific items */
                 display: none;
             }
             .more-menu-wrapper {
@@ -349,19 +363,24 @@
             .page-header .navbar-brand {
                 flex-grow: 1; /* Allow brand to take space */
             }
-            .page-header .navbar-links {
+            .page-header .main-nav { /* Target the nav wrapper */
                 display: none; /* Hide desktop nav */
                 width: 100%;
                 order: 2; /* Place below logo on mobile */
-                flex-direction: column; /* Stack vertically in mobile menu */
-                text-align: center;
-                gap: 0.5rem; /* Smaller gap for stacked items */
             }
             .page-header .nav-toggle {
                 display: block; /* Show hamburger icon */
             }
-            .page-header .navbar-links.is-open {
-                display: flex; /* Show nav when open */
+            .page-header .main-nav.is-open { /* When mobile nav is open */
+                display: flex;
+                flex-direction: column; /* Stack vertically in mobile menu */
+                text-align: center;
+                gap: 0.5rem; /* Smaller gap for stacked items */
+            }
+            .main-nav ul.navbar-links { /* The ul inside main-nav */
+                flex-direction: column; /* Stack items */
+                width: 100%;
+                gap: 0.5rem;
             }
             .navbar-brand {
                 font-size: 1.2rem;
@@ -370,7 +389,7 @@
                 height: 2rem;
             }
             /* Ensure auth items are visible in the mobile menu */
-            .nav-auth-item {
+            .nav-auth-item.desktop-only { /* Override the display:none from 1200px breakpoint */
                 display: list-item; 
             }
             /* Hide the 'more' menu wrapper when hamburger is active */
@@ -378,33 +397,37 @@
                 display: none;
             }
 
-            main {
-                padding: 1.5rem 0;
+            .contact-main {
+                padding: 2rem 1rem;
             }
-            .policy-content {
-                padding: 1.5rem;
+            .contact-container {
+                padding: 1.5rem 1.875rem;
             }
-            .policy-content h1 {
-                font-size: 2.2rem;
+            .contact-container h1 {
+                font-size: 2rem;
+            }
+            .contact-container .tagline {
+                font-size: 1rem;
                 margin-bottom: 1.5rem;
             }
-            .policy-content h2 {
-                font-size: 1.6rem;
-                margin-top: 2rem;
-                margin-bottom: 0.8rem;
-            }
-            .policy-content h3 {
-                font-size: 1.2rem;
-                margin-top: 1rem;
-                margin-bottom: 0.5rem;
-            }
-            .policy-content p, .policy-content ul li {
+            .form-group label {
                 font-size: 0.9rem;
             }
-            .policy-content .final-agreement {
-                font-size: 1rem;
-                margin-top: 1.5rem;
+            .form-group input, .form-group textarea {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
             }
+            .form-group textarea {
+                min-height: 6rem;
+            }
+            .submit-button {
+                padding: 0.6rem;
+                font-size: 1rem;
+            }
+            .django-messages li {
+                font-size: 0.9rem;
+            }
+
             .site-footer {
                 font-size: 0.8rem;
                 padding: 1rem 0.8rem;
@@ -424,24 +447,32 @@
             .navbar-logo-img {
                 height: 1.8rem;
             }
-
-            .policy-content {
-                padding: 1rem;
-            }
-            .policy-content h1 {
-                font-size: 1.8rem;
-            }
-            .policy-content h2 {
-                font-size: 1.4rem;
-            }
-            .policy-content h3 {
-                font-size: 1rem;
-            }
-            .policy-content p, .policy-content ul li {
+            .main-nav ul.navbar-links li a {
                 font-size: 0.85rem;
             }
-            .policy-content .final-agreement {
+
+            .contact-container h1 {
+                font-size: 1.8rem;
+            }
+            .contact-container .tagline {
                 font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+            .form-group label {
+                font-size: 0.85rem;
+            }
+            .form-group input, .form-group textarea {
+                padding: 0.5rem 0.7rem;
+                font-size: 0.85rem;
+            }
+            .form-group textarea {
+                min-height: 5rem;
+            }
+            .submit-button {
+                font-size: 0.9rem;
+            }
+            .django-messages li {
+                font-size: 0.85rem;
             }
             .site-footer .container {
                 padding: 0 1rem;
@@ -452,28 +483,28 @@
 <body>
     <header class="page-header">
         <div class="container">
-            <div class="logo-container">
-                <a href="{% url 'main_site:home' %}" class="navbar-brand">
-                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
-                    <span class="header-logo-text">Pegumax Inc.</span>
-                </a>
-            </div>
+            {# Removed .logo-container div for consistency #}
+            <a href="{% url 'main_site:home' %}" class="navbar-brand">
+                <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
+                <span class="header-logo-text">Pegumax Inc.</span>
+            </a>
             <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
             </button>
-            <nav class="navbar-links">
-                <ul>
+            <nav class="main-nav"> {# Changed class from navbar-links to main-nav #}
+                <ul class="navbar-links"> {# Moved navbar-links class here #}
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {# These are the main auth links, conditionally displayed by CSS #}
                     {% if user.is_authenticated %}
-                        <li class="nav-auth-item"><a href="{% url 'main_site:account' %}">Account</a></li>
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:account' %}">Account</a></li>
                     {% else %}
-                        <li class="nav-auth-item"><a href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-auth-item"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -491,109 +522,39 @@
         </div>
     </header>
 
-    <main>
-        <div class="container">
-            <div class="policy-content">
-                <h1>Pegumax Inc. Privacy Policy and Terms of Service</h1>
-                <p><strong>Effective Date:</strong> July 31, 2025</p>
-                <p>Welcome to Pegumax Inc. These combined Privacy Policy and Terms of Service govern your use of our website, software, applications, and services (collectively, "Services"). By accessing or using any part of our Services, you acknowledge that you have read, understood, and agree to be bound by these policies and terms. If you do not agree, you may not use our Services.</p>
+    <main class="contact-main">
+        <div class="contact-container">
+            <h1>Get In Touch</h1>
+            <p class="tagline">Have questions, feedback, or need support? We're here to help.</p>
 
-                <hr style="border-color: var(--border-color); margin: 2.5rem 0;">
+            {% if messages %}
+            <ul class="django-messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
 
-                <h2>1. Privacy Policy</h2>
-                <p>This Privacy Policy describes how Pegumax Inc. ("we," "us," or "our") collects, uses, and discloses your information when you use our Services.</p>
-
-                <h3>1.1 Information We Collect</h3>
-                <p>We collect information solely for the purpose of providing and improving your direct interaction with our Services, specifically for account authentication and personalization. The types of information we collect directly include:</p>
-                <ul>
-                    <li><strong>Account Information:</strong> When you create an account, we collect your chosen username, email address, and a securely hashed password for authentication.</li>
-                    <li><strong>Profile Information:</strong> Any additional information you choose to provide for personalization within your account settings (e.g., display name, profile picture, theme preferences).</li>
-                </ul>
-                <p><strong>Important Note on Third-Party Data Handling:</strong></p>
-                <ul>
-                    <li><strong>AI Services:</strong> Our AI functionalities are powered by third-party providers, specifically **Google** and **OpenAI**. Any prompts, inputs, or data you submit to our AI features are sent directly to these third-party services for processing. **Pegumax Inc. does not store or process the content of your AI prompts or the AI-generated responses on our servers.** Your interaction with these AI services is governed by their respective privacy policies and terms.</li>
-                    <li><strong>Payment Processing:</strong> All payment transactions and related financial information are handled by **Stripe**. **Pegumax Inc. does not directly collect, store, or have access to your full payment card details or other sensitive financial information.** Stripe processes your payment information securely in accordance with their privacy policy and terms.</li>
-                </ul>
-
-                <h3>1.2 How We Use Your Information</h3>
-                <p>We use the limited information we collect directly from you (username, email, password hash, personalization settings) for the following purposes:</p>
-                <ul>
-                    <li>To authenticate your identity and allow you to log in to your account.</li>
-                    <li>To provide and maintain your personalized user experience within our applications.</li>
-                    <li>To communicate with you regarding your account, service updates, and essential notifications.</li>
-                    <li>To ensure the security and integrity of your account.</li>
-                </ul>
-
-                <h3>1.3 How We Share Your Information</h3>
-                <p>We do not share the personal information we collect directly (username, email, password hash, personalization settings) with any third parties, except as required for the core functionality of our Services (e.g., if we use a third-party email service provider for account-related emails) or as legally required.</p>
-                <p>As stated above, your data related to AI prompts and payment information is handled directly by Google/OpenAI and Stripe, respectively, and is subject to their own policies. **We explicitly disclaim any and all liability for the data handling, security, or privacy practices of Google, OpenAI, Stripe, or any other third-party services integrated into or linked from our Services.** Your interaction with these third parties is solely at your own risk and subject to their respective policies.</p>
-
-                <h3>1.4 Data Security</h3>
-                <p>We strive to use commercially acceptable means to protect the personal information we store (your account credentials and personalization settings). However, no method of transmission over the Internet or method of electronic storage is 100% secure. While we endeavor to protect your data, **we cannot guarantee its absolute security.** You acknowledge and accept that we do not assume any responsibility for any unauthorized access, use, or disclosure of your data.</p>
-
-                <h3>1.5 Your Rights</h3>
-                <p>You may have certain rights regarding your personal information, such as the right to access, correct, or delete your data stored by Pegumax Inc. To exercise these rights, please contact us using the information provided on our Contact Us page. We will respond to your request in accordance with applicable law.</p>
-
-                <h3>1.6 Cookies and Tracking Technologies</h3>
-                <p>We may use cookies and similar tracking technologies to track basic website activity and enhance your user experience (e.g., remembering your login state). You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, some portions of our Service may not function correctly.</p>
-
-                <h3>1.7 Children's Privacy</h3>
-                <p>Our Service is not intended for use by children under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13. If you are a parent or guardian and you are aware that your child has provided us with Personal Information, please contact us. If we become aware that we have collected Personal Information from a child under age 13 without verification of parental consent, we will take steps to remove that information from our servers.</p>
-
-                <h3>1.8 Changes to this Privacy Policy</h3>
-                <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Effective Date" at the top. You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.</p>
-
-                <hr style="border-color: var(--border-color); margin: 2.5rem 0;">
-
-                <h2>2. Terms of Service</h2>
-                <p>These Terms of Service ("Terms") govern your access to and use of the website, software, applications, and services provided by Pegumax Inc.</p>
-
-                <h3>2.1 Acceptance of Terms</h3>
-                <p>By accessing or using our Services, you confirm your acceptance of these Terms and your agreement to be bound by them. If you are using the Services on behalf of an organization, you are agreeing to these Terms for that organization and representing that you have the authority to bind that organization to these Terms. In that case, "you" and "your" will refer to that organization.</p>
-
-                <h3>2.2 Description of Services</h3>
-                <p>Pegumax Inc. develops and provides various software tools, applications, and services designed for users. These may include, but are not limited to, productivity tools, educational suites, and interactive entertainment. The specific features and functionalities of each Service are detailed on their respective product pages.</p>
-
-                <h3>2.3 User Responsibilities</h3>
-                <p>You agree to use our Services only for lawful purposes and in accordance with these Terms. You are solely responsible for your conduct and any data, text, files, information, usernames, images, graphics, photos, profiles, audio and video clips, sounds, musical works, authorship, applications, links, and other content or materials (collectively, "Content") that you submit, post, display, or otherwise make available on or through our Services.</p>
-                <p>You agree not to:</p>
-                <ul>
-                    <li>Use the Services in any way that violates any applicable national or international law or regulation.</li>
-                    <li>Engage in any conduct that restricts or inhibits anyone's use or enjoyment of the Services, or which, as determined by us, may harm Pegumax Inc. or users of the Services.</li>
-                    <li>Transmit, or procure the sending of, any advertising or promotional material, including any "junk mail," "chain letter," "spam," or any other similar solicitation.</li>
-                    <li>Impersonate or attempt to impersonate Pegumax Inc., a Pegumax Inc. employee, another user, or any other person or entity.</li>
-                    <li>Engage in any other conduct that restricts or inhibits anyone's use or enjoyment of the Service, or which, as determined by us, may harm Pegumax Inc. or users of the Service or expose them to liability.</li>
-                    <li>Attempt to reverse engineer, decompile, or disassemble any aspect of the Services.</li>
-                    <li>Attempt to gain unauthorized access to any portion or feature of the Services, or any other systems or networks connected to the Services or to any Pegumax Inc. server.</li>
-                </ul>
-
-                <h3>2.4 Disclaimers of Warranty</h3>
-                <p class="disclaimer"><strong>THE SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR COURSE OF PERFORMANCE. PEGUMAX INC. DOES NOT WARRANT THAT THE SERVICES WILL BE UNINTERRUPTED, SECURE, OR ERROR-FREE; NOR DO WE MAKE ANY WARRANTY AS TO THE RESULTS THAT MAY BE OBTAINED FROM THE USE OF THE SERVICES, OR AS TO THE ACCURACY, RELIABILITY, OR CURRENCY OF ANY INFORMATION OR CONTENT PROVIDED THROUGH THE SERVICES. YOU EXPRESSLY AGREE THAT YOUR USE OF THE SERVICES IS SOLELY AT YOUR OWN RISK.</strong></p>
-
-                <h3>2.5 Limitation of Liability</h3>
-                <p class="disclaimer"><strong>TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL PEGUMAX INC., ITS AFFILIATES, OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, SUPPLIERS, OR LICENSORS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM (I) YOUR ACCESS TO OR USE OF OR INABILITY TO ACCESS OR USE THE SERVICES; (II) ANY CONDUCT OR CONTENT OF ANY THIRD PARTY ON THE SERVICES; (III) ANY CONTENT OBTAINED FROM THE SERVICES; AND (IV) UNAUTHORIZED ACCESS, USE, OR ALTERATION OF YOUR TRANSMISSIONS OR CONTENT, WHETHER BASED ON WARRANTY, CONTRACT, TORT (INCLUDING NEGLIGENCE), OR ANY OTHER LEGAL THEORY, WHETHER OR NOT WE HAVE BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGE, AND EVEN IF A REMEDY SET FORTH HEREIN IS FOUND TO HAVE FAILED OF ITS ESSENTIAL PURPOSE.</strong></p>
-                <p class="disclaimer"><strong>YOU ACKNOWLEDGE AND AGREE THAT PEGUMAX INC. SHALL NOT BE LIABLE FOR ANY DIRECT OR INDIRECT DAMAGES, LOSSES, OR LIABILITIES ARISING FROM OR RELATED TO YOUR USE OF ANY THIRD-PARTY SERVICES, INCLUDING BUT NOT LIMITED TO AI SERVICES (GOOGLE, OPENAI) AND PAYMENT PROCESSING (STRIPE). ANY ISSUES, DISPUTES, OR DAMAGES ARISING FROM YOUR INTERACTION WITH THESE THIRD-PARTY SERVICES ARE SOLELY BETWEEN YOU AND THE RESPECTIVE THIRD PARTY.</strong></p>
-
-                <h3>2.6 Indemnification</h3>
-                <p>You agree to defend, indemnify, and hold harmless Pegumax Inc. and its licensees and licensors, and their employees, contractors, agents, officers, and directors, from and against any and all claims, damages, obligations, losses, liabilities, costs or debt, and expenses (including but not limited to attorney's fees), resulting from or arising out of a) your use and access of the Service, by you or any person using your account and password; b) a breach of these Terms; or c) Content posted on the Service.</p>
-
-                <h3>2.7 Intellectual Property</h3>
-                <p>The Services and their original content (excluding Content provided by users), features, and functionality are and will remain the exclusive property of Pegumax Inc. and its licensors. Our Services are protected by copyright, trademark, and other laws of both the United States and foreign countries. Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of Pegumax Inc.</p>
-
-                <h3>2.8 Third-Party Services</h3>
-                <p>Our Services may contain links to third-party websites or services that are not owned or controlled by Pegumax Inc. We have no control over, and assume no responsibility for, the content, privacy policies, or practices of any third-party websites or services. This includes, but is not limited to, the AI models provided by Google and OpenAI, and the payment processing services provided by Stripe. **You acknowledge and agree that Pegumax Inc. shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in connection with the use of or reliance on any such content, goods, or services available on or through any such third-party websites or services.** We strongly advise you to read the terms and conditions and privacy policies of any third-party websites or services that you visit.</p>
-
-                <h3>2.9 Termination</h3>
-                <p>We may terminate or suspend your account and bar access to the Service immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever and without limitation, including but not limited to a breach of the Terms. If you wish to terminate your account, you may simply discontinue using the Service.</p>
-
-                <h3>2.10 Governing Law</h3>
-                <p>These Terms shall be governed and construed in accordance with the laws of Kentucky, United States, without regard to its conflict of law provisions. Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights.</p>
-
-                <h3>2.11 Changes to These Terms</h3>
-                <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion. By continuing to access or use our Service after any revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, you are no longer authorized to use the Service.</p>
-
-                <p class="final-agreement"><strong>By using our software you agree to the policy and terms above.</strong></p>
-            </div>
+            <form method="POST" action="{% url 'main_site:contact' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Your Message</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="submit-button">Send Message <i class="fas fa-paper-plane"></i></button>
+            </form>
         </div>
     </main>
 
@@ -612,7 +573,6 @@
             </div>
         </div>
     </footer>
-
     <script src="{% static 'js/script.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -620,13 +580,13 @@
 
             // Mobile navigation toggle
             const navToggle = document.querySelector('.nav-toggle');
-            const navbarLinks = document.querySelector('.navbar-links'); // Renamed for consistency
+            const mainNav = document.querySelector('.main-nav'); // Target the nav wrapper
 
-            if (navToggle && navbarLinks) {
+            if (navToggle && mainNav) {
                 navToggle.addEventListener('click', () => {
                     const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
                     navToggle.setAttribute('aria-expanded', !expanded);
-                    navbarLinks.classList.toggle('is-open');
+                    mainNav.classList.toggle('is-open'); // Toggle class on the nav wrapper
                 });
             }
 
