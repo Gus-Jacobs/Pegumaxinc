@@ -253,6 +253,7 @@
             display: flex;
             align-items: center;
             gap: 2.5rem; /* Use rem for gap */
+            margin-top: 2rem; /* Added spacing from section intro */
         }
 
         .story-text {
@@ -260,6 +261,7 @@
             font-size: 1.1rem; /* Use rem for font size */
             line-height: 1.7;
             color: var(--text-light);
+            padding-right: 1.5rem; /* Added padding for text next to image */
         }
 
         .story-visual {
@@ -547,6 +549,7 @@
             }
             .story-text {
                 font-size: 1rem;
+                padding-right: 0; /* Remove padding when stacked */
             }
             .values-grid {
                 gap: 1.5rem;
@@ -703,9 +706,9 @@
         <section id="our-story-section" class="content-section our-story-section js-scroll">
             <div class="container">
                 <h2>Our <span class="highlight">Story</span></h2>
+                <p class="section-intro">At Pegumax Inc., we are driven by a singular vision: to build innovative software solutions that empower users and provide exceptional value. We believe technology should be accessible, powerful, and affordable.</p>
                 <div class="story-content">
                     <div class="story-text">
-                        <p class="section-intro">At Pegumax Inc., we are driven by a singular vision: to build innovative software solutions that empower users and provide exceptional value. We believe technology should be accessible, powerful, and affordable.</p>
                         <p>Our mission is to develop cutting-edge software tools that address real-world needs, enhance productivity, and inspire creativity. We are committed to a user-centric approach, ensuring our products are intuitive, reliable, and deliver tangible benefits. We strive to make high-quality technology accessible by offering our tools at fair and competitive prices, challenging the notion that advanced software must come with a premium cost.</p>
                         <p>Our philosophy is built on innovation, quality, and affordability. We foster a culture of continuous improvement, constantly exploring new technologies and methodologies to enhance our offerings. We are dedicated to ethical practices, transparency, and building lasting relationships with our users and the broader tech community.</p>
                         <p>Join us on our journey as we forge the future of software, one impactful application at a time.</p>
@@ -760,6 +763,7 @@
             <div class="container">
                 <h2>Join Our <span class="highlight">Journey</span></h2>
                 <p>Ready to be part of a company that's shaping the future of software? Explore career opportunities or partner with us.</p>
+                <a href="{% url 'main_site:careers' %}" class="cta-button">View Careers</a>
                 <a href="{% url 'main_site:contact' %}" class="cta-button secondary">Contact Us</a>
                 <a href="{% url 'main_site:policy' %}" class="cta-button policy-button"><i class="fas fa-file-alt"></i> View Policy</a>
             </div>
@@ -821,4 +825,3 @@
     </script>
 </body>
 </html>
-
