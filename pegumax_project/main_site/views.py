@@ -5,16 +5,15 @@ from .models import SoftwareIdea, FullAccessInquiry, ContactMessage, UserLoginAc
 from .forms import SignUpForm, UserProfileEditForm, CustomPasswordChangeForm # Renamed from EditProfileForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse
-# UserLoginActivity is already imported above
 from django.contrib import messages
-import json # Import json for serializing to JSON string
-from django.contrib.auth.models import User # Import the User model
+import json
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
-# Add any other necessary imports, e.g., models from bot_monitor
-from bot_monitor.models import BotStatus, BotActivityLog # Assuming these are your models
-# Duplicate imports removed
-from django.utils import timezone # Ensure timezone is imported
+from bot_monitor.models import BotStatus, BotActivityLog
+from django.utils import timezone
 from django.db.utils import ProgrammingError
+from django.views.decorators.http import require_POST # <--- THIS IS THE MISSING IMPORT!
+from django.views.decorators.csrf import csrf_exempt # Ensure this is also imported if used
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
@@ -64,6 +63,8 @@ def signup_view(request):
     return render(request, 'main_site/signup.html', {'form': form})
 
 @login_required
+@require_POST # Added decorator for clarity, assuming it's an AJAX POST endpoint
+@csrf_exempt # For testing, remove in production and handle CSRF properly
 def edit_profile_view(request):
     if request.method == 'POST':
         form = UserProfileEditForm(request.POST, instance=request.user)
@@ -78,6 +79,8 @@ def edit_profile_view(request):
     return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 @login_required
+@require_POST # Added decorator for clarity, assuming it's an AJAX POST endpoint
+@csrf_exempt # For testing, remove in production and handle CSRF properly
 def change_password_view(request):
     if request.method == 'POST':
         form = CustomPasswordChangeForm(user=request.user, data=request.POST)
@@ -109,40 +112,56 @@ def get_login_history_view(request):
         })
     return JsonResponse({'history': history_data})
 
+@require_POST # Added decorator
+@csrf_exempt # For testing, remove in production and handle CSRF properly
 @login_required # Or remove if guests can submit
 def submit_software_idea_view(request):
     if request.method == 'POST':
-        idea_text = request.POST.get('idea_text')
-        user_email = request.user.email if request.user.is_authenticated else request.POST.get('user_email_idea', 'Not provided')
+        idea_text = request.POST.get('idea-description') # Corrected field name based on HTML
+        idea_name = request.POST.get('idea-name', 'Anonymous')
+        idea_email = request.user.email if request.user.is_authenticated else request.POST.get('idea-email', 'Not provided')
+        idea_type = request.POST.get('idea-type', 'Other')
+
 
         if not idea_text:
-            return JsonResponse({'success': False, 'message': 'Idea text cannot be empty.'}, status=400)
+            return JsonResponse({'success': False, 'message': 'Idea description cannot be empty.'}, status=400)
 
-        subject = f"New Software Idea Submission from {user_email}"
-        message_body = f"User: {request.user.username if request.user.is_authenticated else 'Guest'}\nEmail: {user_email}\n\nIdea:\n{idea_text}"
+        subject = f"New Software Idea Submission from {idea_name} ({idea_email})"
+        message_body = f"User: {request.user.username if request.user.is_authenticated else 'Guest'}\nEmail: {idea_email}\nType: {idea_type}\n\nIdea Description:\n{idea_text}"
         try:
             send_mail(subject, message_body, 'noreply@pegumax.com', ['pegumaxinc@gmail.com']) # REPLACE your_email@example.com
             return JsonResponse({'success': True, 'message': 'Thank you! Your idea has been submitted.'})
         except Exception as e:
             # Log the error e
+            print(f"Error sending idea email: {e}")
             return JsonResponse({'success': False, 'message': 'An error occurred. Please try again.'}, status=500)
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
 
+@require_POST # Added decorator
+@csrf_exempt # For testing, remove in production and handle CSRF properly
 def full_access_pass_inquiry_view(request): # Can be accessed by guests
     if request.method == 'POST':
-        email = request.POST.get('email_access')
-        interest_reason = request.POST.get('interest_reason_access', 'Not specified')
+        email = request.POST.get('interest-email') # Corrected field name based on HTML
+        interest_tools_worth = request.POST.get('interest-tools-worth', 'N/A')
+        interest_replaces = request.POST.get('interest-replaces', 'N/A')
+        interest_wants = request.POST.get('interest-wants', 'N/A')
 
         if not email: # Basic validation
             return JsonResponse({'success': False, 'message': 'Email address is required.'}, status=400)
 
         subject = "Full Access Pass Inquiry"
-        message_body = f"Email: {email}\nReason for Interest:\n{interest_reason}"
+        message_body = (
+            f"Email: {email}\n"
+            f"Tools worth: {interest_tools_worth}\n"
+            f"Replaces: {interest_replaces}\n"
+            f"Wants: {interest_wants}"
+        )
         try:
             send_mail(subject, message_body, 'noreply@pegumax.com', ['pegumaxinc@gmail.com']) # REPLACE your_email@example.com
             return JsonResponse({'success': True, 'message': 'Thank you for your interest! We will be in touch.'})
         except Exception as e:
             # Log the error e
+            print(f"Error sending full access inquiry email: {e}")
             return JsonResponse({'success': False, 'message': 'An error occurred. Please try again.'}, status=500)
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
 
@@ -155,9 +174,14 @@ def contact_page_view(request):
 
         email_subject = f"Contact Form Submission: {subject_user} from {name}"
         email_body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
-        send_mail(email_subject, email_body, 'noreply@pegumax.com', ['pegumaxinc@gmail.com']) # REPLACE your_email@example.com
-        messages.success(request, "Thank you for your message! We'll get back to you soon.")
-        return redirect('main_site:contact') # Redirect to clear form
+        try:
+            send_mail(email_subject, email_body, 'noreply@pegumax.com', ['pegumaxinc@gmail.com']) # REPLACE your_email@example.com
+            messages.success(request, "Thank you for your message! We'll get back to you soon.")
+            return redirect('main_site:contact') # Redirect to clear form
+        except Exception as e:
+            print(f"Error sending contact email: {e}")
+            messages.error(request, "An error occurred while sending your message. Please try again.")
+            return render(request, 'main_site/contact.html', {'error_message': 'Failed to send message.'})
     return render(request, 'main_site/contact.html')
 
 @login_required
@@ -210,13 +234,13 @@ def admin_dashboard_view(request):
         # Get actual counts of unacknowledged logs for badges (no arbitrary cap)
         context['unacknowledged_general_logs_count'] = BotActivityLog.objects.filter(is_acknowledged=False).count()
         context['unacknowledged_critical_logs_count'] = BotActivityLog.objects.filter(
-            is_acknowledged=False, 
+            is_acknowledged=False,  
             log_level__in=['ERROR', 'CRITICAL']
-        )
+        ).count() # Added .count() here
         # Check if any previous step reported an error before declaring full success
         if "Error" not in context['dashboard_error_message'] and "failed" not in context['dashboard_error_message'].lower() \
            and "schema error" not in context['dashboard_error_message'].lower():
-             context['dashboard_error_message'] = "All dashboard data fetched successfully."
+            context['dashboard_error_message'] = "All dashboard data fetched successfully."
         # else, the error message from a previous step will remain.
         
     except ProgrammingError as db_error: # Specifically catch schema errors for BotActivityLog
@@ -294,64 +318,3 @@ def bot_detail_view(request, bot_id: str):
         # Add any other initial context needed for the bot detail page
     }
     return render(request, 'main_site/bot_detail_page.html', context)
-
-# ... (your other views like edit_profile_view, etc.) ...
-
-# --- NEW: View for submitting software ideas ---
-@require_POST
-@csrf_exempt # For testing, remove in production and handle CSRF properly
-def submit_software_idea_view(request):
-    if request.method == 'POST':
-        # You would typically process the form data here, e.g., save to a database
-        # For now, we'll just return a success message
-        idea_name = request.POST.get('idea-name', 'Anonymous')
-        idea_email = request.POST.get('idea-email', 'N/A')
-        idea_type = request.POST.get('idea-type', 'Other')
-        idea_description = request.POST.get('idea-description', '')
-
-        print(f"New Idea Submitted by {idea_name} ({idea_email}):")
-        print(f"Type: {idea_type}")
-        print(f"Description: {idea_description}")
-
-        return JsonResponse({'success': True, 'message': 'Thanks for your idea! We\'ll review it.'})
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
-
-# --- NEW: View for full access pass inquiry (if not already present) ---
-@require_POST
-@csrf_exempt # For testing, remove in production and handle CSRF properly
-def full_access_pass_inquiry_view(request):
-    if request.method == 'POST':
-        # Process the form data here
-        email = request.POST.get('email', 'N/A')
-        message = request.POST.get('message', '')
-
-        print(f"Full Access Pass Inquiry from {email}:")
-        print(f"Message: {message}")
-
-        return JsonResponse({'success': True, 'message': 'Your inquiry has been sent! We\'ll be in touch.'})
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
-
-# --- NEW: View for submitting subscription interest ---
-@require_POST
-@csrf_exempt # For testing, remove in production and handle CSRF properly
-def submit_subscription_interest_view(request):
-    if request.method == 'POST':
-        # Extract data from the form
-        interest_email = request.POST.get('interest-email', '')
-        interest_tools_worth = request.POST.get('interest-tools-worth', '')
-        interest_replaces = request.POST.get('interest-replaces', '')
-        interest_wants = request.POST.get('interest-wants', '')
-
-        # You would typically save this data to a database or send an email
-        print(f"New Subscription Interest from: {interest_email}")
-        print(f"Tools worth: {interest_tools_worth}")
-        print(f"Replaces: {interest_replaces}")
-        print(f"Wants: {interest_wants}")
-
-        # Return a success JSON response
-        return JsonResponse({'success': True, 'message': 'Thanks for your interest! We\'ll notify you when it\'s live.'})
-    
-    # If not a POST request, return an error
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
-
-
