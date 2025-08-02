@@ -12,8 +12,8 @@ from django.core.mail import send_mail
 from bot_monitor.models import BotStatus, BotActivityLog
 from django.utils import timezone
 from django.db.utils import ProgrammingError
-from django.views.decorators.http import require_POST # <--- THIS IS THE MISSING IMPORT!
-from django.views.decorators.csrf import csrf_exempt # Ensure this is also imported if used
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
@@ -318,3 +318,7 @@ def bot_detail_view(request, bot_id: str):
         # Add any other initial context needed for the bot detail page
     }
     return render(request, 'main_site/bot_detail_page.html', context)
+
+# --- NEW: View for Careers page ---
+def careers_view(request):
+    return render(request, 'main_site/careers.html')
