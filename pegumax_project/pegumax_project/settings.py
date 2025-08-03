@@ -24,7 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-default-development-secret-key-here-make-it-long-and-random-for-local-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+# DEBUG should be controlled by an environment variable, defaulting to False for production.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS_STRING = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
 if ALLOWED_HOSTS_STRING:
@@ -89,15 +90,14 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'templates', # This allows finding 'my_template.html' if it's in templates/
-            # If you have templates organized by app within the project-level templates folder,
-            # you usually list their common parent here, and then use the full path in template_name.
-            # Example: If 'student_suite_launch.html' is in 'templates/main_site/'
-            # then template_name='main_site/student_suite_launch.html' will work.
-            
-            STATIC_ROOT, # Important for Flutter's index.html
+            BASE_DIR / 'templates', # Project-level templates (e.g., templates/base.html)
+            # Explicitly add the main_site app's templates directory.
+            # This ensures Django looks here, especially if templates are nested like
+            # main_site/templates/main_site/student_suite_launch.html
+            BASE_DIR / 'main_site' / 'templates',
+            STATIC_ROOT, # Important for Flutter's index.html, if it's served as a template
         ],
-        'APP_DIRS': True, # <--- CRITICAL CHANGE: Set this to TRUE
+        'APP_DIRS': True, # Keep this True for Django to find templates in app_name/templates/
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
