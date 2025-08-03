@@ -22,6 +22,9 @@ def home_view(request):
     return render(request, 'index.html')
 
 def software_center_view(request):
+    # This view is intentionally simple, just rendering the template.
+    # Any complex logic or database queries that could fail should be handled
+    # within the JavaScript on the software-center.html page or in separate AJAX views.
     return render(request, 'software-center.html')
 
 def about_view(request):
@@ -294,7 +297,6 @@ def bot_detail_view(request, bot_id: str):
 def careers_view(request):
     return render(request, 'main_site/careers.html')
 
-# --- NEW: View for submitting subscription interest ---
 @require_POST
 @csrf_exempt
 def submit_subscription_interest_view(request):
