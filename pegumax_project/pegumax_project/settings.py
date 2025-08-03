@@ -97,7 +97,7 @@ TEMPLATES = [
             
             STATIC_ROOT, # Important for Flutter's index.html
         ],
-        'APP_DIRS': False, # <--- CRITICAL CHANGE: Set to False if all templates are in DIRS
+        'APP_DIRS': True, # <--- CRITICAL CHANGE: Set this to TRUE
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
