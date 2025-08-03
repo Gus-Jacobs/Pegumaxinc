@@ -191,7 +191,7 @@
 
         /* Hero Section */
         .about-hero {
-            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/about_hero_background.webp' %}");
+            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/img1.webp' %}"); /* Using img1.webp */
             background-size: cover;
             background-position: center;
             color: #fff;
@@ -376,32 +376,22 @@
         }
 
         /* Primary CTA Button (e.g., View Careers) */
-        .cta-button {
+        /* Removed .cta-button primary style as careers button is gone */
+
+        /* Contact Us Button Style */
+        .cta-button.contact-button { /* New specific class for Contact Us */
             background-color: var(--bg-color);
             color: var(--highlight-color);
             border: 0.125rem solid var(--bg-color);
         }
-        .cta-button:hover {
+        .cta-button.contact-button:hover {
             background-color: transparent;
             color: var(--bg-color);
             box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
             transform: translateY(-0.125rem);
         }
 
-        /* Secondary CTA Button (e.g., Contact Us) */
-        .cta-button.secondary {
-            background-color: transparent;
-            color: var(--bg-color);
-            border: 0.125rem solid var(--bg-color);
-        }
-        .cta-button.secondary:hover {
-            background-color: var(--bg-color);
-            color: var(--highlight-color);
-            box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
-            transform: translateY(-0.125rem);
-        }
-
-        /* New Policy Button Style */
+        /* Policy Button Style */
         .cta-button.policy-button {
             background-color: var(--bg-dark-2); /* Darker background */
             color: var(--highlight-color);
@@ -421,6 +411,7 @@
             padding: 1.25rem 1rem;
             font-size: 0.85rem;
             width: 100%;
+            margin-top: 5rem; /* Added significant margin to separate from content */
         }
         .site-footer .container {
             max-width: 900px;
@@ -581,6 +572,7 @@
             .site-footer {
                 font-size: 0.8rem;
                 padding: 1rem 0.8rem;
+                margin-top: 3rem; /* Adjusted for mobile */
             }
             .social-links {
                 gap: 0.8rem;
@@ -668,6 +660,7 @@
             </button>
             <nav class="main-nav">
                 <ul class="navbar-links">
+                    <li><a href="{% url 'main_site:home' %}">Home</a></li>
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
@@ -713,7 +706,7 @@
                         <p>Join us on our journey as we forge the future of software, one impactful application at a time.</p>
                     </div>
                     <div class="story-visual">
-                        <img src="{% static 'img/about_story_visual.webp' %}" alt="Our Story at Pegumax Inc. - Team working on innovation">
+                        <img src="{% static 'img/img2.webp' %}" alt="Our Story at Pegumax Inc. - Team working on innovation"> <!-- Using img2.webp -->
                     </div>
                 </div>
             </div>
@@ -760,10 +753,10 @@
 
         <section class="join-us-cta">
             <div class="container">
-                <h2>Join Our <span class="highlight">Journey</span></h2>
-                <p>Ready to be part of a company that's shaping the future of software? Explore career opportunities or partner with us.</p>
-                <a href="{% url 'main_site:careers' %}" class="cta-button">View Careers</a>
-                <a href="{% url 'main_site:contact' %}" class="cta-button secondary">Contact Us</a>
+                <h2>Connect With <span class="highlight">Us</span></h2>
+                <p>Have questions, ideas, or just want to say hello? We'd love to hear from you!</p>
+                {# Removed View Careers button #}
+                <a href="{% url 'main_site:contact' %}" class="cta-button contact-button"><i class="fas fa-envelope"></i> Contact Us</a>
                 <a href="{% url 'main_site:policy' %}" class="cta-button policy-button"><i class="fas fa-file-alt"></i> View Policy</a>
             </div>
         </section>
@@ -783,10 +776,11 @@
                     <a href="{% url 'main_site:contact' %}">Contact Us</a> | 
                     <a href="{% url 'main_site:policy' %}">Policy</a>
                 </p>
+                {# Removed physical address #}
             </div>
         </div>
     </footer>
-    <script src="{% static 'js/script.js' %}"></script> {# <--- ADDED THIS LINE! #}
+    <script src="{% static 'js/script.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('current-year').textContent = new Date().getFullYear();
@@ -824,4 +818,3 @@
     </script>
 </body>
 </html>
-
