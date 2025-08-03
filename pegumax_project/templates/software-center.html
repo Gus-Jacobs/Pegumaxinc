@@ -75,7 +75,7 @@
             align-items: center;
         }
 
-        .navbar-brand { /* Renamed for consistency */
+        .navbar-brand {
             display: flex;
             align-items: center;
             text-decoration: none;
@@ -84,7 +84,7 @@
             font-size: 1.5rem;
         }
 
-        .navbar-logo-img { /* Renamed for consistency */
+        .navbar-logo-img {
             height: 2.5rem;
             margin-right: 0.5rem;
         }
@@ -106,7 +106,8 @@
             transition: all 0.3s ease;
         }
 
-        .navbar-links { /* Renamed for consistency */
+        /* Main Navigation Links (Desktop) - Changed to .main-nav */
+        .main-nav { /* Changed from .navbar-links */
             list-style: none;
             margin: 0;
             padding: 0;
@@ -114,7 +115,15 @@
             gap: 2.5rem; /* Increased spacing for desktop */
         }
 
-        .navbar-links a {
+        .main-nav ul.navbar-links { /* Added this to target the ul inside main-nav */
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .main-nav ul.navbar-links li a {
             color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
@@ -122,13 +131,13 @@
             white-space: nowrap; /* Prevent text wrapping */
         }
 
-        .navbar-links a:hover {
+        .main-nav ul.navbar-links li a:hover {
             color: var(--highlight-color);
         }
 
         /* Specific styles for auth links that might be hidden */
-        .nav-auth-item {
-            display: list-item; /* Default to visible */
+        .nav-auth-item.desktop-only { /* Added desktop-only to target specific items */
+            display: list-item; /* Default to visible on desktop */
         }
 
         /* More menu wrapper */
@@ -191,7 +200,7 @@
 
         /* New Hero Section for Software Center */
         .software-hero-section {
-            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/img11.webp' %}");
+            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/img7.webp' %}"); /* Changed to img7.webp */
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -534,15 +543,15 @@
 
         /* Media Queries for responsiveness */
         @media (max-width: 1200px) {
-            .navbar-links {
+            .main-nav ul.navbar-links { /* Target the ul inside main-nav */
                 gap: 1.5rem; /* Reduce gap for slightly smaller screens */
             }
-            .navbar-links a {
+            .main-nav ul.navbar-links li a {
                 font-size: 0.95rem; /* Shrink font to fit more items */
             }
 
             /* Hide login/signup/account from main nav and show in 'more' menu */
-            .nav-auth-item {
+            .nav-auth-item.desktop-only { /* Added desktop-only to target specific items */
                 display: none;
             }
             .more-menu-wrapper {
@@ -557,7 +566,7 @@
             .page-header .navbar-brand {
                 flex-grow: 1; /* Allow brand to take space */
             }
-            .page-header .navbar-links {
+            .page-header .main-nav { /* Target the nav wrapper */
                 display: none; /* Hide desktop nav */
                 width: 100%;
                 order: 2; /* Place below logo on mobile */
@@ -568,7 +577,7 @@
             .page-header .nav-toggle {
                 display: block; /* Show hamburger icon */
             }
-            .page-header .navbar-links.is-open {
+            .page-header .main-nav.is-open {
                 display: flex; /* Show nav when open */
             }
             .navbar-brand {
@@ -754,17 +763,18 @@
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
             </button>
-            <nav class="navbar-links">
-                <ul>
+            <nav class="main-nav"> {# Changed class from navbar-links to main-nav #}
+                <ul class="navbar-links"> {# Retained navbar-links on the ul #}
+                    {# Removed Home link as requested #}
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
                     {% if user.is_authenticated %}
-                        <li class="nav-auth-item"><a href="{% url 'main_site:account' %}">Account</a></li>
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:account' %}">Account</a></li> {# Added desktop-only #}
                     {% else %}
-                        <li class="nav-auth-item"><a href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-auth-item"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'login' %}">Login</a></li> {# Added desktop-only #}
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:signup' %}">Sign Up</a></li> {# Added desktop-only #}
                     {% endif %}
                 </ul>
             </nav>
@@ -773,6 +783,7 @@
                 <ul class="more-dropdown-content">
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'main_site:account' %}">Account</a></li>
+                        <li><a href="{% url 'logout' %}">Sign Out</a></li> {# Added Sign Out to dropdown #}
                     {% else %}
                         <li><a href="{% url 'login' %}">Login</a></li>
                         <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
@@ -976,13 +987,13 @@
 
             // Mobile navigation toggle
             const navToggle = document.querySelector('.nav-toggle');
-            const navbarLinks = document.querySelector('.navbar-links');
+            const mainNav = document.querySelector('.main-nav'); // Changed to .main-nav
 
-            if (navToggle && navbarLinks) {
+            if (navToggle && mainNav) {
                 navToggle.addEventListener('click', () => {
                     const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
                     navToggle.setAttribute('aria-expanded', !expanded);
-                    navbarLinks.classList.toggle('is-open');
+                    mainNav.classList.toggle('is-open');
                 });
             }
 
@@ -1076,7 +1087,7 @@
                 const messageArea = document.getElementById('submitIdeaMessageArea');
                 messageArea.style.display = 'none'; // Hide message area initially
 
-                fetch("{% url 'main_site:submit_software_idea' %}", { // Restored Django URL
+                fetch("{% url 'main_site:submit_software_idea' %}", {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -1113,7 +1124,7 @@
                 const messageArea = document.getElementById('subscriptionInterestMessageArea');
                 messageArea.style.display = 'none'; // Hide message area initially
 
-                fetch("{% url 'main_site:submit_subscription_interest' %}", { // Restored Django URL
+                fetch("{% url 'main_site:submit_subscription_interest' %}", {
                     method: 'POST',
                     body: formData,
                     headers: {
