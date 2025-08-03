@@ -262,6 +262,8 @@
             transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
             font-size: 1rem;
+            border: none; /* Ensure no default button border */
+            cursor: pointer;
             margin-top: 1.25rem; /* 20px */
         }
         .cta-button:hover {
@@ -577,7 +579,7 @@
             }
             /* Ensure auth items are visible in the mobile menu */
             .nav-auth-item {
-                display: list-item; 
+                display: list-item;  
             }
             /* Hide the 'more' menu wrapper when hamburger is active */
             .more-menu-wrapper {
@@ -838,7 +840,7 @@
                     <h3>Powerful Suites</h3>
                     <div class="software-grid">
                         <!-- Student Suite Card (Now Clickable) -->
-                        <a href="{% url 'main_site:student-suite-launch' %}" class="software-card" data-category="suite">
+                        <a href="{% url 'main_site:student_suite_launch' %}" class="software-card" data-category="suite"> {# FIXED: Changed to student_suite_launch #}
                             <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
                             <h4>Student Suite</h4>
                             <p>Essential applications for academic success and productivity.</p>
@@ -1143,4 +1145,3 @@
     </script>
 </body>
 </html>
-
