@@ -191,7 +191,7 @@
 
         /* Hero Section */
         .about-hero {
-            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/img7.webp' %}");
+            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/about_hero_background.webp' %}");
             background-size: cover;
             background-position: center;
             color: #fff;
@@ -714,7 +714,7 @@
                         <p>Join us on our journey as we forge the future of software, one impactful application at a time.</p>
                     </div>
                     <div class="story-visual">
-                        <img src="{% static 'img/img3.webp' %}" alt="Our Story at Pegumax Inc. - Team working on innovation">
+                        <img src="{% static 'img/about_story_visual.webp' %}" alt="Our Story at Pegumax Inc. - Team working on innovation">
                     </div>
                 </div>
             </div>
@@ -763,6 +763,7 @@
             <div class="container">
                 <h2>Join Our <span class="highlight">Journey</span></h2>
                 <p>Ready to be part of a company that's shaping the future of software? Explore career opportunities or partner with us.</p>
+                <a href="{% url 'main_site:careers' %}" class="cta-button">View Careers</a>
                 <a href="{% url 'main_site:contact' %}" class="cta-button secondary">Contact Us</a>
                 <a href="{% url 'main_site:policy' %}" class="cta-button policy-button"><i class="fas fa-file-alt"></i> View Policy</a>
             </div>
@@ -783,9 +784,11 @@
                     <a href="{% url 'main_site:contact' %}">Contact Us</a> | 
                     <a href="{% url 'main_site:policy' %}">Policy</a>
                 </p>
+                <p>123 Innovation Drive, Tech City, TX 75001</p>
             </div>
         </div>
     </footer>
+    <script src="{% static 'js/script.js' %}"></script> {# <--- ADDED THIS LINE! #}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('current-year').textContent = new Date().getFullYear();
@@ -823,5 +826,3 @@
     </script>
 </body>
 </html>
-
-
