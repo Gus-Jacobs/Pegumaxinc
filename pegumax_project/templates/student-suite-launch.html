@@ -110,7 +110,7 @@
             list-style: none;
             margin: 0;
             padding: 0;
-            display: flex;
+            display: flex; /* This makes the links horizontal */
             gap: 2.5rem; /* Increased spacing for desktop */
         }
 
@@ -238,14 +238,15 @@
             text-align: center;
         }
 
-        ul {
+        /* Corrected selector for feature lists to prevent affecting navbar */
+        ul.feature-list { /* Added class to target specifically */
             list-style: none;
             padding: 0;
             margin: 0 auto 2.5rem auto; /* 40px */
             max-width: 700px;
         }
 
-        ul li {
+        ul.feature-list li { /* Added class to target specifically */
             background-color: var(--bg-dark-1);
             padding: 0.8rem 1.2rem;
             margin-bottom: 0.625rem; /* 10px */
@@ -257,7 +258,7 @@
             align-items: center;
         }
 
-        ul li::before {
+        ul.feature-list li::before { /* Added class to target specifically */
             content: "\f00c"; /* Font Awesome checkmark icon */
             font-family: "Font Awesome 6 Free";
             font-weight: 900;
@@ -469,7 +470,7 @@
             }
             /* Ensure auth items are visible in the mobile menu */
             .nav-auth-item.desktop-only { /* Override the display:none from 1200px breakpoint */
-                display: list-item; 
+                display: list-item;  
             }
             /* Hide the 'more' menu wrapper when hamburger is active */
             .more-menu-wrapper {
@@ -495,10 +496,10 @@
                 margin-top: 2rem;
                 margin-bottom: 1rem;
             }
-            ul {
+            ul.feature-list { /* Specific target */
                 margin-bottom: 2rem;
             }
-            ul li {
+            ul.feature-list li { /* Specific target */
                 font-size: 0.95rem;
                 padding: 0.7rem 1rem;
             }
@@ -567,7 +568,7 @@
                 margin-top: 1.5rem;
                 margin-bottom: 0.8rem;
             }
-            ul li {
+            ul.feature-list li { /* Specific target */
                 font-size: 0.9rem;
                 padding: 0.6rem 0.8rem;
             }
@@ -599,7 +600,6 @@
 <body>
     <header class="page-header">
         <div class="container">
-            {# Removed .logo-container div for consistency #}
             <a href="{% url 'main_site:home' %}" class="navbar-brand">
                 <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
                 <span class="header-logo-text">Pegumax Inc.</span>
@@ -629,6 +629,7 @@
                 <ul class="more-dropdown-content">
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'main_site:account' %}">Account</a></li>
+                        <li><a href="{% url 'logout' %}">Sign Out</a></li>
                     {% else %}
                         <li><a href="{% url 'login' %}">Login</a></li>
                         <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
@@ -639,7 +640,7 @@
     </header>
 
     <main>
-        <section class="content-section app-detail-page">
+        <section class="app-detail-page">
             <div class="container">
                 <div class="app-header">
                     <div class="app-icon-large"><i class="fas fa-graduation-cap"></i></div>
@@ -648,7 +649,7 @@
                 <p class="section-intro">Your all-in-one productivity and learning companion for students. The Pegumax Student Suite integrates essential tools designed to streamline academic tasks, enhance collaboration, and foster a more efficient learning experience.</p>
                 
                 <h3>Key Features:</h3>
-                <ul>
+                <ul class="feature-list"> {# Added class to target specifically #}
                     <li>Integrated course management and calendar.</li>
                     <li>Study tools like flashcard generating tools and AI teachers.</li>
                     <li>Career tools like resume and cover letter generators and AI interview assistance.</li>
@@ -660,8 +661,8 @@
                 <div class="download-links">
                     {# Link to your deployed Flutter web app #}
                     <a href="{% url 'student_suite_app_launch' %}" class="download-button online-dl active" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i> Launch Web App</a>
-                    <a href="#" class="download-button windows-dl disabled"><i class="fab fa-windows"></i> Windows <span class="coming-soon-inline">(Soon)</span></a>
-                    <a href="#" class="download-button ios-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a>
+                    <a href="#" class="download-button ios-dl disabled"><i class="fab fa-apple"></i> iOS <span class="coming-soon-inline">(Soon)</span></a>
+                    <a href="#" class="download-button macos-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a> {# Added macOS option #}
                     
                     {# Android Dropdown Button #}
                     <div class="android-dropdown-container">
@@ -722,17 +723,6 @@
                 moreWrapper.classList.toggle('active'); // Toggle 'active' class to show/hide dropdown
             }
 
-            // Close dropdowns when clicking outside (copied from other pages)
-            window.addEventListener('click', function(event) {
-                const moreWrapper = document.querySelector('.more-menu-wrapper');
-                if (moreWrapper && moreWrapper.classList.contains('active') && !moreWrapper.contains(event.target)) {
-                    moreWrapper.classList.remove('active');
-                }
-            });
-
-            // Expose toggleMoreDropdown to global scope for onclick attribute
-            window.toggleMoreDropdown = toggleMoreDropdown;
-
             // Android Dropdown Toggle Function
             function toggleAndroidDropdown(event) {
                 event.stopPropagation(); // Prevent click from immediately closing dropdown via window click
@@ -740,15 +730,27 @@
                 dropdownContainer.classList.toggle('active');
             }
 
-            // Close the dropdown if the user clicks outside of it
-            window.onclick = function(event) {
-                const dropdowns = document.querySelectorAll('.android-dropdown-container');
-                dropdowns.forEach(dropdown => {
+            // Close all dropdowns (more menu and android) when clicking outside
+            window.addEventListener('click', function(event) {
+                // Close 'more' menu dropdown
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                if (moreWrapper && moreWrapper.classList.contains('active') && 
+                    !moreWrapper.contains(event.target) && !event.target.matches('.more-toggle')) {
+                    moreWrapper.classList.remove('active');
+                }
+
+                // Close Android dropdown
+                const androidDropdowns = document.querySelectorAll('.android-dropdown-container');
+                androidDropdowns.forEach(dropdown => {
                     if (dropdown.classList.contains('active') && !dropdown.contains(event.target)) {
                         dropdown.classList.remove('active');
                     }
                 });
-            }
+            });
+
+            // Expose toggleMoreDropdown and toggleAndroidDropdown to global scope for onclick attribute
+            window.toggleMoreDropdown = toggleMoreDropdown;
+            window.toggleAndroidDropdown = toggleAndroidDropdown;
         });
     </script>
 </body>
