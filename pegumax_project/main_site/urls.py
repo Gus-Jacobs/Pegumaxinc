@@ -30,8 +30,8 @@ urlpatterns = [
     path('admin-dashboard/live-bot-mode/<str:bot_id>/', views.bot_detail_view, name='bot_detail_page'),
     path('policy/', views.policy_view, name='policy'),
     path('careers/', views.careers_view, name='careers'),
-    # --- CRITICAL FIX: Changed template_name to 'main_site/student_suite_launch.html' ---
-    path('software-center/student-suite-launch/', TemplateView.as_view(template_name='main_site/student_suite_launch.html'), name='student_suite_launch'),
+    # --- CRITICAL FIX: template_name is now just 'student_suite_launch.html' ---
+    path('software-center/student-suite-launch/', TemplateView.as_view(template_name='student_suite_launch.html'), name='student_suite_launch'),
     # --- NEW: URL for submitting subscription interest ---
     path('submit-subscription-interest/', views.submit_subscription_interest_view, name='submit_subscription_interest'),
 ]
