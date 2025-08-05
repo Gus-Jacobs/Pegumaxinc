@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" 
-                crossorigin="anonymous" referrerpolicy="no-referrer" />
+                 crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Universal box-sizing for consistent layout */
         *, *::before, *::after {
@@ -35,6 +35,7 @@
             --secondary-font: 'Orbitron', sans-serif;
             --danger-color: #ff4d4f;
             --success-color: #52c41a;
+            --navbar-height: 4.5rem; /* Approximate height of the fixed navbar */
         }
 
         /* General Page Styles */
@@ -52,6 +53,7 @@
 
         main {
             flex-grow: 1; /* Allows main content to take up available space */
+            background-color: var(--bg-color); /* Ensure main also has the base background */
         }
 
         .container {
@@ -67,7 +69,8 @@
             background-position: center;
             background-attachment: fixed; /* Parallax effect */
             color: #fff;
-            padding: 8rem 0;
+            padding-top: calc(var(--navbar-height) + 6rem); /* Adjust padding based on navbar height + extra space */
+            padding-bottom: 8rem; /* Consistent bottom padding */
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -80,13 +83,14 @@
 
         /* Navbar specific styles within the header */
         .main-navbar {
-            position: absolute; /* Position the navbar over the hero image */
+            position: fixed; /* Changed to fixed to stay at top */
             top: 0;
             left: 0;
             width: 100%;
-            background-color: transparent; /* Make it transparent over the hero */
+            background-color: var(--bg-dark-1); /* Solid background for navbar */
             padding: 1rem 0;
             z-index: 1001; /* Higher z-index than hero-overlay */
+            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1); /* Add a subtle border */
         }
 
         .main-navbar .container {
@@ -285,6 +289,8 @@
             transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
             font-size: 1.1rem;
+            border: none; /* Ensure no default button border */
+            cursor: pointer;
         }
 
         .cta-button:hover {
@@ -410,7 +416,7 @@
             background-color: var(--bg-dark-1);
             text-align: center;
             padding-bottom: 5rem; /* Increased padding at the bottom */
-            margin-bottom: 4rem; /* Added margin before the footer */
+            /* Removed margin-bottom here */
         }
 
         .engaging-content {
@@ -456,6 +462,19 @@
             color: var(--text-light);
         }
 
+        /* New section to bridge the gap before the footer */
+        .pre-footer-bridge {
+            background-color: var(--bg-dark-1); /* Match footer background */
+            padding: 4rem 0; /* Provide the desired space */
+            text-align: center;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        .pre-footer-bridge p {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
         /* Site Footer Styles */
         .site-footer {
             background-color: var(--bg-dark-1);
@@ -463,6 +482,7 @@
             padding: 1.25rem 1rem;
             font-size: 0.85rem;
             width: 100%;
+            /* No margin-top needed here, pre-footer-bridge handles it */
         }
         .site-footer .container {
             max-width: 900px;
@@ -555,7 +575,7 @@
             }
             /* Ensure auth items are visible in the mobile menu */
             .nav-auth-item.desktop-only {
-                display: list-item; 
+                display: list-item;  
             }
             /* Hide the 'more' menu wrapper when hamburger is active */
             .more-menu-wrapper {
@@ -563,7 +583,8 @@
             }
 
             .hero-section {
-                padding: 5rem 0;
+                padding-top: calc(var(--navbar-height) + 3rem); /* Adjusted for smaller screens */
+                padding-bottom: 5rem;
                 min-height: 60vh;
             }
             .hero-content h1 {
@@ -624,6 +645,9 @@
                 font-size: 0.9rem;
             }
 
+            .pre-footer-bridge {
+                padding: 3rem 0;
+            }
             .site-footer {
                 font-size: 0.8rem;
                 padding: 1rem 0.8rem;
@@ -648,7 +672,8 @@
             }
 
             .hero-section {
-                padding: 4rem 0;
+                padding-top: calc(var(--navbar-height) + 2rem); /* Further adjusted for very small screens */
+                padding-bottom: 4rem;
                 min-height: 50vh;
             }
             .hero-content h1 {
@@ -696,6 +721,9 @@
             .interactive-placeholder p {
                 font-size: 0.85rem;
             }
+            .pre-footer-bridge {
+                padding: 2rem 0;
+            }
             .site-footer .container {
                 padding: 0 1rem;
             }
@@ -736,6 +764,7 @@
                     <ul class="more-dropdown-content">
                         {% if user.is_authenticated %}
                             <li><a href="{% url 'main_site:account' %}">Account</a></li>
+                            <li><a href="{% url 'logout' %}">Sign Out</a></li>
                         {% else %}
                             <li><a href="{% url 'login' %}">Login</a></li>
                             <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
@@ -829,6 +858,12 @@
         </section>
     </main>
 
+    <section class="pre-footer-bridge">
+        <div class="container">
+            <p>Ready to forge your future with Pegumax Inc.? Explore our solutions or connect with us!</p>
+        </div>
+    </section>
+
     <footer class="site-footer">
         <div class="container">
             <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
@@ -846,7 +881,42 @@
     </footer>
 
     <script src="{% static 'js/script.js' %}"></script>
-    {# Removed the duplicate inline JavaScript block #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            // Mobile navigation toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const mainNav = document.querySelector('.main-nav'); // Target the nav wrapper
+
+            if (navToggle && mainNav) {
+                navToggle.addEventListener('click', () => {
+                    const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+                    navToggle.setAttribute('aria-expanded', !expanded);
+                    mainNav.classList.toggle('is-open'); // Toggle class on the nav wrapper
+                });
+            }
+
+            // More menu dropdown toggle function
+            function toggleMoreDropdown(event) {
+                event.stopPropagation(); // Prevent document click from immediately closing
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                moreWrapper.classList.toggle('active'); // Toggle 'active' class to show/hide dropdown
+            }
+
+            // Close dropdowns when clicking outside
+            window.addEventListener('click', function(event) {
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                // Check if the click is outside the dropdown and the toggle button
+                if (moreWrapper && moreWrapper.classList.contains('active') && 
+                    !moreWrapper.contains(event.target) && !event.target.matches('.more-toggle')) {
+                    moreWrapper.classList.remove('active');
+                }
+            });
+
+            // Expose toggleMoreDropdown to global scope for onclick attribute
+            window.toggleMoreDropdown = toggleMoreDropdown;
+        });
+    </script>
 </body>
 </html>
-
