@@ -662,19 +662,23 @@
                     {# Link to your deployed Flutter web app #}
                     <a href="{% url 'student_suite_app_launch' %}" class="download-button online-dl active" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i> Launch Web App</a>
                     <a href="#" class="download-button ios-dl disabled"><i class="fab fa-apple"></i> iOS <span class="coming-soon-inline">(Soon)</span></a>
-                    <a href="#" class="download-button macos-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a> {# Added macOS option #}
-                    
+                    <a href="#" class="download-button macos-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a>
+                
                     {# Android Dropdown Button #}
                     <div class="android-dropdown-container">
                         <button class="download-button android-dl" onclick="toggleAndroidDropdown(event)"><i class="fab fa-android"></i> Android <i class="fas fa-caret-down" style="margin-left: 0.5rem;"></i></button>
                         <div class="android-dropdown-content">
                             <a href="https://play.google.com/store/apps/details?id=com.pegumax.studentsuite" target="_blank" rel="noopener noreferrer">Google Play Store</a>
-                            <a href="{% static 'downloads/student_suite.apk' %}" download>Direct APK Download</a>
+                            <a href="https://github.com/Gus-Jacobs/StudentSuite/releases/download/v1.0.0/app-release.apk" download>Direct APK Download</a>
                         </div>
                     </div>
-                    
+                
+                    {# Windows Download Link #}
+                    <a href="https://github.com/Gus-Jacobs/StudentSuite/releases/download/v1.0.0/PGM.Student.Suite.Windows.v1.0.0.zip" class="download-button windows-dl" download><i class="fab fa-windows"></i> Windows</a>
+                
                     <a href="#" class="download-button linux-dl disabled"><i class="fab fa-linux"></i> Linux <span class="coming-soon-inline">(Soon)</span></a>
                 </div>
+
                 <p class="small-text">*Web App and Android versions available now. Desktop and other mobile versions coming soon!</p>
             </div>
         </section>
@@ -685,9 +689,9 @@
             <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
             <p>Empowering the human spirit through technological transcendence.</p>
             <div class="social-links">
-                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+                <a href="https://www.facebook.com/profile.php?id=61579165562125" target="_blank" aria-label="Follow us on Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/pegumax_llc/" target="_blank" aria-label="Follow us on Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/company/pegumax/" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
             </div>
             <div class="contact-info">
                 <p>
