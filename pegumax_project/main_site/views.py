@@ -49,6 +49,9 @@ def account_view(request):
 def movie_word_scanner_view(request):
     return render(request, 'movie-word-scanner.html')
 
+def game_portal(request):
+    return render(request, 'main_site/game_portal.html')
+
 def policy_view(request):
     return render(request, 'main_site/policy.html')
 
@@ -314,3 +317,4 @@ def submit_subscription_interest_view(request):
         return JsonResponse({'success': True, 'message': 'Thanks for your interest! We\'ll notify you when it\'s live.'})
     
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
