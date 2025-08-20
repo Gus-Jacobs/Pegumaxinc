@@ -1,0 +1,678 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stellar Echoes - A Sci-Fi Adventure Game | Pegumax Inc.</title>
+    <meta name="description" content="Stellar Echoes by Pegumax Inc. is a thrilling sci-fi adventure game. Explore alien worlds, uncover ancient secrets, and navigate a universe on the brink of collapse. Play the online version now, with desktop and mobile versions coming soon.">
+    <meta name="keywords" content="Stellar Echoes, sci-fi game, adventure game, online game, gaming portal, Pegumax Inc., space exploration, sci-fi adventure, indie games, browser game">
+    
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+                    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Universal box-sizing for consistent layout */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* Root variables (assuming these are defined in style.css or globally) */
+        :root {
+            --bg-color: #0d0e12;
+            --bg-dark-1: #1a1c23;
+            --bg-dark-2: #22242b;
+            --card-bg: #16181d;
+            --text-color: #e0e0e0;
+            --text-light: #b0b0b0;
+            --highlight-color: #00efff;
+            --border-color: #333740;
+            --primary-font: 'Rajdhani', sans-serif;
+            --secondary-font: 'Orbitron', sans-serif;
+            --danger-color: #ff4d4f;
+            --success-color: #52c41a;
+        }
+
+        /* General Page Styles */
+        body {
+            font-family: var(--primary-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensures body takes at least full viewport height */
+            line-height: 1.6; /* Improved readability */
+        }
+
+        main {
+            flex-grow: 1; /* Allows main content to take up available space */
+        }
+
+        .container {
+            max-width: 1200px; /* Max width for content on large screens */
+            margin: 0 auto; /* Center the container */
+            padding: 0 1.5rem; /* Responsive horizontal padding */
+        }
+
+        /* Header Styles (unified for consistency) */
+        .page-header {
+            background-color: var(--bg-dark-1);
+            padding: 1rem 0;
+            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .page-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand { /* Renamed for consistency */
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-color);
+            font-family: var(--secondary-font);
+            font-size: 1.5rem;
+        }
+
+        .navbar-logo-img { /* Renamed for consistency */
+            height: 2.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .nav-toggle {
+            display: none; /* Hidden by default, shown on smaller screens */
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .hamburger-line {
+            display: block;
+            width: 1.5rem;
+            height: 0.125rem;
+            background-color: var(--highlight-color);
+            margin: 0.25rem 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Main Navigation Links (Desktop) - Applied to ul inside .main-nav */
+        .main-nav ul.navbar-links { 
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex; /* This makes the links horizontal */
+            gap: 2.5rem; /* Increased spacing for desktop */
+        }
+
+        .main-nav ul.navbar-links li a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        .main-nav ul.navbar-links li a:hover {
+            color: var(--highlight-color);
+        }
+
+        /* Specific styles for auth links that might be hidden */
+        .nav-auth-item.desktop-only { /* Use desktop-only for consistency */
+            display: list-item; /* Default to visible */
+        }
+
+        /* More menu wrapper */
+        .more-menu-wrapper {
+            position: relative;
+            display: none; /* Hidden by default, shown in specific breakpoint */
+        }
+
+        .more-toggle {
+            background-color: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem; /* Size of the "..." icon */
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .more-toggle:hover {
+            color: var(--highlight-color);
+        }
+
+        .more-dropdown-content {
+            display: none; /* Hidden by default, toggled by JS */
+            position: absolute;
+            background-color: var(--card-bg);
+            min-width: 10rem;
+            box-shadow: 0px 0.5rem 1rem 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 0.3rem;
+            overflow: hidden;
+            top: calc(100% + 0.5rem); /* Position below the button */
+            right: 0; /* Align to the right of the button */
+            border: 0.0625rem solid var(--border-color);
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .more-dropdown-content li a {
+            color: var(--text-color);
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            display: block;
+            text-align: left;
+            font-family: var(--primary-font);
+            font-size: 0.95rem;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            white-space: nowrap; /* Ensure dropdown items don't wrap */
+        }
+
+        .more-dropdown-content li a:hover {
+            background-color: var(--bg-dark-2);
+            color: var(--highlight-color);
+        }
+
+        .more-menu-wrapper.active .more-dropdown-content {
+            display: block;
+        }
+
+        /* Hero Section for Game Portal */
+        .game-hero-section {
+            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/stellar-echoes-hero.webp' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            padding: 6.25rem 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 25rem;
+        }
+
+        .game-hero-section .game-icon-large {
+            font-size: 6rem;
+            color: var(--highlight-color);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 1rem rgba(0, 255, 255, 0.5);
+        }
+
+        .game-hero-section h1 {
+            font-family: var(--secondary-font);
+            font-size: 3.5rem;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .game-hero-section h1 .highlight {
+            color: var(--highlight-color);
+        }
+
+        .game-hero-section .section-intro {
+            max-width: 900px;
+            margin: 1.5rem auto 0 auto;
+            font-size: 1.1rem;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        /* App Detail Page Specific Styles (adjusted to be a content section) */
+        .app-detail-content { /* Renamed from app-detail-page */
+            padding: 4rem 0; /* Consistent section padding */
+            background-color: var(--bg-color); /* Default background for sections */
+        }
+
+        h3 {
+            font-family: var(--secondary-font);
+            font-size: 1.8rem;
+            color: var(--highlight-color);
+            margin-top: 2.5rem; /* 40px */
+            margin-bottom: 1.25rem; /* 20px */
+            text-align: center;
+        }
+
+        /* Game Detail Content */
+        .game-screenshots {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .game-screenshots img {
+            width: 100%;
+            max-width: 350px;
+            height: auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+            border: 0.0625rem solid var(--border-color);
+        }
+
+        .play-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.25rem;
+            margin-top: 2.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .play-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.3rem;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
+            font-size: 1rem;
+            min-width: 10rem;
+            justify-content: center;
+        }
+
+        .play-button i {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .play-button:hover {
+            background-color: #00e6e6;
+            transform: translateY(-0.125rem);
+            box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
+        }
+
+        .play-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: var(--border-color);
+            color: var(--text-light);
+            box-shadow: none;
+        }
+
+        .play-button.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .coming-soon-inline {
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .small-text {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        /* Site Footer Styles (consistent with other pages) */
+        .site-footer {
+            background-color: var(--bg-dark-1);
+            color: var(--text-light);
+            padding: 1.25rem 1rem;
+            font-size: 0.85rem;
+            width: 100%;
+        }
+        .site-footer .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .social-links {
+            margin-top: 0.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .social-links a {
+            color: inherit;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+            text-decoration: none;
+        }
+        .social-links a:hover {
+            color: var(--highlight-color);
+        }
+        .contact-info {
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .contact-info a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            color: var(--highlight-color);
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 1200px) {
+            .main-nav ul.navbar-links {
+                gap: 1.5rem;
+            }
+            .main-nav ul.navbar-links li a {
+                font-size: 0.95rem;
+            }
+            .nav-auth-item.desktop-only {
+                display: none;
+            }
+            .more-menu-wrapper {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header .container {
+                flex-wrap: wrap;
+            }
+            .page-header .navbar-brand {
+                flex-grow: 1;
+            }
+            .main-nav {
+                display: none;
+                width: 100%;
+                order: 2;
+            }
+            .page-header .nav-toggle {
+                display: block;
+            }
+            .main-nav.is-open {
+                display: flex;
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            .main-nav ul.navbar-links {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+            }
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            .navbar-logo-img {
+                height: 2rem;
+            }
+            .nav-auth-item.desktop-only {
+                display: list-item;  
+            }
+            .more-menu-wrapper {
+                display: none;
+            }
+            
+            .game-hero-section {
+                padding: 4rem 0;
+                min-height: 20rem;
+            }
+            .game-hero-section .game-icon-large {
+                font-size: 5rem;
+                margin-bottom: 1rem;
+            }
+            .game-hero-section h1 {
+                font-size: 2.8rem;
+            }
+            .game-hero-section .section-intro {
+                font-size: 1rem;
+                margin-top: 1rem;
+            }
+            
+            .app-detail-content {
+                padding: 3rem 0;
+            }
+            h3 {
+                font-size: 1.6rem;
+                margin-top: 2rem;
+                margin-bottom: 1rem;
+            }
+            .game-screenshots {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+            .play-links {
+                flex-direction: column;
+                gap: 0.8rem;
+                margin-top: 2rem;
+                margin-bottom: 2rem;
+            }
+            .play-button {
+                min-width: 80%;
+                padding: 0.7rem 1.2rem;
+                font-size: 0.95rem;
+            }
+            .small-text {
+                font-size: 0.85rem;
+                margin-top: 1rem;
+            }
+            .site-footer {
+                font-size: 0.8rem;
+                padding: 1rem 0.8rem;
+            }
+            .social-links {
+                gap: 0.8rem;
+            }
+            .social-links a {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+            .navbar-logo-img {
+                height: 1.8rem;
+            }
+            .game-hero-section {
+                padding: 3rem 0;
+                min-height: 18rem;
+            }
+            .game-hero-section .game-icon-large {
+                font-size: 4rem;
+                margin-bottom: 0.8rem;
+            }
+            .game-hero-section h1 {
+                font-size: 2.2rem;
+            }
+            .game-hero-section .section-intro {
+                font-size: 0.9rem;
+                margin-top: 0.8rem;
+            }
+            .app-detail-content {
+                padding: 2rem 0;
+            }
+            h3 {
+                font-size: 1.4rem;
+                margin-top: 1.5rem;
+                margin-bottom: 0.8rem;
+            }
+            .play-links {
+                gap: 0.6rem;
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            .play-button {
+                min-width: 90%;
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+            .coming-soon-inline {
+                font-size: 0.7rem;
+            }
+            .small-text {
+                font-size: 0.8rem;
+            }
+            .site-footer .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="page-header">
+        <div class="container">
+            <a href="{% url 'main_site:home' %}" class="navbar-brand">
+                <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
+                <span class="header-logo-text">Pegumax Inc.</span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            <nav class="main-nav"> {# Added main-nav wrapper for consistent styling #}
+                <ul class="navbar-links"> {# Moved navbar-links class here #}
+                    <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
+                    <li><a href="{% url 'main_site:about' %}">About Us</a></li>
+                    <li><a href="{% url 'main_site:community' %}">Community</a></li>
+                    <li><a href="{% url 'main_site:store' %}">Store</a></li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:account' %}">Account</a></li> {# Added desktop-only for consistency #}
+                    {% else %}
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'login' %}">Login</a></li> {# Added desktop-only for consistency #}
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:signup' %}">Sign Up</a></li> {# Added desktop-only for consistency #}
+                    {% endif %}
+                </ul>
+            </nav>
+            <div class="more-menu-wrapper">
+                <button class="more-toggle" aria-label="More navigation links" aria-expanded="false" onclick="toggleMoreDropdown(event)">...</button>
+                <ul class="more-dropdown-content">
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'main_site:account' %}">Account</a></li>
+                        <li><a href="{% url 'logout' %}">Sign Out</a></li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="game-hero-section">
+            <div class="container">
+                <div class="game-icon-large"><i class="fas fa-satellite-dish"></i></div>
+                <h1>Stellar <span class="highlight">Echoes</span></h1>
+                <p class="section-intro">Embark on a cosmic journey to the farthest reaches of the galaxy. Stellar Echoes is a captivating sci-fi adventure game where you'll explore mysterious planets, battle hostile alien forces, and unravel the secrets of an ancient civilization.</p>
+            </div>
+        </section>
+
+        <section class="app-detail-content">
+            <div class="container">
+                <h3>Key Features:</h3>
+                <ul class="feature-list">
+                    <li>Vast, procedurally generated universe to explore.</li>
+                    <li>Engaging narrative with branching storylines.</li>
+                    <li>Dynamic combat system with upgradeable gear.</li>
+                    <li>Collect resources and craft powerful new items.</li>
+                    <li>Stunning visuals and an immersive, atmospheric soundtrack.</li>
+                </ul>
+                
+                <h3>Screenshots:</h3>
+                <div class="game-screenshots">
+                    <img src="{% static 'img/game-screenshot-1.webp' %}" alt="Stellar Echoes screenshot of a player character on an alien planet.">
+                    <img src="{% static 'img/game-screenshot-2.webp' %}" alt="Stellar Echoes screenshot of a space combat scene.">
+                    <img src="{% static 'img/game-screenshot-3.webp' %}" alt="Stellar Echoes screenshot of an ancient temple interior.">
+                </div>
+
+                <h3>Available Platforms:</h3>
+                <div class="play-links">
+                    <a href="{% url 'main_site:play_game' %}" class="play-button online-dl active"><i class="fas fa-globe"></i> Play Online Now</a>
+                    <a href="#" class="play-button windows-dl disabled"><i class="fab fa-windows"></i> Windows <span class="coming-soon-inline">(Soon)</span></a>
+                    <a href="#" class="play-button ios-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a>
+                    <a href="#" class="play-button android-dl disabled"><i class="fab fa-android"></i> Android <span class="coming-soon-inline">(Soon)</span></a>
+                    <a href="#" class="play-button linux-dl disabled"><i class="fab fa-linux"></i> Linux <span class="coming-soon-inline">(Soon)</span></a>
+                </div>
+                <p class="small-text">*Play Stellar Echoes directly in your browser! Desktop and mobile versions are currently in development.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
+            <p>Empowering the human spirit through technological transcendence.</p>
+            <div class="social-links">
+                <a href="https://www.facebook.com/profile.php?id=61579165562125" target="_blank" aria-label="Follow us on Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/pegumax_llc/" target="_blank" aria-label="Follow us on Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/company/pegumax/" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <div class="contact-info">
+                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p>
+                <p><a href="{% url 'main_site:policy' %}">Policy</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            // Mobile navigation toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const mainNav = document.querySelector('.main-nav'); // Target the main-nav wrapper
+
+            if (navToggle && mainNav) {
+                navToggle.addEventListener('click', () => {
+                    const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+                    navToggle.setAttribute('aria-expanded', !expanded);
+                    mainNav.classList.toggle('is-open'); // Toggle class on the main-nav wrapper
+                });
+            }
+
+            // More menu dropdown toggle function
+            function toggleMoreDropdown(event) {
+                event.stopPropagation(); // Prevent document click from immediately closing
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                moreWrapper.classList.toggle('active'); // Toggle 'active' class to show/hide dropdown
+            }
+
+            // Close dropdowns when clicking outside
+            window.addEventListener('click', function(event) {
+                const moreWrapper = document.querySelector('.more-menu-wrapper');
+                // Check if the click is outside the dropdown and the toggle button
+                if (moreWrapper && moreWrapper.classList.contains('active') &&
+                    !moreWrapper.contains(event.target) && !event.target.matches('.more-toggle')) {
+                    moreWrapper.classList.remove('active');
+                }
+            });
+
+            // Expose toggleMoreDropdown to global scope for onclick attribute
+            window.toggleMoreDropdown = toggleMoreDropdown;
+        });
+    </script>
+</body>
+</html>
