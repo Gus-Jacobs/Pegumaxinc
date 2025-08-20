@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stellar Echoes - A Sci-Fi Adventure Game | Pegumax Inc.</title>
-    <meta name="description" content="Stellar Echoes by Pegumax Inc. is a thrilling sci-fi adventure game. Explore alien worlds, uncover ancient secrets, and navigate a universe on the brink of collapse. Play the online version now, with desktop and mobile versions coming soon.">
-    <meta name="keywords" content="Stellar Echoes, sci-fi game, adventure game, online game, gaming portal, Pegumax Inc., space exploration, sci-fi adventure, indie games, browser game">
+    <title>Nancy Drew Game Portal - Download & Play Mystery Games | Pegumax Inc.</title>
+    <meta name="description" content="Explore the world of Nancy Drew with our dedicated game portal by Pegumax Inc. Download and play classic mystery adventure games. Discover secrets, solve puzzles, and uncover the truth. Get the Windows app now, with other platforms and online access coming soon.">
+    <meta name="keywords" content="Nancy Drew, mystery games, adventure games, point-and-click, PC games, game portal, Pegumax Inc., download games, Windows games, secret solving, puzzles">
     
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,21 +46,21 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Ensures body takes at least full viewport height */
-            line-height: 1.6; /* Improved readability */
+            min-height: 100vh;
+            line-height: 1.6;
         }
 
         main {
-            flex-grow: 1; /* Allows main content to take up available space */
+            flex-grow: 1;
         }
 
         .container {
-            max-width: 1200px; /* Max width for content on large screens */
-            margin: 0 auto; /* Center the container */
-            padding: 0 1.5rem; /* Responsive horizontal padding */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
         }
 
-        /* Header Styles (unified for consistency) */
+        /* Header Styles */
         .page-header {
             background-color: var(--bg-dark-1);
             padding: 1rem 0;
@@ -76,7 +76,7 @@
             align-items: center;
         }
 
-        .navbar-brand { /* Renamed for consistency */
+        .navbar-brand {
             display: flex;
             align-items: center;
             text-decoration: none;
@@ -85,13 +85,13 @@
             font-size: 1.5rem;
         }
 
-        .navbar-logo-img { /* Renamed for consistency */
+        .navbar-logo-img {
             height: 2.5rem;
             margin-right: 0.5rem;
         }
 
         .nav-toggle {
-            display: none; /* Hidden by default, shown on smaller screens */
+            display: none;
             background: none;
             border: none;
             cursor: pointer;
@@ -107,13 +107,13 @@
             transition: all 0.3s ease;
         }
 
-        /* Main Navigation Links (Desktop) - Applied to ul inside .main-nav */
-        .main-nav ul.navbar-links { 
+        /* Main Navigation Links (Desktop) */
+        .main-nav ul.navbar-links {
             list-style: none;
             margin: 0;
             padding: 0;
-            display: flex; /* This makes the links horizontal */
-            gap: 2.5rem; /* Increased spacing for desktop */
+            display: flex;
+            gap: 2.5rem;
         }
 
         .main-nav ul.navbar-links li a {
@@ -121,29 +121,28 @@
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
-            white-space: nowrap; /* Prevent text wrapping */
+            white-space: nowrap;
         }
 
         .main-nav ul.navbar-links li a:hover {
             color: var(--highlight-color);
         }
 
-        /* Specific styles for auth links that might be hidden */
-        .nav-auth-item.desktop-only { /* Use desktop-only for consistency */
-            display: list-item; /* Default to visible */
+        .nav-auth-item.desktop-only {
+            display: list-item;
         }
 
         /* More menu wrapper */
         .more-menu-wrapper {
             position: relative;
-            display: none; /* Hidden by default, shown in specific breakpoint */
+            display: none;
         }
 
         .more-toggle {
             background-color: transparent;
             border: none;
             color: var(--text-color);
-            font-size: 1.5rem; /* Size of the "..." icon */
+            font-size: 1.5rem;
             cursor: pointer;
             padding: 0.25rem 0.5rem;
             transition: color 0.3s ease;
@@ -154,7 +153,7 @@
         }
 
         .more-dropdown-content {
-            display: none; /* Hidden by default, toggled by JS */
+            display: none;
             position: absolute;
             background-color: var(--card-bg);
             min-width: 10rem;
@@ -162,8 +161,8 @@
             z-index: 1;
             border-radius: 0.3rem;
             overflow: hidden;
-            top: calc(100% + 0.5rem); /* Position below the button */
-            right: 0; /* Align to the right of the button */
+            top: calc(100% + 0.5rem);
+            right: 0;
             border: 0.0625rem solid var(--border-color);
             list-style: none;
             padding: 0;
@@ -179,7 +178,7 @@
             font-family: var(--primary-font);
             font-size: 0.95rem;
             transition: background-color 0.2s ease, color 0.2s ease;
-            white-space: nowrap; /* Ensure dropdown items don't wrap */
+            white-space: nowrap;
         }
 
         .more-dropdown-content li a:hover {
@@ -193,7 +192,7 @@
 
         /* Hero Section for Game Portal */
         .game-hero-section {
-            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/stellar-echoes-hero.webp' %}");
+            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/nancy-drew-hero.webp' %}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -233,40 +232,50 @@
             text-align: center;
         }
 
-        /* App Detail Page Specific Styles (adjusted to be a content section) */
-        .app-detail-content { /* Renamed from app-detail-page */
-            padding: 4rem 0; /* Consistent section padding */
-            background-color: var(--bg-color); /* Default background for sections */
+        /* Game Detail Content */
+        .app-detail-content {
+            padding: 4rem 0;
+            background-color: var(--bg-color);
         }
 
         h3 {
             font-family: var(--secondary-font);
             font-size: 1.8rem;
             color: var(--highlight-color);
-            margin-top: 2.5rem; /* 40px */
-            margin-bottom: 1.25rem; /* 20px */
+            margin-top: 2.5rem;
+            margin-bottom: 1.25rem;
             text-align: center;
         }
 
-        /* Game Detail Content */
-        .game-screenshots {
+        /* Target only feature lists for checkmarks */
+        ul.feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto 2.5rem auto;
+            max-width: 700px;
+        }
+
+        ul.feature-list li {
+            background-color: var(--bg-dark-1);
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 0.625rem;
+            border-radius: 0.3rem;
+            border-left: 0.25rem solid var(--highlight-color);
+            color: var(--text-color);
+            font-size: 1rem;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            align-items: center;
         }
 
-        .game-screenshots img {
-            width: 100%;
-            max-width: 350px;
-            height: auto;
-            border-radius: 0.5rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
-            border: 0.0625rem solid var(--border-color);
+        ul.feature-list li::before {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: var(--success-color);
+            margin-right: 0.75rem;
         }
 
-        .play-links {
+        .download-links {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -275,7 +284,7 @@
             margin-bottom: 2.5rem;
         }
 
-        .play-button {
+        .download-button {
             display: inline-flex;
             align-items: center;
             background-color: var(--highlight-color);
@@ -291,18 +300,18 @@
             justify-content: center;
         }
 
-        .play-button i {
+        .download-button i {
             margin-right: 0.5rem;
             font-size: 1.1rem;
         }
 
-        .play-button:hover {
+        .download-button:hover {
             background-color: #00e6e6;
             transform: translateY(-0.125rem);
             box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
         }
 
-        .play-button.disabled {
+        .download-button.disabled {
             opacity: 0.5;
             cursor: not-allowed;
             background-color: var(--border-color);
@@ -310,7 +319,7 @@
             box-shadow: none;
         }
 
-        .play-button.disabled:hover {
+        .download-button.disabled:hover {
             transform: none;
             box-shadow: none;
         }
@@ -328,7 +337,7 @@
             margin-top: 1.5rem;
         }
 
-        /* Site Footer Styles (consistent with other pages) */
+        /* Site Footer Styles */
         .site-footer {
             background-color: var(--bg-dark-1);
             color: var(--text-light);
@@ -454,19 +463,20 @@
                 margin-top: 2rem;
                 margin-bottom: 1rem;
             }
-            .game-screenshots {
-                flex-direction: column;
-                align-items: center;
-                gap: 1rem;
+            ul.feature-list {
                 margin-bottom: 2rem;
             }
-            .play-links {
+            ul.feature-list li {
+                font-size: 0.95rem;
+                padding: 0.7rem 1rem;
+            }
+            .download-links {
                 flex-direction: column;
                 gap: 0.8rem;
                 margin-top: 2rem;
                 margin-bottom: 2rem;
             }
-            .play-button {
+            .download-button {
                 min-width: 80%;
                 padding: 0.7rem 1.2rem;
                 font-size: 0.95rem;
@@ -517,12 +527,16 @@
                 margin-top: 1.5rem;
                 margin-bottom: 0.8rem;
             }
-            .play-links {
+            ul.feature-list li {
+                font-size: 0.9rem;
+                padding: 0.6rem 0.8rem;
+            }
+            .download-links {
                 gap: 0.6rem;
                 margin-top: 1.5rem;
                 margin-bottom: 1.5rem;
             }
-            .play-button {
+            .download-button {
                 min-width: 90%;
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
@@ -551,17 +565,17 @@
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
             </button>
-            <nav class="main-nav"> {# Added main-nav wrapper for consistent styling #}
-                <ul class="navbar-links"> {# Moved navbar-links class here #}
+            <nav class="main-nav">
+                <ul class="navbar-links">
                     <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
                     <li><a href="{% url 'main_site:about' %}">About Us</a></li>
                     <li><a href="{% url 'main_site:community' %}">Community</a></li>
                     <li><a href="{% url 'main_site:store' %}">Store</a></li>
                     {% if user.is_authenticated %}
-                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:account' %}">Account</a></li> {# Added desktop-only for consistency #}
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:account' %}">Account</a></li>
                     {% else %}
-                        <li class="nav-auth-item desktop-only"><a href="{% url 'login' %}">Login</a></li> {# Added desktop-only for consistency #}
-                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:signup' %}">Sign Up</a></li> {# Added desktop-only for consistency #}
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
                     {% endif %}
                 </ul>
             </nav>
@@ -583,9 +597,9 @@
     <main>
         <section class="game-hero-section">
             <div class="container">
-                <div class="game-icon-large"><i class="fas fa-satellite-dish"></i></div>
-                <h1>Stellar <span class="highlight">Echoes</span></h1>
-                <p class="section-intro">Embark on a cosmic journey to the farthest reaches of the galaxy. Stellar Echoes is a captivating sci-fi adventure game where you'll explore mysterious planets, battle hostile alien forces, and unravel the secrets of an ancient civilization.</p>
+                <div class="game-icon-large"><i class="fas fa-magnifying-glass"></i></div>
+                <h1>Nancy Drew <span class="highlight">Game Portal</span></h1>
+                <p class="section-intro">Embark on a mystery-solving journey with our dedicated Nancy Drew Game Portal. This application provides a convenient hub to download, manage, and launch your favorite Nancy Drew adventure games, from classic titles to the latest releases. Uncover secrets, solve intricate puzzles, and catch the culprits!</p>
             </div>
         </section>
 
@@ -593,29 +607,22 @@
             <div class="container">
                 <h3>Key Features:</h3>
                 <ul class="feature-list">
-                    <li>Vast, procedurally generated universe to explore.</li>
-                    <li>Engaging narrative with branching storylines.</li>
-                    <li>Dynamic combat system with upgradeable gear.</li>
-                    <li>Collect resources and craft powerful new items.</li>
-                    <li>Stunning visuals and an immersive, atmospheric soundtrack.</li>
+                    <li>A single portal for all your Nancy Drew games.</li>
+                    <li>Easy access to download and install new titles.</li>
+                    <li>Automatic updates for the portal and game info.</li>
+                    <li>Track your progress across different mysteries.</li>
+                    <li>User-friendly interface with a sleek design.</li>
                 </ul>
-                
-                <h3>Screenshots:</h3>
-                <div class="game-screenshots">
-                    <img src="{% static 'img/game-screenshot-1.webp' %}" alt="Stellar Echoes screenshot of a player character on an alien planet.">
-                    <img src="{% static 'img/game-screenshot-2.webp' %}" alt="Stellar Echoes screenshot of a space combat scene.">
-                    <img src="{% static 'img/game-screenshot-3.webp' %}" alt="Stellar Echoes screenshot of an ancient temple interior.">
-                </div>
 
-                <h3>Available Platforms:</h3>
-                <div class="play-links">
-                    <a href="{% url 'main_site:play_game' %}" class="play-button online-dl active"><i class="fas fa-globe"></i> Play Online Now</a>
-                    <a href="#" class="play-button windows-dl disabled"><i class="fab fa-windows"></i> Windows <span class="coming-soon-inline">(Soon)</span></a>
-                    <a href="#" class="play-button ios-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a>
-                    <a href="#" class="play-button android-dl disabled"><i class="fab fa-android"></i> Android <span class="coming-soon-inline">(Soon)</span></a>
-                    <a href="#" class="play-button linux-dl disabled"><i class="fab fa-linux"></i> Linux <span class="coming-soon-inline">(Soon)</span></a>
+                <h3>Download Options:</h3>
+                <div class="download-links">
+                    <a href="https://github.com/Gus-Jacobs/Nancy-Drew-Game-Portal/releases/download/2.0.0/Nancy.Drew.Game.Portal.Setup.1.0.1.exe" class="download-button windows-dl active" target="_blank" rel="noopener noreferrer"><i class="fab fa-windows"></i> Windows</a>
+                    <a href="#" class="download-button ios-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a>
+                    <a href="#" class="download-button android-dl disabled"><i class="fab fa-android"></i> Android <span class="coming-soon-inline">(Soon)</span></a>
+                    <a href="#" class="download-button linux-dl disabled"><i class="fab fa-linux"></i> Linux <span class="coming-soon-inline">(Soon)</span></a>
+                    <a href="#" class="download-button online-dl disabled"><i class="fas fa-globe"></i> Online Version <span class="coming-soon-inline">(Soon)</span></a>
                 </div>
-                <p class="small-text">*Play Stellar Echoes directly in your browser! Desktop and mobile versions are currently in development.</p>
+                <p class="small-text">*Windows version available now. Other platforms and online version coming soon!</p>
             </div>
         </section>
     </main>
@@ -643,34 +650,32 @@
 
             // Mobile navigation toggle
             const navToggle = document.querySelector('.nav-toggle');
-            const mainNav = document.querySelector('.main-nav'); // Target the main-nav wrapper
+            const mainNav = document.querySelector('.main-nav');
 
             if (navToggle && mainNav) {
                 navToggle.addEventListener('click', () => {
                     const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
                     navToggle.setAttribute('aria-expanded', !expanded);
-                    mainNav.classList.toggle('is-open'); // Toggle class on the main-nav wrapper
+                    mainNav.classList.toggle('is-open');
                 });
             }
 
             // More menu dropdown toggle function
             function toggleMoreDropdown(event) {
-                event.stopPropagation(); // Prevent document click from immediately closing
+                event.stopPropagation();
                 const moreWrapper = document.querySelector('.more-menu-wrapper');
-                moreWrapper.classList.toggle('active'); // Toggle 'active' class to show/hide dropdown
+                moreWrapper.classList.toggle('active');
             }
 
             // Close dropdowns when clicking outside
             window.addEventListener('click', function(event) {
                 const moreWrapper = document.querySelector('.more-menu-wrapper');
-                // Check if the click is outside the dropdown and the toggle button
                 if (moreWrapper && moreWrapper.classList.contains('active') &&
                     !moreWrapper.contains(event.target) && !event.target.matches('.more-toggle')) {
                     moreWrapper.classList.remove('active');
                 }
             });
 
-            // Expose toggleMoreDropdown to global scope for onclick attribute
             window.toggleMoreDropdown = toggleMoreDropdown;
         });
     </script>
