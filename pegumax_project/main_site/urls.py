@@ -13,6 +13,7 @@ urlpatterns = [
     path('admin-login/', views.admin_login_view, name='admin_login'), # Temporary
     path('account/', views.account_view, name='account'),
     path('movie-word-scanner/', views.movie_word_scanner_view, name='movie_word_scanner'),
+    path('game-portal/', views.game_portal, name='game_portal'),
     path('signup/', views.signup_view, name='signup'),
     # Django's auth system will handle login and logout views by default
     # path('login/', views.CustomLoginView.as_view(), name='login'), # If you need a custom login view
@@ -35,3 +36,4 @@ urlpatterns = [
     # --- NEW: URL for submitting subscription interest ---
     path('submit-subscription-interest/', views.submit_subscription_interest_view, name='submit_subscription_interest'),
 ]
+
