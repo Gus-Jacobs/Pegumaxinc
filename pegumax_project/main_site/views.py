@@ -21,6 +21,19 @@ def is_admin(user):
 def home_view(request):
     return render(request, 'index.html')
 
+def payment_success_view(request):
+    """
+    Renders the payment successful page.
+    """
+    return render(request, 'payment_success.html')
+
+def payment_cancelled_view(request):
+    """
+    Renders the payment cancelled page.
+    """
+    return render(request, 'payment_cancelled.html')
+
+
 def software_center_view(request):
     # This view is intentionally simple, just rendering the template.
     # Any complex logic or database queries that could fail should be handled
@@ -317,5 +330,6 @@ def submit_subscription_interest_view(request):
         return JsonResponse({'success': True, 'message': 'Thanks for your interest! We\'ll notify you when it\'s live.'})
     
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
 
 
