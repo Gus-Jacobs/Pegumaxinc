@@ -35,5 +35,8 @@ urlpatterns = [
     path('software-center/student-suite-launch/', TemplateView.as_view(template_name='student-suite-launch.html'), name='student_suite_launch'),
     # --- NEW: URL for submitting subscription interest ---
     path('submit-subscription-interest/', views.submit_subscription_interest_view, name='submit_subscription_interest'),
+    path('payment-success/', views.payment_success_view, name='payment-success'),
+    path('payment-cancelled/', views.payment_cancelled_view, name='payment-cancelled'),
 ]
+
 
