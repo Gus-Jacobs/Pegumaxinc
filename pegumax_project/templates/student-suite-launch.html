@@ -661,7 +661,11 @@
                 <div class="download-links">
                     {# Link to your deployed Flutter web app #}
                     <a href="{% url 'student_suite_app_launch' %}" class="download-button online-dl active" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i> Launch Web App</a>
-                    <a href="#" class="download-button ios-dl disabled"><i class="fab fa-apple"></i> iOS <span class="coming-soon-inline">(Soon)</span></a>
+                    
+                    {# iOS Download Link (Now Active) #}
+                    <a href="https://apps.apple.com/us/app/pgm-student-suite/id6749324995" class="download-button ios-dl" target="_blank" rel="noopener noreferrer"><i class="fab fa-apple"></i> iOS</a>
+                    
+                    {# macOS Download Link (Disabled) #}
                     <a href="#" class="download-button macos-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a>
                 
                     {# Android Dropdown Button #}
@@ -669,17 +673,18 @@
                         <button class="download-button android-dl" onclick="toggleAndroidDropdown(event)"><i class="fab fa-android"></i> Android <i class="fas fa-caret-down" style="margin-left: 0.5rem;"></i></button>
                         <div class="android-dropdown-content">
                             <a href="https://play.google.com/store/apps/details?id=com.pegumax.studentsuite" target="_blank" rel="noopener noreferrer">Google Play Store</a>
-                            <a href="https://github.com/Gus-Jacobs/StudentSuite/releases/download/v1.0.0/app-release.apk" download>Direct APK Download</a>
+                            <a href="https://github.com/Gus-Jacobs/Student-Suite/releases/download/v1.0.16/app-release.apk" download>Direct APK Download</a>
                         </div>
                     </div>
                 
-                    {# Windows Download Link #}
-                    <a href="https://github.com/Gus-Jacobs/StudentSuite/releases/download/v1.0.0/PGM.Student.Suite.Windows.v1.0.0.zip" class="download-button windows-dl" download><i class="fab fa-windows"></i> Windows</a>
+                    {# Windows Download Link (Now Disabled) #}
+                    <a href="#" class="download-button windows-dl disabled"><i class="fab fa-windows"></i> Windows <span class="coming-soon-inline">(Soon)</span></a>
                 
+                    {# Linux Download Link (Disabled) #}
                     <a href="#" class="download-button linux-dl disabled"><i class="fab fa-linux"></i> Linux <span class="coming-soon-inline">(Soon)</span></a>
                 </div>
-
-                <p class="small-text">*Web App and Android versions available now. Desktop and other mobile versions coming soon!</p>
+                
+                <p class="small-text">*Web App, iOS, and Android versions available now. Desktop versions coming soon!</p>
             </div>
         </section>
     </main>
