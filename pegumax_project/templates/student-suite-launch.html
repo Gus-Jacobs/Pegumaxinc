@@ -760,6 +760,38 @@
             // Expose toggleMoreDropdown and toggleAndroidDropdown to global scope for onclick attribute
             window.toggleMoreDropdown = toggleMoreDropdown;
             window.toggleAndroidDropdown = toggleAndroidDropdown;
+            // ==========================================
+            // DEVICE DETECTION & AUTO-REDIRECT
+            // ==========================================
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // 1. Detect iOS (iPhone/iPad)
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                var iosBtn = document.querySelector('.ios-dl');
+                if (iosBtn && iosBtn.href) {
+                    console.log("iOS detected. Attempting redirect to: " + iosBtn.href);
+                    // Use location.href to trigger the App Store "Deep Link"
+                    // This switches apps, leaving your website open in the browser background.
+                    setTimeout(function() {
+                        window.location.href = iosBtn.href;
+                    }, 500); 
+                }
+            } 
+            
+            // 2. Detect Android
+            else if (/android/i.test(userAgent)) {
+                // Find the Google Play link inside your dropdown
+                // We look for the link containing "play.google.com"
+                var playStoreLink = document.querySelector('.android-dropdown-content a[href*="play.google.com"]');
+                
+                if (playStoreLink && playStoreLink.href) {
+                    console.log("Android detected. Attempting redirect to: " + playStoreLink.href);
+                    // Use location.href to trigger the Play Store App
+                    setTimeout(function() {
+                        window.location.href = playStoreLink.href;
+                    }, 500);
+                }
+            }
         });
     </script>
 </body>
