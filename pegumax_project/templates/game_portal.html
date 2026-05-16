@@ -279,6 +279,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
+            align-items: center;
             gap: 1.25rem;
             margin-top: 2.5rem;
             margin-bottom: 2.5rem;
@@ -296,7 +297,7 @@
             transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
             box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
             font-size: 1rem;
-            min-width: 10rem;
+            min-width: 13rem;
             justify-content: center;
         }
 
@@ -382,6 +383,80 @@
         }
         .contact-info a:hover {
             color: var(--highlight-color);
+        }
+
+        /* --- ACCESS RESTRAINT GATE OVERLAY STYLES --- */
+        .gate-fullscreen-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(13, 14, 18, 0.96);
+            backdrop-filter: blur(20px);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gate-cyber-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            padding: 3.5rem 2.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 239, 255, 0.15);
+            max-width: 420px;
+            width: 90%;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .gate-cyber-card h2 {
+            font-family: var(--secondary-font);
+            color: var(--highlight-color);
+            margin-top: 0;
+            font-size: 1.6rem;
+            text-shadow: 0 0 10px rgba(0, 239, 255, 0.4);
+        }
+        .gate-pin-field {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--bg-dark-1);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            font-family: var(--secondary-font);
+            font-size: 1.4rem;
+            text-align: center;
+            letter-spacing: 0.6rem;
+            margin: 1.5rem 0 0.5rem 0;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .gate-pin-field:focus {
+            outline: none;
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 15px rgba(0, 239, 255, 0.4);
+        }
+        .gate-submit-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--highlight-color);
+            color: var(--bg-color);
+            border: none;
+            font-weight: bold;
+            font-family: var(--primary-font);
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease-in-out;
+            margin-top: 1rem;
+        }
+        .gate-submit-btn:hover {
+            background-color: #00e6e6;
+            transform: translateY(-2px);
+        }
+        .gate-validation-error {
+            color: var(--danger-color);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+            font-weight: 500;
         }
 
         /* Media Queries for responsiveness */
@@ -554,6 +629,18 @@
     </style>
 </head>
 <body>
+
+    <!-- --- ACCESS RESTRAINT GATE OVERLAY --- -->
+    <div id="portal-access-gate" class="gate-fullscreen-overlay">
+        <div class="gate-cyber-card">
+            <h2>Security Verification</h2>
+            <p style="font-size: 0.95rem; color: var(--text-light); margin-bottom: 0;">Enter authorization token PIN to unlock the Game Portal files repository download options.</p>
+            <input type="password" id="portal-pin-input" class="gate-pin-field" maxlength="4" placeholder="••••" autocomplete="off" />
+            <div id="gate-error-msg" class="gate-validation-error">Invalid authorization token. Access denied.</div>
+            <button class="gate-submit-btn" onclick="validatePortalGateAccess()">Submit Code</button>
+        </div>
+    </div>
+
     <header class="page-header">
         <div class="container">
             <a href="{% url 'main_site:home' %}" class="navbar-brand">
@@ -616,7 +703,16 @@
 
                 <h3>Download Options:</h3>
                 <div class="download-links">
-                    <a href="https://github.com/Gus-Jacobs/Nancy-Drew-Game-Portal/releases/download/2.0.0/Nancy.Drew.Game.Portal.Setup.1.0.1.exe" class="download-button windows-dl active" target="_blank" rel="noopener noreferrer"><i class="fab fa-windows"></i> Windows</a>
+                    <!-- --- LATEST STABLE PRODUCTION DISTRIBUTION V1.0.1 LINK --- -->
+                    <a href="https://github.com/Gus-Jacobs/Nancy-Drew-Game-Portal/releases/download/v1.0.1/GamePortal-Setup-1.0.1.exe" class="download-button windows-dl active" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-windows"></i> Windows v1.0.1 (Latest)
+                    </a>
+                    
+                    <!-- --- LEGACY FALLBACK ARTIFACT LINK --- -->
+                    <a href="https://github.com/Gus-Jacobs/Nancy-Drew-Game-Portal/releases/download/2.0.0/Nancy.Drew.Game.Portal.Setup.1.0.1.exe" class="download-button windows-dl" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-light); box-shadow: none;" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-windows"></i> Windows v1.0.0 (Legacy)
+                    </a>
+
                     <a href="#" class="download-button ios-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a>
                     <a href="#" class="download-button android-dl disabled"><i class="fab fa-android"></i> Android <span class="coming-soon-inline">(Soon)</span></a>
                     <a href="#" class="download-button linux-dl disabled"><i class="fab fa-linux"></i> Linux <span class="coming-soon-inline">(Soon)</span></a>
@@ -629,7 +725,7 @@
 
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
+            <p>&copy; <span id="current-year">2026</span> Pegumax Inc. All rights reserved.</p>
             <p>Empowering the human spirit through technological transcendence.</p>
             <div class="social-links">
                 <a href="https://www.facebook.com/profile.php?id=61579165562125" target="_blank" aria-label="Follow us on Facebook"><i class="fab fa-facebook-f"></i></a>
@@ -647,6 +743,35 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            // --- ACCESS GATE RESTRAINT CIRCUIT EVALUATIONS ---
+            const gateOverlay = document.getElementById('portal-access-gate');
+            const pinInputField = document.getElementById('portal-pin-input');
+            const validationErrorBox = document.getElementById('gate-error-msg');
+
+            if (sessionStorage.getItem('portal_authenticated') === 'true') {
+                gateOverlay.style.display = 'none';
+            } else {
+                pinInputField.focus();
+            }
+
+            window.validatePortalGateAccess = function() {
+                if (pinInputField.value === '0000') {
+                    sessionStorage.setItem('portal_authenticated', 'true');
+                    gateOverlay.style.display = 'none';
+                } else {
+                    validationErrorBox.style.display = 'block';
+                    pinInputField.value = '';
+                    pinInputField.focus();
+                }
+            };
+
+            // Capture enter button presses on password input field natively
+            pinInputField.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    validatePortalGateAccess();
+                }
+            });
 
             // Mobile navigation toggle
             const navToggle = document.querySelector('.nav-toggle');
