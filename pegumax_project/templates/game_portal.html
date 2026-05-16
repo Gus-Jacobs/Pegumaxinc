@@ -299,6 +299,8 @@
             font-size: 1rem;
             min-width: 13rem;
             justify-content: center;
+            cursor: pointer;
+            border: none;
         }
 
         .download-button i {
@@ -323,6 +325,62 @@
         .download-button.disabled:hover {
             transform: none;
             box-shadow: none;
+        }
+
+        /* --- CUSTOM WINDOWS DOWNLOAD DROPDOWN HOOKS --- */
+        .download-dropdown-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .windows-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: var(--card-bg);
+            min-width: 100%;
+            box-shadow: 0px 0.5rem 1rem 0px rgba(0,0,0,0.5);
+            z-index: 10;
+            border-radius: 4px;
+            overflow: hidden;
+            top: calc(100% + 0.5rem);
+            left: 0;
+            border: 1px solid var(--border-color);
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .windows-dropdown-content li a {
+            color: var(--text-color);
+            padding: 0.8rem 1.2rem;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            font-family: var(--primary-font);
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .windows-dropdown-content li a:hover {
+            background-color: var(--bg-dark-2);
+            color: var(--highlight-color);
+        }
+
+        .download-dropdown-wrapper.active .windows-dropdown-content {
+            display: block;
+        }
+
+        .download-dropdown-wrapper .download-button i.fa-chevron-down {
+            margin-right: 0;
+            margin-left: 0.75rem;
+            font-size: 0.85rem;
+            transition: transform 0.2s ease;
+        }
+
+        .download-dropdown-wrapper.active .download-button i.fa-chevron-down {
+            transform: rotate(180deg);
         }
 
         .coming-soon-inline {
@@ -403,7 +461,7 @@
             border-radius: 12px;
             text-align: center;
             box-shadow: 0 0 40px rgba(0, 239, 255, 0.15);
-            max-width: 420px;
+            max-width: 440px;
             width: 90%;
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -556,6 +614,14 @@
                 padding: 0.7rem 1.2rem;
                 font-size: 0.95rem;
             }
+            .download-dropdown-wrapper {
+                width: 80%;
+                display: flex;
+                flex-direction: column;
+            }
+            .download-dropdown-wrapper .download-button {
+                width: 100%;
+            }
             .small-text {
                 font-size: 0.85rem;
                 margin-top: 1rem;
@@ -616,8 +682,8 @@
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
-            .coming-soon-inline {
-                font-size: 0.7rem;
+            .download-dropdown-wrapper {
+                width: 90%;
             }
             .small-text {
                 font-size: 0.8rem;
@@ -630,11 +696,11 @@
 </head>
 <body>
 
-    <!-- --- ACCESS RESTRAINT GATE OVERLAY --- -->
     <div id="portal-access-gate" class="gate-fullscreen-overlay">
         <div class="gate-cyber-card">
             <h2>Security Verification</h2>
-            <p style="font-size: 0.95rem; color: var(--text-light); margin-bottom: 0;">Enter authorization token PIN to unlock the Game Portal files repository download options.</p>
+            <p style="font-size: 0.95rem; color: var(--text-light); margin-bottom: 0.5rem;">Enter authorization token PIN to unlock the Game Portal files repository download options.</p>
+            <p style="font-size: 0.9rem; color: var(--highlight-color); margin-bottom: 0; font-family: var(--secondary-font); font-weight: bold;">Email pegumaxinc@gmail.com to request PIN</p>
             <input type="password" id="portal-pin-input" class="gate-pin-field" maxlength="4" placeholder="••••" autocomplete="off" />
             <div id="gate-error-msg" class="gate-validation-error">Invalid authorization token. Access denied.</div>
             <button class="gate-submit-btn" onclick="validatePortalGateAccess()">Submit Code</button>
@@ -703,15 +769,24 @@
 
                 <h3>Download Options:</h3>
                 <div class="download-links">
-                    <!-- --- LATEST STABLE PRODUCTION DISTRIBUTION V1.0.1 LINK --- -->
-                    <a href="https://github.com/Gus-Jacobs/Nancy-Drew-Game-Portal/releases/download/v1.0.1/GamePortal-Setup-1.0.1.exe" class="download-button windows-dl active" target="_blank" rel="noopener noreferrer">
-                        <i class="fab fa-windows"></i> Windows v1.0.1 (Latest)
-                    </a>
                     
-                    <!-- --- LEGACY FALLBACK ARTIFACT LINK --- -->
-                    <a href="https://github.com/Gus-Jacobs/Nancy-Drew-Game-Portal/releases/download/2.0.0/Nancy.Drew.Game.Portal.Setup.1.0.1.exe" class="download-button windows-dl" style="background-color: transparent; border: 1px solid var(--border-color); color: var(--text-light); box-shadow: none;" target="_blank" rel="noopener noreferrer">
-                        <i class="fab fa-windows"></i> Windows v1.0.0 (Legacy)
-                    </a>
+                    <div class="download-dropdown-wrapper">
+                        <button class="download-button windows-dl active" onclick="toggleWindowsDropdown(event)">
+                            <i class="fab fa-windows"></i> Windows Build <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <ul class="windows-dropdown-content">
+                            <li>
+                                <a href="https://github.com/Gus-Jacobs/Nancy-Drew-Game-Portal/releases/download/v1.0.1/GamePortal-Setup-1.0.1.exe" target="_blank" rel="noopener noreferrer">
+                                    v1.0.1 (Latest Stable)
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/Gus-Jacobs/Nancy-Drew-Game-Portal/releases/download/2.0.0/Nancy.Drew.Game.Portal.Setup.1.0.1.exe" style="border-top: 1px solid var(--border-color); color: var(--text-light);" target="_blank" rel="noopener noreferrer">
+                                    v1.0.0 (Legacy Fallback)
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
                     <a href="#" class="download-button ios-dl disabled"><i class="fab fa-apple"></i> macOS <span class="coming-soon-inline">(Soon)</span></a>
                     <a href="#" class="download-button android-dl disabled"><i class="fab fa-android"></i> Android <span class="coming-soon-inline">(Soon)</span></a>
@@ -766,12 +841,21 @@
                 }
             };
 
-            // Capture enter button presses on password input field natively
             pinInputField.addEventListener('keydown', function(event) {
                 if (event.key === 'Enter') {
                     validatePortalGateAccess();
                 }
             });
+
+            // --- CUSTOM DROPDOWN CLICKS ROUTER HANDLERS ---
+            window.toggleWindowsDropdown = function(event) {
+                event.stopPropagation();
+                // Close any open more-menu-navbar layers to keep UX clean
+                document.querySelector('.more-menu-wrapper').classList.remove('active');
+                
+                const winWrapper = document.querySelector('.download-dropdown-wrapper');
+                winWrapper.classList.toggle('active');
+            };
 
             // Mobile navigation toggle
             const navToggle = document.querySelector('.nav-toggle');
@@ -788,16 +872,23 @@
             // More menu dropdown toggle function
             function toggleMoreDropdown(event) {
                 event.stopPropagation();
+                // Close active windows download panels if navbar dropdown is activated
+                document.querySelector('.download-dropdown-wrapper').classList.remove('active');
+                
                 const moreWrapper = document.querySelector('.more-menu-wrapper');
                 moreWrapper.classList.toggle('active');
             }
 
-            // Close dropdowns when clicking outside
+            // Close dropdown overlay components gracefully when clicking generic container whitespace
             window.addEventListener('click', function(event) {
                 const moreWrapper = document.querySelector('.more-menu-wrapper');
-                if (moreWrapper && moreWrapper.classList.contains('active') &&
-                    !moreWrapper.contains(event.target) && !event.target.matches('.more-toggle')) {
+                const winWrapper = document.querySelector('.download-dropdown-wrapper');
+                
+                if (moreWrapper && moreWrapper.classList.contains('active') && !moreWrapper.contains(event.target)) {
                     moreWrapper.classList.remove('active');
+                }
+                if (winWrapper && winWrapper.classList.contains('active') && !winWrapper.contains(event.target)) {
+                    winWrapper.classList.remove('active');
                 }
             });
 
