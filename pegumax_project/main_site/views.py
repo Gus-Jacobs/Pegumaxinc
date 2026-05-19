@@ -65,6 +65,9 @@ def movie_word_scanner_view(request):
 def game_portal(request):
     return render(request, 'game_portal.html')
 
+def apex_studio_view(request):
+    return render(request, 'apex_studio.html')
+
 def policy_view(request):
     return render(request, 'main_site/policy.html')
 
