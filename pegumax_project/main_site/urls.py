@@ -14,6 +14,7 @@ urlpatterns = [
     path('account/', views.account_view, name='account'),
     path('movie-word-scanner/', views.movie_word_scanner_view, name='movie_word_scanner'),
     path('game-portal/', views.game_portal, name='game_portal'),
+    path('apex-studio/', views.apex_studio_view, name='apex_studio'), # NEW APEX STUDIO ROUTE
     path('signup/', views.signup_view, name='signup'),
     # Django's auth system will handle login and logout views by default
     # path('login/', views.CustomLoginView.as_view(), name='login'), # If you need a custom login view
