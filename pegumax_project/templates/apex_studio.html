@@ -13,15 +13,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-                    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Universal box-sizing for consistent layout */
         *, *::before, *::after {
             box-sizing: border-box;
         }
 
-        /* Root variables (assuming these are defined in style.css or globally) */
+        /* Root variables */
         :root {
             --bg-color: #0d0e12;
             --bg-dark-1: #1a1c23;
@@ -29,7 +28,7 @@
             --card-bg: #16181d;
             --text-color: #e0e0e0;
             --text-light: #b0b0b0;
-            --highlight-color: #3b82f6; /* Adjusted to Apex Studio Blue */
+            --highlight-color: #00efff;
             --border-color: #333740;
             --primary-font: 'Rajdhani', sans-serif;
             --secondary-font: 'Orbitron', sans-serif;
@@ -64,7 +63,7 @@
         .page-header {
             background-color: var(--bg-dark-1);
             padding: 1rem 0;
-            border-bottom: 0.0625rem solid rgba(59, 130, 246, 0.2);
+            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -192,7 +191,6 @@
 
         /* Hero Section for Apex Studio */
         .game-hero-section {
-            /* Update to a relevant tech/media background image */
             background: linear-gradient(rgba(13, 14, 18, 0.85), rgba(13, 14, 18, 0.85)), url("{% static 'img/apex-hero.webp' %}");
             background-size: cover;
             background-position: center;
@@ -211,7 +209,7 @@
             font-size: 6rem;
             color: var(--highlight-color);
             margin-bottom: 1.5rem;
-            text-shadow: 0 0 1rem rgba(59, 130, 246, 0.5);
+            text-shadow: 0 0 1rem rgba(0, 255, 255, 0.5);
         }
 
         .game-hero-section h1 {
@@ -290,13 +288,13 @@
             display: inline-flex;
             align-items: center;
             background-color: var(--highlight-color);
-            color: #ffffff;
+            color: var(--bg-color);
             padding: 0.8rem 1.5rem;
             border-radius: 0.3rem;
             text-decoration: none;
             font-weight: bold;
             transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
-            box-shadow: 0 0.25rem 0.5rem rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
             font-size: 1rem;
             min-width: 13rem;
             justify-content: center;
@@ -310,9 +308,9 @@
         }
 
         .download-button:hover {
-            background-color: #2563eb;
+            background-color: #00e6e6;
             transform: translateY(-0.125rem);
-            box-shadow: 0 0.375rem 0.75rem rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
         }
 
         .download-button.disabled {
@@ -444,80 +442,6 @@
             color: var(--highlight-color);
         }
 
-        /* --- ACCESS RESTRAINT GATE OVERLAY STYLES --- */
-        .gate-fullscreen-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(13, 14, 18, 0.96);
-            backdrop-filter: blur(20px);
-            z-index: 99999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .gate-cyber-card {
-            background-color: var(--card-bg);
-            border: 2px solid var(--border-color);
-            padding: 3.5rem 2.5rem;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 0 40px rgba(59, 130, 246, 0.15); /* Matched to Apex Blue */
-            max-width: 440px;
-            width: 90%;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        .gate-cyber-card h2 {
-            font-family: var(--secondary-font);
-            color: var(--highlight-color);
-            margin-top: 0;
-            font-size: 1.6rem;
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
-        }
-        .gate-pin-field {
-            width: 100%;
-            padding: 0.8rem;
-            background-color: var(--bg-dark-1);
-            border: 1px solid var(--border-color);
-            color: #fff;
-            font-family: var(--secondary-font);
-            font-size: 1.4rem;
-            text-align: center;
-            letter-spacing: 0.6rem;
-            margin: 1.5rem 0 0.5rem 0;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-        }
-        .gate-pin-field:focus {
-            outline: none;
-            border-color: var(--highlight-color);
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
-        }
-        .gate-submit-btn {
-            width: 100%;
-            padding: 0.8rem;
-            background-color: var(--highlight-color);
-            color: #ffffff;
-            border: none;
-            font-weight: bold;
-            font-family: var(--primary-font);
-            font-size: 1.1rem;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s ease-in-out;
-            margin-top: 1rem;
-        }
-        .gate-submit-btn:hover {
-            background-color: #2563eb;
-            transform: translateY(-2px);
-        }
-        .gate-validation-error {
-            color: var(--danger-color);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            display: none;
-            font-weight: 500;
-        }
-
         /* Media Queries for responsiveness */
         @media (max-width: 1200px) {
             .main-nav ul.navbar-links { gap: 1.5rem; }
@@ -576,17 +500,6 @@
     </style>
 </head>
 <body>
-
-    <div id="portal-access-gate" class="gate-fullscreen-overlay">
-        <div class="gate-cyber-card">
-            <h2>Security Verification</h2>
-            <p style="font-size: 0.95rem; color: var(--text-light); margin-bottom: 0.5rem;">Enter authorization token PIN to unlock the Software repository download options.</p>
-            <p style="font-size: 0.9rem; color: var(--highlight-color); margin-bottom: 0; font-family: var(--secondary-font); font-weight: bold;">Email pegumaxinc@gmail.com to request PIN</p>
-            <input type="password" id="portal-pin-input" class="gate-pin-field" maxlength="4" placeholder="••••" autocomplete="off" />
-            <div id="gate-error-msg" class="gate-validation-error">Invalid authorization token. Access denied.</div>
-            <button class="gate-submit-btn" onclick="validatePortalGateAccess()">Submit Code</button>
-        </div>
-    </div>
 
     <header class="page-header">
         <div class="container">
@@ -657,7 +570,7 @@
                         </button>
                         <ul class="windows-dropdown-content">
                             <li>
-                                <a href="https://github.com/Gus-Jacobs/ApexConverter/releases/download/v1.0.0/Apex.Studio.Setup.1.0.0.exe" target="_blank" rel="noopener noreferrer">
+                                <a href="https://github.com/Gus-Jacobs/Apex-Studio/releases/download/v1.0.0/ApexStudio-Setup-1.0.0.exe" target="_blank" rel="noopener noreferrer">
                                     v1.0.0 (Latest Stable)
                                 </a>
                             </li>
@@ -693,34 +606,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('current-year').textContent = new Date().getFullYear();
-
-            // --- ACCESS GATE RESTRAINT CIRCUIT EVALUATIONS ---
-            const gateOverlay = document.getElementById('portal-access-gate');
-            const pinInputField = document.getElementById('portal-pin-input');
-            const validationErrorBox = document.getElementById('gate-error-msg');
-
-            if (sessionStorage.getItem('portal_authenticated') === 'true') {
-                gateOverlay.style.display = 'none';
-            } else {
-                pinInputField.focus();
-            }
-
-            window.validatePortalGateAccess = function() {
-                if (pinInputField.value === '0000') {
-                    sessionStorage.setItem('portal_authenticated', 'true');
-                    gateOverlay.style.display = 'none';
-                } else {
-                    validationErrorBox.style.display = 'block';
-                    pinInputField.value = '';
-                    pinInputField.focus();
-                }
-            };
-
-            pinInputField.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter') {
-                    validatePortalGateAccess();
-                }
-            });
 
             // --- CUSTOM DROPDOWN CLICKS ROUTER HANDLERS ---
             window.toggleWindowsDropdown = function(event) {
