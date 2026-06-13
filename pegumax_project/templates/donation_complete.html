@@ -1,37 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thank you — Pegumax Inc.</title>
-<link rel="icon" type="image/png" href="/static/img/favicon.png">
-<style>
-  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#07070d;color:#edeef5;
-    font-family:'Segoe UI',system-ui,sans-serif;text-align:center;padding:2rem;}
-  .card{max-width:480px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);
-    border-radius:24px;padding:3rem 2.4rem;box-shadow:0 40px 100px rgba(0,0,0,.6);}
-  .icon{font-size:3.4rem;margin-bottom:1rem;}
-  h1{font-size:1.9rem;margin:0 0 .6rem;}
-  p{color:#9a9cb0;line-height:1.6;margin:0 0 1.6rem;}
-  a{display:inline-block;background:linear-gradient(120deg,#22d3ee,#7ee8fb);color:#04121a;
-    font-weight:700;text-decoration:none;padding:.8rem 1.6rem;border-radius:12px;}
-  .secure{margin-top:1.4rem;font-size:.78rem;color:#6b6d82;}
-  .secure b{color:#635bff;}
-</style>
-</head>
-<body>
-  <div class="card">
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Thank you — Pegumax Inc.{% endblock %}
+{% block description %}Thank you for supporting Pegumax — independent, local-first software.{% endblock %}
+
+{% block content %}
+<div class="notice">
+  <div class="card reveal-s">
     {% if status == 'complete' %}
-      <div class="icon">💜</div>
-      <h1>Thank you so much!</h1>
-      <p>Your donation came through. Support like yours is exactly what keeps the studio running and the updates coming. We truly appreciate it.</p>
+      <div class="app-ic" style="background:linear-gradient(135deg,#7c5cff,#22d3ee);margin:0 auto 1.6rem;"><i class="fas fa-heart"></i></div>
+      <span class="eyebrow c" style="justify-content:center;">// donation received</span>
+      <h1 style="margin:1rem 0 .8rem;">Thank you<span class="g">.</span></h1>
+      <p>Your support genuinely keeps the studio running — servers on, updates shipping, and a slice passed on to the charities and nonprofits we back. It means a lot from a team as small as ours.</p>
     {% else %}
-      <div class="icon">🙏</div>
-      <h1>Thanks for stopping by</h1>
-      <p>If your donation didn't complete, no worries at all — you can try again any time. Either way, thank you for the support.</p>
+      <div class="app-ic" style="background:linear-gradient(135deg,#22d3ee,#36e0a0);margin:0 auto 1.6rem;"><i class="fas fa-hand-holding-heart"></i></div>
+      <span class="eyebrow c" style="justify-content:center;">// no charge made</span>
+      <h1 style="margin:1rem 0 .8rem;">Thanks for <span class="g">stopping by</span></h1>
+      <p>It looks like the donation didn't go through — and nothing was charged. No worries at all; you're welcome back any time.</p>
     {% endif %}
-    <a href="/">Back to Pegumax</a>
-    <div class="secure">🔒 Secure payment · Powered by <b>stripe</b></div>
+    <div class="hero-cta" style="justify-content:center;margin-top:.4rem;">
+      <a class="btn btn-acc btn-lg" href="{% url 'main_site:home' %}">Back to Pegumax</a>
+      <a class="btn btn-ghost btn-lg" href="{% url 'main_site:software_center' %}">Browse software</a>
+    </div>
+    <div class="stripe-secure"><i class="fas fa-lock"></i> Secure payment · Powered by <b>stripe</b></div>
   </div>
-</body>
-</html>
+</div>
+{% endblock %}
