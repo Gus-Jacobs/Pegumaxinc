@@ -423,7 +423,7 @@ def create_donation_session(request):
 
     try:
         session = stripe.checkout.Session.create(
-            ui_mode='embedded',
+            ui_mode='embedded_page',  # Stripe 2026-03-25 renamed 'embedded' -> 'embedded_page'
             mode='payment',
             submit_type='donate',
             line_items=[{
