@@ -1,1059 +1,372 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard - {{ user.username|capfirst }} | Pegumax Inc. Account Management</title>
-    <meta name="description" content="Manage your Pegumax Inc. account settings, profile, security, and view login activity. Access your personalized dashboard.">
-    <meta name="keywords" content="Pegumax Inc. account, user dashboard, profile settings, account security, change password, login history, user management">
-    
-    <link rel="stylesheet" href="{% static 'css/style.css' %}"> {# Your global styles #}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        /* Universal box-sizing for consistent layout */
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
 
-        :root {
-            --bg-color: #0d0e12;
-            --bg-dark-1: #1a1c23;
-            --bg-dark-2: #22242b;
-            --card-bg: #16181d;
-            --text-color: #e0e0e0;
-            --text-light: #b0b0b0;
-            --highlight-color: #00efff;
-            --border-color: #333740;
-            --primary-font: 'Rajdhani', sans-serif;
-            --secondary-font: 'Orbitron', sans-serif;
-            --danger-color: #ff4d4f;
-            --success-color: #52c41a;
-            --warning-color: #faad14;
-        }
-        body {
-            font-family: var(--primary-font);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            line-height: 1.6; /* Improved readability */
-        }
+{% block title %}User Dashboard - {{ user.username|capfirst }} | Pegumax Inc. Account Management{% endblock %}
+{% block description %}Manage your Pegumax Inc. account settings, profile, security, and view login activity. Access your personalized dashboard.{% endblock %}
 
-        /* Header Styles (Consistent with other pages) */
-        .page-header {
-            background-color: var(--bg-dark-1);
-            padding: 1rem 0;
-            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+{% block extra_head %}
+<style>
+  /* Account page — Midnight Premium accents (layout helpers only) */
+  .acct-card .acct-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.2rem;}
+  .acct-avatar{width:8.5rem;height:8.5rem;border-radius:50%;background:var(--bg3);display:grid;place-items:center;flex-shrink:0;
+    border:2px solid rgba(34,211,238,.5);box-shadow:0 0 22px rgba(34,211,238,.25),inset 0 0 14px rgba(34,211,238,.12);}
+  .acct-avatar i{font-size:3.6rem;color:var(--cy);opacity:.9;}
+  .profile-band{display:flex;align-items:center;gap:1.8rem;flex-wrap:wrap;}
+  .profile-band .profile-info{flex:1;min-width:220px;}
+  .profile-band .profile-info h2{font-family:'Space Grotesk',sans-serif;font-size:2rem;margin-bottom:.4rem;}
+  .profile-band .profile-info p{color:var(--mut);margin:.35rem 0;font-size:1.02rem;}
+  .profile-band .profile-info p i{color:var(--cy);margin-right:.4rem;}
+  .login-history-wrapper{overflow-x:auto;margin-top:.5rem;}
+  .login-history-table{width:100%;min-width:30rem;border-collapse:collapse;}
+  .login-history-table th,.login-history-table td{padding:.6rem .7rem;text-align:left;border-bottom:1px solid var(--line);font-size:.92rem;}
+  .login-history-table th{color:var(--cy);font-family:'Space Grotesk',sans-serif;}
+  .login-history-table td{color:var(--mut);word-break:break-word;}
+  .login-history-table tr.current-device td{background:rgba(34,211,238,.05);}
+  .login-history-table td .fa-check-circle{color:var(--grn);margin-left:.3rem;}
+  .form-error{color:var(--red);font-size:.82rem;margin:.1rem 0 .2rem;display:block;min-height:0;}
+  .message-area{padding:.7rem 1rem;margin-bottom:.9rem;border-radius:10px;text-align:center;font-size:.9rem;}
+  .message-area.success{background:rgba(54,224,160,.12);color:var(--grn);border:1px solid rgba(54,224,160,.3);}
+  .message-area.error{background:rgba(255,107,107,.12);color:var(--red);border:1px solid rgba(255,107,107,.3);}
+  .acct-modal-form{display:grid;gap:.3rem;}
+  .acct-modal-form label{font-size:.78rem;color:var(--mut);font-family:'JetBrains Mono',monospace;margin-top:.3rem;}
+  .acct-modal-form .field{margin-bottom:.2rem;}
+</style>
+{% endblock %}
 
-        .page-header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+{% block content %}
+<header class="phead">
+  <div class="pbg" style="background-image:url('{% static 'img/img8.webp' %}')"></div>
+  <div class="wrap">
+    <div class="breadcrumb"><b>Pegumax</b> / Account</div>
+    <span class="eyebrow c" style="margin-top:1rem;">Your dashboard</span>
+    <h1 class="g">{{ user.username|capfirst }}</h1>
+    <p>Manage your profile, security, and account activity — all in one place.</p>
+  </div>
+</header>
 
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-color);
-            font-family: var(--secondary-font);
-            font-size: 1.5rem;
-        }
+<section class="sec" style="padding-top:0;">
+  <div class="wrap">
 
-        .navbar-logo-img {
-            height: 2.5rem;
-            margin-right: 0.5rem;
-        }
-
-        .nav-toggle {
-            display: none; /* Hidden by default, shown on smaller screens */
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        .hamburger-line {
-            display: block;
-            width: 1.5rem;
-            height: 0.125rem;
-            background-color: var(--highlight-color);
-            margin: 0.25rem 0;
-            transition: all 0.3s ease;
-        }
-
-        /* Main Navigation Links (Desktop) */
-        .navbar-links { /* This class is on the <ul> */
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            gap: 2.5rem; /* Increased spacing between nav items for desktop */
-        }
-
-        .navbar-links li a { /* Target links directly within the list */
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            white-space: nowrap; /* Prevent text wrapping */
-        }
-
-        .navbar-links li a:hover {
-            color: var(--highlight-color);
-        }
-
-        /* Specific styles for auth links that might be hidden */
-        .nav-auth-item {
-            display: list-item; /* Default to visible */
-        }
-
-        /* More menu wrapper (for auth links on medium screens) */
-        .more-menu-wrapper {
-            position: relative;
-            display: none; /* Hidden by default, shown in specific breakpoint */
-        }
-
-        .more-toggle {
-            background-color: transparent;
-            border: none;
-            color: var(--text-color);
-            font-size: 1.5rem; /* Size of the "..." icon */
-            cursor: pointer;
-            padding: 0.25rem 0.5rem;
-            transition: color 0.3s ease;
-        }
-
-        .more-toggle:hover {
-            color: var(--highlight-color);
-        }
-
-        .more-dropdown-content {
-            display: none; /* Hidden by default, toggled by JS */
-            position: absolute;
-            background-color: var(--card-bg);
-            min-width: 10rem;
-            box-shadow: 0px 0.5rem 1rem 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            border-radius: 0.3rem;
-            overflow: hidden;
-            top: calc(100% + 0.5rem); /* Position below the button */
-            right: 0; /* Align to the right of the button */
-            border: 0.0625rem solid var(--border-color);
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .more-dropdown-content li a {
-            color: var(--text-color);
-            padding: 0.75rem 1rem;
-            text-decoration: none;
-            display: block;
-            text-align: left;
-            font-family: var(--primary-font);
-            font-size: 0.95rem;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            white-space: nowrap; /* Ensure dropdown items don't wrap */
-        }
-
-        .more-dropdown-content li a:hover {
-            background-color: var(--bg-dark-2);
-            color: var(--highlight-color);
-        }
-
-        .more-menu-wrapper.active .more-dropdown-content {
-            display: block;
-        }
-
-        /* Dashboard Main Content */
-        .dashboard-main {
-            flex-grow: 1;
-            padding: 1.875rem 1.25rem; /* 30px 20px */
-        }
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr)); /* 300px */
-            gap: 1.5625rem; /* 25px */
-        }
-
-        /* Dashboard Card Styles */
-        .dashboard-card {
-            background-color: var(--card-bg);
-            border-radius: 0.75rem; /* 12px */
-            padding: 1.5625rem 1.875rem; /* 25px 30px */
-            border: 0.0625rem solid var(--border-color); /* 1px */
-            box-shadow: 0 0.3125rem 0.9375rem rgba(0,0,0,0.2), 0 0 0 0.0625rem transparent; /* 5px 15px, 1px */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .dashboard-card:hover {
-            transform: translateY(-0.3125rem) scale(1.02); /* 5px */
-            box-shadow: 0 0.625rem 1.875rem rgba(0, 239, 255, 0.15), 0 0 0 0.0625rem var(--highlight-color); /* 10px 30px, 1px */
-        }
-        .dashboard-card::before { /* Subtle animated gradient border */
-            content: "";
-            position: absolute;
-            top: -0.125rem; left: -0.125rem; right: -0.125rem; bottom: -0.125rem; /* 2px */
-            background: conic-gradient(from 180deg at 50% 50%, var(--highlight-color) 0deg, var(--bg-dark-2) 60deg, var(--highlight-color) 120deg, var(--bg-dark-2) 180deg, var(--highlight-color) 240deg, var(--bg-dark-2) 300deg, var(--highlight-color) 360deg);
-            z-index: -1;
-            border-radius: 0.875rem; /* 14px */
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .dashboard-card-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.25rem; /* 20px */
-            border-bottom: 0.0625rem solid var(--border-color); /* 1px */
-            padding-bottom: 0.9375rem; /* 15px */
-        }
-        .dashboard-card-header i {
-            font-size: 1.8rem; /* 1.8em */
-            color: var(--highlight-color);
-            margin-right: 0.9375rem; /* 15px */
-            text-shadow: 0 0 0.5rem var(--highlight-color); /* 8px */
-        }
-        .dashboard-card-header h3 {
-            font-family: var(--secondary-font);
-            font-size: 1.4rem; /* 1.4em */
-            color: var(--text-color);
-            margin: 0;
-        }
-
-        /* Profile Card Specifics */
-        .profile-card {
-            grid-column: 1 / -1; /* Span full width */
-            display: flex;
-            align-items: center;
-            gap: 1.875rem; /* 30px */
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-            justify-content: center; /* Center content when wrapped */
-            text-align: center; /* Center text when wrapped */
-        }
-        .profile-picture-wrapper {
-            width: 9.375rem; /* 150px */
-            height: 9.375rem; /* 150px */
-            border-radius: 50%;
-            background-color: var(--bg-dark-2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 0.1875rem solid var(--highlight-color); /* 3px */
-            box-shadow: 0 0 0.9375rem var(--highlight-color), inset 0 0 0.625rem rgba(0, 239, 255, 0.3); /* 15px, 10px */
-            overflow: hidden;
-            flex-shrink: 0; /* Prevent shrinking on smaller screens */
-        }
-        .profile-picture-wrapper i.fa-user-astronaut {
-            font-size: 5rem; /* 5em */
-            color: var(--highlight-color);
-            opacity: 0.8;
-        }
-        .profile-info {
-            flex-grow: 1; /* Allow info to take remaining space */
-            text-align: left; /* Default text alignment */
-        }
-        .profile-info h2 {
-            font-family: var(--secondary-font);
-            font-size: 2rem; /* 2em */
-            color: var(--highlight-color);
-            margin-bottom: 0.3125rem; /* 5px */
-        }
-        .profile-info p {
-            color: var(--text-light);
-            margin: 0.3125rem 0; /* 5px */
-            font-size: 1.1rem; /* 1.1em */
-        }
-
-        /* Info Items */
-        .info-item {
-            margin-bottom: 0.75rem; /* 12px */
-        }
-        .info-item strong {
-            color: var(--text-color);
-            min-width: 6.25rem; /* 100px */
-            display: inline-block;
-        }
-        .info-item span {
-            color: var(--text-light);
-        }
-
-        /* Buttons & Forms */
-        .dashboard-button, .dashboard-form button {
-            background-color: var(--highlight-color);
-            color: var(--bg-color);
-            border: none;
-            padding: 0.625rem 1.25rem; /* 10px 20px */
-            border-radius: 0.375rem; /* 6px */
-            font-family: var(--secondary-font);
-            font-weight: bold;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            display: inline-block;
-            margin-top: 0.625rem; /* 10px */
-            text-align: center;
-            font-size: 0.9rem; /* Base font size */
-        }
-        .dashboard-button:hover, .dashboard-form button:hover {
-            background-color: #00c0c0; /* Slightly darker highlight */
-            transform: translateY(-0.125rem); /* 2px */
-            box-shadow: 0 0.3125rem 0.9375rem rgba(0, 239, 255, 0.3); /* 5px 15px */
-        }
-        .dashboard-button.danger { background-color: var(--danger-color); color: white; }
-        .dashboard-button.danger:hover { background-color: #cc3032; box-shadow: 0 0.3125rem 0.9375rem rgba(255, 77, 79, 0.4); }
-        .dashboard-button.secondary { background-color: var(--bg-dark-2); color: var(--text-light); border: 0.0625rem solid var(--border-color); }
-        .dashboard-button.secondary:hover { border-color: var(--highlight-color); color: var(--highlight-color); box-shadow: 0 0.3125rem 0.9375rem rgba(0, 239, 255, 0.2); }
-
-        .dashboard-form { margin-top: 0.9375rem; /* 15px */ }
-
-        /* Site Footer Styles (Consistent with other pages) */
-        .site-footer {
-            background-color: var(--bg-dark-1);
-            color: var(--text-light);
-            padding: 1.25rem 1rem;
-            font-size: 0.85rem;
-            width: 100%;
-        }
-        .site-footer .container {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .social-links {
-            margin-top: 0.5rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .social-links a {
-            color: inherit;
-            font-size: 1.2rem;
-            transition: color 0.3s ease;
-            text-decoration: none;
-        }
-        .social-links a:hover {
-            color: var(--highlight-color);
-        }
-        .contact-info {
-            margin-top: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.25rem;
-        }
-        .contact-info a {
-            color: inherit;
-            text-decoration: none;
-        }
-        .contact-info a:hover {
-            color: var(--highlight-color);
-        }
-        
-        /* Modal Styles - FIX: set display: none initially */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1000; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.7); /* Black w/ opacity */
-            backdrop-filter: blur(5px);
-            align-items: center; /* Use flex to center content when visible */
-            justify-content: center;
-        }
-        /* When JS opens it, it adds this class to make it visible */
-        .modal.is-open {
-            display: flex;
-        }
-
-        .modal-content {
-            background-color: var(--card-bg);
-            margin: auto;
-            padding: 1.875rem 2.5rem; /* 30px 40px */
-            border: 0.0625rem solid var(--highlight-color); /* 1px */
-            border-radius: 0.625rem; /* 10px */
-            width: 90%;
-            max-width: 34.375rem; /* 550px */
-            box-shadow: 0 0.625rem 1.875rem rgba(0, 239, 255, 0.2); /* 10px 30px */
-            position: relative;
-            color: var(--text-color);
-        }
-        .modal-content h3 {
-            font-family: var(--secondary-font);
-            color: var(--highlight-color);
-            margin-top: 0;
-            margin-bottom: 1.5625rem; /* 25px */
-            font-size: 1.8rem; /* 1.8em */
-        }
-        .close-button {
-            color: var(--text-light);
-            float: right;
-            font-size: 1.75rem; /* 28px */
-            font-weight: bold;
-            position: absolute;
-            top: 0.9375rem; /* 15px */
-            right: 1.5625rem; /* 25px */
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        .close-button:hover, .close-button:focus {
-            color: var(--highlight-color);
-            text-decoration: none;
-        }
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 0.9375rem; /* 12px 15px */
-            margin-bottom: 0.9375rem; /* 15px */
-            background-color: var(--bg-dark-2);
-            border: 0.0625rem solid var(--border-color); /* 1px */
-            border-radius: 0.3125rem; /* 5px */
-            color: var(--text-color);
-            font-size: 1rem; /* 1em */
-        }
-        .form-input:focus {
-            border-color: var(--highlight-color);
-            box-shadow: 0 0 0.5rem var(--highlight-color); /* 8px */
-            outline: none;
-        }
-        .form-error {
-            color: var(--danger-color);
-            font-size: 0.9rem; /* 0.9em */
-            margin-bottom: 0.625rem; /* 10px */
-            display: block;
-        }
-        .login-history-wrapper {
-            overflow-x: auto; /* Enable horizontal scrolling for table on small screens */
-            margin-top: 0.9375rem; /* 15px */
-        }
-        .login-history-table {
-            width: 100%;
-            min-width: 30rem; /* Ensure table has a minimum width to prevent squishing */
-            border-collapse: collapse;
-        }
-        .login-history-table th, .login-history-table td {
-            padding: 0.625rem; /* 10px */
-            text-align: left;
-            border-bottom: 0.0625rem solid var(--border-color); /* 1px */
-            font-size: 0.95rem; /* 0.95em */
-        }
-        .login-history-table th {
-            color: var(--highlight-color);
-            font-family: var(--secondary-font);
-        }
-        .login-history-table td {
-            color: var(--text-light);
-            word-break: break-word; /* Allow long user agents to wrap */
-        }
-        .login-history-table tr.current-device td {
-            background-color: rgba(0, 239, 255, 0.05);
-        }
-        .login-history-table td .fa-check-circle {
-            color: var(--success-color);
-            margin-left: 0.3125rem; /* 5px */
-        }
-        .message-area {
-            padding: 0.625rem; /* 10px */
-            margin-bottom: 0.9375rem; /* 15px */
-            border-radius: 0.3125rem; /* 5px */
-            text-align: center;
-        }
-        .message-area.success { background-color: rgba(82, 196, 26, 0.2); color: var(--success-color); border: 0.0625rem solid var(--success-color); }
-        .message-area.error { background-color: rgba(255, 77, 79, 0.2); color: var(--danger-color); border: 0.0625rem solid var(--danger-color); }
-
-        /* Media Queries */
-        @media (max-width: 1200px) {
-            .navbar-links {
-                gap: 1.5rem; /* Reduce gap for slightly smaller screens */
-            }
-            .navbar-links li a {
-                font-size: 0.95rem; /* Shrink font to fit more items */
-            }
-
-            /* Hide login/signup/account from main nav and show in 'more' menu */
-            .nav-auth-item.desktop-only { /* Target specific class for hiding */
-                display: none;
-            }
-            .more-menu-wrapper {
-                display: block; /* Show the '...' button */
-            }
-        }
-
-        @media (max-width: 768px) {
-            .page-header .container {
-                flex-wrap: wrap; /* Allow logo and toggle to wrap */
-            }
-            .page-header .navbar-brand {
-                flex-grow: 1; /* Allow brand to take space */
-            }
-            .page-header .main-nav { /* Target the nav wrapper */
-                display: none; /* Hide desktop nav */
-                width: 100%;
-                order: 2; /* Place below logo on mobile */
-            }
-            .page-header .nav-toggle {
-                display: block; /* Show hamburger icon */
-            }
-            .page-header .main-nav.is-open { /* When mobile nav is open */
-                display: flex;
-                flex-direction: column; /* Stack vertically in mobile menu */
-                text-align: center;
-                gap: 0.5rem; /* Smaller gap for stacked items */
-            }
-            .navbar-links { /* The ul inside main-nav */
-                flex-direction: column; /* Stack items */
-                width: 100%;
-                gap: 0.5rem;
-            }
-            .navbar-brand {
-                font-size: 1.2rem;
-            }
-            .navbar-logo-img {
-                height: 2rem;
-            }
-            /* Ensure auth items are visible in the mobile menu, overriding desktop-only hide */
-            .nav-auth-item.desktop-only {
-                display: list-item; 
-            }
-            /* Hide the 'more' menu wrapper when hamburger is active */
-            .more-menu-wrapper {
-                display: none;
-            }
-
-            .dashboard-main {
-                padding: 1.5rem 1rem;
-            }
-            .dashboard-container {
-                grid-template-columns: 1fr; /* Stack cards on smaller screens */
-                gap: 1.25rem;
-            }
-            .profile-card {
-                flex-direction: column; /* Stack profile picture and info */
-                gap: 1rem;
-                text-align: center;
-            }
-            .profile-info {
-                text-align: center; /* Center text when stacked */
-            }
-            .profile-info h2 {
-                font-size: 1.8rem;
-            }
-            .profile-info p {
-                font-size: 1rem;
-            }
-            .dashboard-card {
-                padding: 1.25rem 1.5rem;
-            }
-            .dashboard-card-header i {
-                font-size: 1.6rem;
-                margin-right: 0.75rem;
-            }
-            .dashboard-card-header h3 {
-                font-size: 1.2rem;
-            }
-            .dashboard-button, .dashboard-form button {
-                padding: 0.5rem 1rem;
-                font-size: 0.85rem;
-            }
-            .site-footer {
-                padding: 1.5rem 1rem;
-                font-size: 0.8rem;
-                margin-top: 2rem;
-            }
-            .modal-content {
-                padding: 1.5rem 1.875rem;
-                max-width: 90%; /* Ensure it doesn't get too wide on small screens */
-            }
-            .modal-content h3 {
-                font-size: 1.5rem;
-                margin-bottom: 1.25rem;
-            }
-            .close-button {
-                font-size: 1.5rem;
-                top: 0.75rem;
-                right: 1.25rem;
-            }
-            .form-input {
-                padding: 0.625rem 0.75rem;
-                font-size: 0.9rem;
-            }
-            .login-history-table th, .login-history-table td {
-                padding: 0.5rem;
-                font-size: 0.85rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .navbar-brand {
-                font-size: 1.1rem;
-            }
-            .navbar-logo-img {
-                height: 1.8rem;
-            }
-            .profile-picture-wrapper {
-                width: 7.5rem; /* Smaller profile picture */
-                height: 7.5rem;
-            }
-            .profile-picture-wrapper i.fa-user-astronaut {
-                font-size: 4rem;
-            }
-            .profile-info h2 {
-                font-size: 1.5rem;
-            }
-            .profile-info p {
-                font-size: 0.9rem;
-            }
-            .dashboard-card-header h3 {
-                font-size: 1.1rem;
-            }
-            .dashboard-button, .dashboard-form button {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.8rem;
-            }
-            .site-footer {
-                padding: 1rem 0.8rem;
-                font-size: 0.75rem;
-                margin-top: 1.5rem;
-            }
-            .modal-content {
-                padding: 1rem 1.25rem;
-            }
-            .modal-content h3 {
-                font-size: 1.3rem;
-                margin-bottom: 1rem;
-            }
-            .form-input {
-                padding: 0.5rem 0.6rem;
-                font-size: 0.85rem;
-            }
-            .login-history-table {
-                min-width: 25rem; /* Adjust min-width if needed for very small screens */
-            }
-        }
-    </style>
-</head>
-<body>
-    <header class="page-header">
-        <div class="container">
-            <div class="logo-container">
-                <a href="{% url 'main_site:home' %}" class="navbar-brand">
-                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
-                    <span class="header-logo-text">Pegumax Inc.</span>
-                </a>
-            </div>
-            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
-            <nav class="main-nav">
-                <ul class="navbar-links"> {# Moved navbar-links class here #}
-                    <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
-                    <li><a href="{% url 'main_site:about' %}">About Us</a></li>
-                    <li><a href="{% url 'main_site:community' %}">Community</a></li>
-                    <li><a href="{% url 'main_site:store' %}">Store</a></li>
-                    {# These are the main auth links, conditionally displayed by CSS #}
-                    {% if user.is_authenticated %}
-                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:account' %}">Account</a></li>
-                    {% else %}
-                        <li class="nav-auth-item desktop-only"><a href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {# This will be the "..." menu, appearing only in the specific breakpoint #}
-            <div class="more-menu-wrapper">
-                <button class="more-toggle" aria-label="More navigation links" aria-expanded="false" onclick="toggleMoreDropdown(event)">...</button>
-                <ul class="more-dropdown-content">
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'main_site:account' %}">Account</a></li>
-                    {% else %}
-                        <li><a href="{% url 'login' %}">Login</a></li>
-                        <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </header>
-    <main class="dashboard-main">
-        <div id="message-container" style="max-width: 1200px; margin: 0 auto 1.25rem auto;"> {# 20px #}
-            {# Django messages will be injected here by JS if not using AJAX for all, or use for JS-driven messages #}
-            {# This is where Django's messages framework messages would typically appear on initial page load #}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="message-area {{ message.tags }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
-        <div class="dashboard-container">
-            
-            <div class="dashboard-card profile-card">
-                <div class="profile-picture-wrapper">
-                    <!-- Placeholder for profile picture - could be an <img> tag or just icon -->
-                    <i class="fas fa-user-astronaut"></i>
-                </div>
-                <div class="profile-info">
-                    <h2>{{ user.username|capfirst }}</h2>
-                    <p><i class="fas fa-envelope fa-fw"></i> {{ user.email|default:"No email provided" }}</p>
-                    <p><i class="fas fa-calendar-alt fa-fw"></i> Joined: {{ user.date_joined|date:"M d, Y, P T"|default:"N/A" }}</p>
-                </div>
-            </div>
-            <div class="dashboard-card">
-                <div class="dashboard-card-header">
-                    <i class="fas fa-user-edit"></i><h3>Account Details</h3>
-                </div>
-                <div class="info-item"><strong>Username:</strong> <span>{{ user.username }}</span></div>
-                <div class="info-item"><strong>Email:</strong> <span>{{ user.email|default:"Not set" }}</span></div>
-                <button type="button" id="editProfileBtn" class="dashboard-button secondary">Edit Profile</button>
-                <button type="button" id="changePasswordBtn" class="dashboard-button secondary">Change Password</button>
-            </div>
-            <div class="dashboard-card">
-                <div class="dashboard-card-header">
-                    <i class="fas fa-shield-alt"></i><h3>Security &amp; Activity</h3>
-                </div>
-                <p>Last Login: {{ user.last_login|date:"M d, Y, P T"|default:"N/A" }}</p>
-                {# <p>Recent Activity: (Placeholder for activity log)</p> #}
-                <button type="button" id="loginHistoryBtn" class="dashboard-button secondary">View Login History</button>
-            </div>
-            {% if user.is_staff or user.is_superuser %}
-            <div class="dashboard-card admin-tools-card">
-                <div class="dashboard-card-header">
-                    <i class="fas fa-user-shield"></i><h3>Admin Tools</h3>
-                </div>
-                <a href="{% url 'admin:index' %}" class="dashboard-button" target="_blank" rel="noopener noreferrer">Django Admin Panel</a>
-                <a href="{% url 'main_site:admin_dashboard' %}" class="dashboard-button">Site Admin Dashboard</a>
-            </div>
-            {% endif %}
-
-            <div class="dashboard-card logout-card">
-                    <div class="dashboard-card-header">
-                    <i class="fas fa-sign-out-alt"></i><h3>Session</h3>
-                </div>
-                <form method="post" action="{% url 'logout' %}" class="dashboard-form">
-                    {% csrf_token %}
-                    <button type="submit" class="dashboard-button danger">Logout Securely</button>
-                </form>
-            </div>
-
-        </div>
-    </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
-            <p>Empowering the human spirit through technological transcendence.</p>
-            <div class="social-links">
-                <a href="https://twitter.com/PegumaxInc" target="_blank" aria-label="Follow us on X (Twitter)" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://linkedin.com/company/PegumaxInc" target="_blank" aria-label="Connect with us on LinkedIn" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://github.com/PegumaxInc" target="_blank" aria-label="Explore our projects on GitHub" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
-            </div>
-            <div class="contact-info">
-                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p>
-                <p><a href="{% url 'main_site:policy' %}">Policy</a></p>
-            </div>
-        </div>
-    </footer>
-    <!-- Edit Profile Modal -->
-    <div id="editProfileModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal('editProfileModal')">&times;</span>
-            <h3>Edit Your Profile</h3>
-            <div id="editProfileMessageArea"></div>
-            <form id="editProfileForm">
-                {% csrf_token %}
-                <div>
-                    <label for="id_username_edit">Username:</label>
-                    <input type="text" name="username" value="{{ user.username }}" required id="id_username_edit" class="form-input">
-                    <span class="form-error" id="error_username_edit"></span>
-                </div>
-                <div>
-                    <label for="id_email_edit">Email:</label>
-                    <input type="email" name="email" value="{{ user.email|default:"" }}" id="id_email_edit" class="form-input">
-                    <span class="form-error" id="error_email_edit"></span>
-                </div>
-                <button type="submit" class="dashboard-button">Save Changes</button>
-            </form>
-        </div>
+    <div id="message-container" style="max-width:900px;margin:0 auto 1.4rem;">
+      {% if messages %}
+        <ul class="msg-list">
+          {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
     </div>
 
-    <!-- Change Password Modal -->
-    <div id="changePasswordModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal('changePasswordModal')">&times;</span>
-            <h3>Change Password</h3>
-            <div id="changePasswordMessageArea"></div>
-            <form id="changePasswordForm">
-                {% csrf_token %}
-                <div>
-                    <label for="id_old_password">Old Password:</label>
-                    <input type="password" name="old_password" required id="id_old_password" class="form-input">
-                    <span class="form-error" id="error_old_password"></span>
-                </div>
-                <div>
-                    <label for="id_new_password1">New Password:</label>
-                    <input type="password" name="new_password1" required id="id_new_password1" class="form-input">
-                    <span class="form-error" id="error_new_password1"></span>
-                </div>
-                <div>
-                    <label for="id_new_password2">Confirm New Password:</label>
-                    <input type="password" name="new_password2" required id="id_new_password2" class="form-input">
-                    <span class="form-error" id="error_new_password2"></span>
-                </div>
-                <button type="submit" class="dashboard-button">Change Password</button>
-            </form>
+    <div class="acct-grid">
+
+      <!-- Profile band -->
+      <div class="acct-card acct-full profile-card reveal">
+        <div class="profile-band">
+          <div class="acct-avatar">
+            <i class="fas fa-user-astronaut"></i>
+          </div>
+          <div class="profile-info">
+            <h2 class="g" id="profileName">{{ user.username|capfirst }}</h2>
+            <p id="profileEmail"><i class="fas fa-envelope fa-fw"></i>{{ user.email|default:"No email provided" }}</p>
+            <p><i class="fas fa-calendar-alt fa-fw"></i>Joined: {{ user.date_joined|date:"M d, Y, P T"|default:"N/A" }}</p>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Login History Modal -->
-    <div id="loginHistoryModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal('loginHistoryModal')">&times;</span>
-            <h3>Login History</h3>
-            <div class="login-history-wrapper">
-                <table class="login-history-table">
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>IP Address</th>
-                            <th>Device/Browser</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {# Example data - replace with actual Django loop if you have login history #}
-                        <tr class="current-device">
-                            <td>{{ user.last_login|date:"M d, Y, P T"|default:"N/A" }}</td>
-                            <td>Current Device <i class="fas fa-check-circle"></i></td>
-                            <td>Your current browser/device.</td>
-                        </tr>
-                        <tr>
-                            <td>Jul 29, 2025, 10:30 AM EDT</td>
-                            <td>192.168.1.10</td>
-                            <td>Chrome on Windows</td>
-                        </tr>
-                        <tr>
-                            <td>Jul 28, 2025, 08:15 PM EDT</td>
-                            <td>10.0.0.5</td>
-                            <td>Safari on iOS</td>
-                        </tr>
-                        {# End example data #}
-                    </tbody>
-                </table>
-            </div>
+      <!-- Account details -->
+      <div class="acct-card reveal-s">
+        <h3><i class="fas fa-user-edit"></i> Account Details</h3>
+        <div class="acct-row"><span>Username</span> <b id="acctUsername">{{ user.username }}</b></div>
+        <div class="acct-row"><span>Email</span> <b id="acctEmail">{{ user.email|default:"Not set" }}</b></div>
+        <div class="acct-actions">
+          <button type="button" id="editProfileBtn" class="btn btn-ghost">Edit Profile</button>
+          <button type="button" id="changePasswordBtn" class="btn btn-ghost">Change Password</button>
         </div>
+      </div>
+
+      <!-- Security & Activity -->
+      <div class="acct-card reveal-s">
+        <h3><i class="fas fa-shield-alt"></i> Security &amp; Activity</h3>
+        <div class="acct-row"><span>Last Login</span> <b>{{ user.last_login|date:"M d, Y, P T"|default:"N/A" }}</b></div>
+        <div class="acct-actions">
+          <button type="button" id="loginHistoryBtn" class="btn btn-ghost">View Login History</button>
+        </div>
+      </div>
+
+      {% if user.is_staff or user.is_superuser %}
+      <!-- Admin tools -->
+      <div class="acct-card admin-tools-card reveal-s">
+        <h3><i class="fas fa-user-shield"></i> Admin Tools</h3>
+        <div class="acct-actions">
+          <a href="{% url 'admin:index' %}" class="btn btn-cy" target="_blank" rel="noopener noreferrer">Django Admin Panel</a>
+          <a href="{% url 'main_site:admin_dashboard' %}" class="btn btn-acc">Site Admin Dashboard</a>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Session -->
+      <div class="acct-card logout-card reveal-s">
+        <h3><i class="fas fa-sign-out-alt"></i> Session</h3>
+        <form method="post" action="{% url 'logout' %}" class="dashboard-form" style="margin-top:.6rem;">
+          {% csrf_token %}
+          <button type="submit" class="btn" style="background:linear-gradient(120deg,var(--red),#ff9b9b);color:#1a0606;padding:.6rem 1.25rem;">Logout Securely</button>
+        </form>
+      </div>
+
     </div>
+  </div>
+</section>
 
-    <script src="{% static 'js/script.js' %}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('current-year').textContent = new Date().getFullYear();
+<!-- Edit Profile Modal -->
+<div id="editProfileModal" class="modal">
+  <div class="ovl" onclick="closeModal('editProfileModal')"></div>
+  <div class="box">
+    <button class="close" onclick="closeModal('editProfileModal')">&times;</button>
+    <h3>Edit Your Profile</h3>
+    <div id="editProfileMessageArea"></div>
+    <form id="editProfileForm" class="acct-modal-form">
+      {% csrf_token %}
+      <div>
+        <label for="id_username_edit">Username</label>
+        <input type="text" name="username" value="{{ user.username }}" required id="id_username_edit" class="field form-input">
+        <span class="form-error" id="error_username_edit"></span>
+      </div>
+      <div>
+        <label for="id_email_edit">Email</label>
+        <input type="email" name="email" value="{{ user.email|default:"" }}" id="id_email_edit" class="field form-input">
+        <span class="form-error" id="error_email_edit"></span>
+      </div>
+      <button type="submit" class="btn btn-acc btn-lg" style="margin-top:.6rem;">Save Changes</button>
+    </form>
+  </div>
+</div>
 
-            // Mobile navigation toggle
-            const navToggle = document.querySelector('.nav-toggle');
-            const mainNav = document.querySelector('.main-nav'); // Target the nav wrapper
+<!-- Change Password Modal -->
+<div id="changePasswordModal" class="modal">
+  <div class="ovl" onclick="closeModal('changePasswordModal')"></div>
+  <div class="box">
+    <button class="close" onclick="closeModal('changePasswordModal')">&times;</button>
+    <h3>Change Password</h3>
+    <div id="changePasswordMessageArea"></div>
+    <form id="changePasswordForm" class="acct-modal-form">
+      {% csrf_token %}
+      <div>
+        <label for="id_old_password">Old Password</label>
+        <input type="password" name="old_password" required id="id_old_password" class="field form-input">
+        <span class="form-error" id="error_old_password"></span>
+      </div>
+      <div>
+        <label for="id_new_password1">New Password</label>
+        <input type="password" name="new_password1" required id="id_new_password1" class="field form-input">
+        <span class="form-error" id="error_new_password1"></span>
+      </div>
+      <div>
+        <label for="id_new_password2">Confirm New Password</label>
+        <input type="password" name="new_password2" required id="id_new_password2" class="field form-input">
+        <span class="form-error" id="error_new_password2"></span>
+      </div>
+      <button type="submit" class="btn btn-acc btn-lg" style="margin-top:.6rem;">Change Password</button>
+    </form>
+  </div>
+</div>
 
-            if (navToggle && mainNav) {
-                navToggle.addEventListener('click', () => {
-                    const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
-                    navToggle.setAttribute('aria-expanded', !expanded);
-                    mainNav.classList.toggle('is-open'); // Toggle class on the nav wrapper
-                });
-            }
+<!-- Login History Modal -->
+<div id="loginHistoryModal" class="modal">
+  <div class="ovl" onclick="closeModal('loginHistoryModal')"></div>
+  <div class="box wide">
+    <button class="close" onclick="closeModal('loginHistoryModal')">&times;</button>
+    <h3>Login History</h3>
+    <div class="login-history-wrapper">
+      <table class="login-history-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>IP Address</th>
+            <th>Device/Browser</th>
+          </tr>
+        </thead>
+        <tbody id="loginHistoryBody">
+          <tr><td colspan="3" style="text-align:center;color:var(--mut);">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
 
-            // More menu dropdown toggle function
-            function toggleMoreDropdown(event) {
-                event.stopPropagation(); // Prevent document click from immediately closing
-                const moreWrapper = document.querySelector('.more-menu-wrapper');
-                moreWrapper.classList.toggle('active'); // Toggle 'active' class to show/hide dropdown
-            }
+{% block extra_js %}
+<script id="acct-endpoints" type="application/json">{"editProfile": "{% url 'main_site:edit_profile' %}", "changePassword": "{% url 'main_site:change_password_popup' %}", "loginHistory": "{% url 'main_site:get_login_history' %}"}</script>
+{% verbatim %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ACCT_ENDPOINTS = JSON.parse(document.getElementById('acct-endpoints').textContent);
 
-            // Close dropdowns when clicking outside
-            window.addEventListener('click', function(event) {
-                const moreWrapper = document.querySelector('.more-menu-wrapper');
-                if (moreWrapper && moreWrapper.classList.contains('active') && !moreWrapper.contains(event.target)) {
-                    moreWrapper.classList.remove('active');
-                }
-            });
+    // Modal functionality (uses .open class — matches base/pegumax.css modals)
+    var editProfileModal = document.getElementById('editProfileModal');
+    var changePasswordModal = document.getElementById('changePasswordModal');
+    var loginHistoryModal = document.getElementById('loginHistoryModal');
 
-            // Expose toggleMoreDropdown to global scope for onclick attribute
-            window.toggleMoreDropdown = toggleMoreDropdown;
+    var editProfileBtn = document.getElementById('editProfileBtn');
+    var changePasswordBtn = document.getElementById('changePasswordBtn');
+    var loginHistoryBtn = document.getElementById('loginHistoryBtn');
 
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('open');
+    }
 
-            // Modal functionality
-            const editProfileModal = document.getElementById('editProfileModal');
-            const changePasswordModal = document.getElementById('changePasswordModal');
-            const loginHistoryModal = document.getElementById('loginHistoryModal');
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('open');
+        // Clear form errors/messages when closing modal
+        var messageArea = document.getElementById(modalId.replace('Modal', 'MessageArea'));
+        if (messageArea) messageArea.innerHTML = '';
+        var formErrors = document.querySelectorAll('#' + modalId + ' .form-error');
+        formErrors.forEach(function(error){ error.textContent = ''; });
+    }
 
-            const editProfileBtn = document.getElementById('editProfileBtn');
-            const changePasswordBtn = document.getElementById('changePasswordBtn');
-            const loginHistoryBtn = document.getElementById('loginHistoryBtn');
+    if (editProfileBtn) {
+        editProfileBtn.onclick = function(){ openModal('editProfileModal'); };
+    }
+    if (changePasswordBtn) {
+        changePasswordBtn.onclick = function(){ openModal('changePasswordModal'); };
+    }
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    function loadLoginHistory(){
+        var body=document.getElementById('loginHistoryBody'); if(!body) return;
+        body.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--mut)">Loading…</td></tr>';
+        fetch(ACCT_ENDPOINTS.loginHistory, {headers:{'X-Requested-With':'XMLHttpRequest'}})
+          .then(function(r){ return r.json(); })
+          .then(function(data){
+            var rows=(data&&data.history)||[];
+            if(!rows.length){ body.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--mut)">No login history recorded yet.</td></tr>'; return; }
+            body.innerHTML=rows.map(function(h){
+              var cur=h.is_current_device?' <i class="fas fa-check-circle"></i>':'';
+              return '<tr'+(h.is_current_device?' class="current-device"':'')+'><td>'+esc(h.timestamp)+cur+'</td><td>'+esc(h.ip_address)+'</td><td>'+esc(h.user_agent)+'</td></tr>';
+            }).join('');
+          })
+          .catch(function(){ body.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--red)">Could not load history.</td></tr>'; });
+    }
+    if (loginHistoryBtn) {
+        loginHistoryBtn.onclick = function(){ openModal('loginHistoryModal'); loadLoginHistory(); };
+    }
 
-            function openModal(modalId) {
-                document.getElementById(modalId).classList.add('is-open'); // Add is-open class
-            }
+    // Close modals when clicking outside of the content
+    window.addEventListener('click', function(event) {
+        if (event.target === editProfileModal) {
+            closeModal('editProfileModal');
+        }
+        if (event.target === changePasswordModal) {
+            closeModal('changePasswordModal');
+        }
+        if (event.target === loginHistoryModal) {
+            closeModal('loginHistoryModal');
+        }
+    });
 
-            function closeModal(modalId) {
-                document.getElementById(modalId).classList.remove('is-open'); // Remove is-open class
-                // Clear form errors/messages when closing modal
-                const messageArea = document.getElementById(modalId.replace('Modal', 'MessageArea'));
-                if (messageArea) messageArea.innerHTML = '';
-                const formErrors = document.querySelectorAll(`#${modalId} .form-error`);
-                formErrors.forEach(error => error.textContent = '');
-            }
+    // Handle form submissions via AJAX (edit profile)
+    var editProfileForm = document.getElementById('editProfileForm');
+    if (editProfileForm) {
+        editProfileForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            var messageArea = document.getElementById('editProfileMessageArea');
+            var formErrors = document.querySelectorAll('#editProfileForm .form-error');
+            formErrors.forEach(function(error){ error.textContent = ''; }); // Clear previous errors
+            messageArea.innerHTML = ''; // Clear previous messages
 
-            if (editProfileBtn) {
-                editProfileBtn.onclick = () => openModal('editProfileModal');
-            }
-            if (changePasswordBtn) {
-                changePasswordBtn.onclick = () => openModal('changePasswordModal');
-            }
-            if (loginHistoryBtn) {
-                loginHistoryBtn.onclick = () => openModal('loginHistoryModal');
-            }
-
-            // Close modals when clicking outside of the content
-            window.addEventListener('click', function(event) {
-                if (event.target === editProfileModal) {
-                    closeModal('editProfileModal');
-                }
-                if (event.target === changePasswordModal) {
-                    closeModal('changePasswordModal');
-                }
-                if (event.target === loginHistoryModal) {
-                    closeModal('loginHistoryModal');
-                }
-            });
-
-            // Handle form submissions via AJAX (example for edit profile)
-            const editProfileForm = document.getElementById('editProfileForm');
-            if (editProfileForm) {
-                editProfileForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    const formData = new FormData(this);
-                    const messageArea = document.getElementById('editProfileMessageArea');
-                    const formErrors = document.querySelectorAll('#editProfileForm .form-error');
-                    formErrors.forEach(error => error.textContent = ''); // Clear previous errors
-                    messageArea.innerHTML = ''; // Clear previous messages
-
-                    try {
-                        const response = await fetch('{% url "main_site:edit_profile" %}', { // Assuming you have an edit_profile URL
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest', // Important for Django to recognize AJAX
-                            }
-                        });
-
-                        const data = await response.json();
-
-                        if (response.ok) {
-                            messageArea.innerHTML = `<div class="message-area success">${data.message}</div>`;
-                            // Update displayed user info on the dashboard
-                            document.querySelector('.profile-info h2').textContent = data.username.charAt(0).toUpperCase() + data.username.slice(1);
-                            document.querySelector('.profile-info p:nth-child(2) span').textContent = data.email || 'Not set';
-                            document.querySelector('.info-item strong:nth-child(1) + span').textContent = data.username;
-                            document.querySelector('.info-item strong:nth-child(2) + span').textContent = data.email || 'Not set';
-                            // Optionally close modal after success
-                            // setTimeout(() => closeModal('editProfileModal'), 2000);
-                        } else {
-                            if (data.errors) {
-                                for (const fieldName in data.errors) {
-                                    const errorSpan = document.getElementById(`error_${fieldName}_edit`);
-                                    if (errorSpan) {
-                                        errorSpan.textContent = data.errors[fieldName].join(' ');
-                                    } else {
-                                        // Handle non-field errors or general form errors
-                                        messageArea.innerHTML = `<div class="message-area error">${data.errors[fieldName].join(' ')}</div>`;
-                                    }
-                                }
-                            } else {
-                                messageArea.innerHTML = `<div class="message-area error">${data.message || 'An unknown error occurred.'}</div>`;
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        messageArea.innerHTML = `<div class="message-area error">An error occurred: ${error.message}</div>`;
+            try {
+                const response = await fetch(ACCT_ENDPOINTS.editProfile, { // Assuming you have an edit_profile URL
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest', // Important for Django to recognize AJAX
                     }
                 });
-            }
 
-            // Handle change password form submission via AJAX
-            const changePasswordForm = document.getElementById('changePasswordForm');
-            if (changePasswordForm) {
-                changePasswordForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    const formData = new FormData(this);
-                    const messageArea = document.getElementById('changePasswordMessageArea');
-                    const formErrors = document.querySelectorAll('#changePasswordForm .form-error');
-                    formErrors.forEach(error => error.textContent = ''); // Clear previous errors
-                    messageArea.innerHTML = ''; // Clear previous messages
+                const data = await response.json();
 
-                    try {
-                        const response = await fetch('{% url "password_change" %}', { // Assuming you have a password_change URL
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest',
-                            }
-                        });
-
-                        const data = await response.json();
-
-                        if (response.ok) {
-                            messageArea.innerHTML = `<div class="message-area success">${data.message}</div>`;
-                            this.reset(); // Clear form fields on success
-                            // Optionally close modal after success
-                            // setTimeout(() => closeModal('changePasswordModal'), 2000);
-                        } else {
-                            if (data.errors) {
-                                for (const fieldName in data.errors) {
-                                    const errorSpan = document.getElementById(`error_${fieldName}`);
-                                    if (errorSpan) {
-                                        errorSpan.textContent = data.errors[fieldName].join(' ');
-                                    } else {
-                                        messageArea.innerHTML = `<div class="message-area error">${data.errors[fieldName].join(' ')}</div>`;
-                                    }
-                                }
+                if (response.ok) {
+                    messageArea.innerHTML = `<div class="message-area success">${data.message}</div>`;
+                    var newUsername = formData.get('username') || '';
+                    var newEmail = formData.get('email') || '';
+                    var cap = newUsername ? newUsername.charAt(0).toUpperCase() + newUsername.slice(1) : '';
+                    var elName = document.getElementById('profileName'); if (elName && newUsername) elName.textContent = cap;
+                    var elEmail = document.getElementById('profileEmail'); if (elEmail) elEmail.innerHTML = '<i class="fas fa-envelope fa-fw"></i>' + (newEmail || 'No email provided');
+                    var au = document.getElementById('acctUsername'); if (au && newUsername) au.textContent = newUsername;
+                    var ae = document.getElementById('acctEmail'); if (ae) ae.textContent = newEmail || 'Not set';
+                    setTimeout(function(){ closeModal('editProfileModal'); }, 1300);
+                } else {
+                    if (data.errors) {
+                        for (const fieldName in data.errors) {
+                            const errorSpan = document.getElementById(`error_${fieldName}_edit`);
+                            if (errorSpan) {
+                                errorSpan.textContent = data.errors[fieldName].join(' ');
                             } else {
-                                messageArea.innerHTML = `<div class="message-area error">${data.message || 'An unknown error occurred.'}</div>`;
+                                // Handle non-field errors or general form errors
+                                messageArea.innerHTML = `<div class="message-area error">${data.errors[fieldName].join(' ')}</div>`;
                             }
                         }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        messageArea.innerHTML = `<div class="message-area error">An error occurred: ${error.message}</div>`;
+                    } else {
+                        messageArea.innerHTML = `<div class="message-area error">${data.message || 'An unknown error occurred.'}</div>`;
                     }
-                });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageArea.innerHTML = `<div class="message-area error">An error occurred: ${error.message}</div>`;
             }
-
-            // Expose closeModal to global scope for onclick attribute on close buttons
-            window.closeModal = closeModal;
         });
-    </script>
-</body>
-</html>
+    }
 
+    // Handle change password form submission via AJAX
+    var changePasswordForm = document.getElementById('changePasswordForm');
+    if (changePasswordForm) {
+        changePasswordForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            var messageArea = document.getElementById('changePasswordMessageArea');
+            var formErrors = document.querySelectorAll('#changePasswordForm .form-error');
+            formErrors.forEach(function(error){ error.textContent = ''; }); // Clear previous errors
+            messageArea.innerHTML = ''; // Clear previous messages
+
+            try {
+                const response = await fetch(ACCT_ENDPOINTS.changePassword, { // Assuming you have a password change URL
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageArea.innerHTML = `<div class="message-area success">${data.message}</div>`;
+                    this.reset(); // Clear form fields on success
+                    // Optionally close modal after success
+                    // setTimeout(() => closeModal('changePasswordModal'), 2000);
+                } else {
+                    if (data.errors) {
+                        for (const fieldName in data.errors) {
+                            const errorSpan = document.getElementById(`error_${fieldName}`);
+                            if (errorSpan) {
+                                errorSpan.textContent = data.errors[fieldName].join(' ');
+                            } else {
+                                messageArea.innerHTML = `<div class="message-area error">${data.errors[fieldName].join(' ')}</div>`;
+                            }
+                        }
+                    } else {
+                        messageArea.innerHTML = `<div class="message-area error">${data.message || 'An unknown error occurred.'}</div>`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageArea.innerHTML = `<div class="message-area error">An error occurred: ${error.message}</div>`;
+            }
+        });
+    }
+
+    // Expose closeModal to global scope for onclick attribute on close buttons
+    window.closeModal = closeModal;
+});
+</script>
+{% endverbatim %}
+{% endblock %}

@@ -1,923 +1,175 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pegumax Inc. - Forge Your Future with Advanced Software Solutions</title>
-    <meta name="description" content="Pegumax Inc. crafts cutting-edge software for a smarter, connected world. Explore our innovative solutions, join our community, and empower your future with us.">
-    <meta name="keywords" content="Pegumax Inc., software solutions, innovation, technology, future, smart solutions, connected world, software development, tech company, digital transformation">
-    
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" 
-                 crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        /* Universal box-sizing for consistent layout */
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        /* Root variables (assuming they are also in style.css) */
-        :root {
-            --bg-color: #0d0e12;
-            --bg-dark-1: #1a1c23;
-            --bg-dark-2: #22242b;
-            --card-bg: #16181d;
-            --text-color: #e0e0e0;
-            --text-light: #b0b0b0;
-            --highlight-color: #00efff;
-            --border-color: #333740;
-            --primary-font: 'Rajdhani', sans-serif;
-            --secondary-font: 'Orbitron', sans-serif;
-            --danger-color: #ff4d4f;
-            --success-color: #52c41a;
-            --navbar-height: 4.5rem; /* Approximate height of the fixed navbar */
-        }
-
-        /* General Page Styles */
-        body {
-            font-family: var(--primary-font);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh; /* Ensures body takes at least full viewport height */
-            line-height: 1.6; /* Improved readability */
-        }
-
-        main {
-            flex-grow: 1; /* Allows main content to take up available space */
-            background-color: var(--bg-color); /* Ensure main also has the base background */
-        }
-
-        .container {
-            max-width: 1200px; /* Max width for content on large screens */
-            margin: 0 auto; /* Center the container */
-            padding: 0 1.5rem; /* Responsive horizontal padding */
-        }
-
-        /* Header Styles (Hero Section background) */
-        .hero-section {
-            background: linear-gradient(rgba(13, 14, 18, 0.7), rgba(13, 14, 18, 0.7)), url("{% static 'img/img2.webp' %}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed; /* Parallax effect */
-            color: #fff;
-            padding-top: calc(var(--navbar-height) + 6rem); /* Adjust padding based on navbar height + extra space */
-            padding-bottom: 8rem; /* Consistent bottom padding */
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 80vh;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Navbar specific styles within the header */
-        .main-navbar {
-            position: fixed; /* Changed to fixed to stay at top */
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: var(--bg-dark-1); /* Solid background for navbar */
-            padding: 1rem 0;
-            z-index: 1001; /* Higher z-index than hero-overlay */
-            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1); /* Add a subtle border */
-        }
-
-        .main-navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-color);
-            font-family: var(--secondary-font);
-            font-size: 1.5rem;
-        }
-
-        .navbar-logo-img {
-            height: 2.5rem;
-            margin-right: 0.5rem;
-        }
-
-        .nav-toggle {
-            display: none; /* Hidden by default, shown on smaller screens */
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        .hamburger-line {
-            display: block;
-            width: 1.5rem;
-            height: 0.125rem; /* 2px */
-            background-color: var(--highlight-color);
-            margin: 0.25rem 0;
-            transition: all 0.3s ease;
-        }
-
-        /* Main Navigation Links (Desktop) */
-        .main-nav ul.navbar-links { /* Corrected selector to target the ul within main-nav */
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            gap: 2.5rem; /* Increased spacing between nav items for desktop */
-        }
-
-        .main-nav ul.navbar-links li a { /* Corrected selector for links */
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            white-space: nowrap; /* Prevent text wrapping */
-        }
-
-        .main-nav ul.navbar-links li a:hover {
-            color: var(--highlight-color);
-        }
-
-        /* Specific styles for auth links that might be hidden */
-        .nav-auth-item.desktop-only { /* Added desktop-only to target specific items */
-            display: list-item; /* Default to visible on desktop */
-        }
-
-        /* More menu wrapper */
-        .more-menu-wrapper {
-            position: relative;
-            display: none; /* Hidden by default, shown in specific breakpoint */
-        }
-
-        .more-toggle {
-            background-color: transparent;
-            border: none;
-            color: var(--text-color);
-            font-size: 1.5rem; /* Size of the "..." icon */
-            cursor: pointer;
-            padding: 0.25rem 0.5rem;
-            transition: color 0.3s ease;
-        }
-
-        .more-toggle:hover {
-            color: var(--highlight-color);
-        }
-
-        .more-dropdown-content {
-            display: none; /* Hidden by default, toggled by JS */
-            position: absolute;
-            background-color: var(--card-bg);
-            min-width: 10rem;
-            box-shadow: 0px 0.5rem 1rem 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            border-radius: 0.3rem;
-            overflow: hidden;
-            top: calc(100% + 0.5rem); /* Position below the button */
-            right: 0; /* Align to the right of the button */
-            border: 0.0625rem solid var(--border-color);
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .more-dropdown-content li a {
-            color: var(--text-color);
-            padding: 0.75rem 1rem;
-            text-decoration: none;
-            display: block;
-            text-align: left;
-            font-family: var(--primary-font);
-            font-size: 0.95rem;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            white-space: nowrap; /* Ensure dropdown items don't wrap */
-        }
-
-        .more-dropdown-content li a:hover {
-            background-color: var(--bg-dark-2);
-            color: var(--highlight-color);
-        }
-
-        .more-menu-wrapper.active .more-dropdown-content {
-            display: block;
-        }
-
-        .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-            display: flex; /* Use flexbox for vertical alignment */
-            flex-direction: column;
-            align-items: center; /* Center horizontally */
-            justify-content: center; /* Center vertically */
-            text-align: center; /* Ensure text is centered */
-        }
-
-        .hero-content h1 {
-            font-family: var(--secondary-font);
-            font-size: 4.5rem;
-            color: var(--highlight-color);
-            margin-bottom: 1rem;
-            text-shadow: 0 0 1rem rgba(0, 255, 255, 0.7);
-        }
-
-        .hero-content h1 .highlight {
-            color: #fff;
-        }
-
-        .hero-content .tagline {
-            font-size: 1.8rem;
-            font-weight: 300;
-            margin-bottom: 2rem;
-            color: #ccc;
-        }
-
-        /* Slogan Animation Styling */
-        .slogan-animation-wrapper {
-            min-height: 2.5rem; /* Ensure enough height for the slogan */
-            margin-bottom: 2rem;
-            display: flex; /* Use flex to center the text and cursor */
-            justify-content: center;
-            align-items: center;
-            white-space: nowrap; /* Keep text and cursor on one line */
-            overflow: hidden; /* Hide overflow during animation */
-            font-size: 1.8rem; /* Increased font size for better visibility */
-            color: #ffcc00;
-            font-family: var(--primary-font);
-            font-weight: 500;
-            /* Added background for techy feel */
-            background-color: rgba(0, 255, 255, 0.1); /* Semi-transparent light blue */
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-        }
-
-
-        .cta-button {
-            display: inline-block;
-            background-color: var(--highlight-color);
-            color: var(--bg-color);
-            padding: 0.75rem 2rem;
-            border-radius: 0.3rem;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 0.25rem 0.5rem rgba(0, 255, 255, 0.3);
-            font-size: 1.1rem;
-            border: none; /* Ensure no default button border */
-            cursor: pointer;
-        }
-
-        .cta-button:hover {
-            background-color: #00e6e6;
-            transform: translateY(-0.125rem);
-            box-shadow: 0 0.375rem 0.75rem rgba(0, 255, 255, 0.4);
-        }
-
-        /* Content Sections */
-        .content-section {
-            padding: 5rem 0;
-        }
-
-        .overview-section {
-            background-color: var(--bg-dark-1);
-            text-align: center;
-        }
-
-        h2 {
-            font-family: var(--secondary-font);
-            font-size: 2.8rem;
-            color: var(--text-color);
-            margin-bottom: 2.5rem;
-            text-align: center;
-        }
-
-        h2 .highlight {
-            color: var(--highlight-color);
-        }
-
-        .section-intro {
-            max-width: 800px;
-            margin: 0 auto 3rem auto;
-            font-size: 1.1rem;
-            color: var(--text-light);
-        }
-
-        /* Grid Layouts - Fixed for 2x2 or 1x4 */
-        .about-grid, .heroes-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Default to 2x2 for 4 items */
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .about-card {
-            background-color: var(--card-bg);
-            padding: 2rem;
-            border-radius: 0.75rem;
-            border: 0.0625rem solid var(--border-color);
-            box-shadow: 0 0.3125rem 0.9375rem rgba(0,0,0,0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
-        }
-
-        .about-card:hover {
-            transform: translateY(-0.3125rem);
-            box-shadow: 0 0.625rem 1.875rem rgba(0, 239, 255, 0.15);
-        }
-
-        .about-card .card-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: var(--highlight-color);
-        }
-
-        .about-card h3 {
-            font-family: var(--secondary-font);
-            font-size: 1.5rem;
-            color: var(--text-color);
-            margin-bottom: 0.75rem;
-        }
-
-        .about-card p {
-            font-size: 0.95rem;
-            color: var(--text-light);
-        }
-
-        .site-heroes-section {
-            background-color: var(--bg-dark-2);
-            text-align: center;
-        }
-
-        .hero-link-card {
-            background-color: var(--card-bg);
-            padding: 2rem;
-            border-radius: 0.75rem;
-            border: 0.0625rem solid var(--border-color);
-            box-shadow: 0 0.3125rem 0.9375rem rgba(0,0,0,0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
-            text-decoration: none;
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hero-link-card:hover {
-            transform: translateY(-0.3125rem);
-            box-shadow: 0 0.625rem 1.875rem rgba(0, 239, 255, 0.15);
-        }
-
-        .hero-link-icon {
-            font-size: 3rem;
-            color: var(--highlight-color);
-            margin-bottom: 1rem;
-        }
-
-        .hero-link-card h3 {
-            font-family: var(--secondary-font);
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .hero-link-card p {
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .engaging-section {
-            background-color: var(--bg-dark-1);
-            text-align: center;
-            padding-bottom: 5rem; /* Increased padding at the bottom */
-            /* Removed margin-bottom here */
-        }
-
-        .engaging-content {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 2.5rem;
-            margin-top: 2rem;
-        }
-
-        .engaging-image-container {
-            flex: 1;
-            min-width: 18.75rem;
-            max-width: 31.25rem;
-        }
-
-        .engaging-image-container img {
-            width: 100%;
-            height: auto;
-            border-radius: 0.75rem;
-            box-shadow: 0 0.625rem 1.875rem rgba(0,0,0,0.3);
-        }
-
-        .interactive-placeholder {
-            flex: 1;
-            min-width: 18.75rem;
-            max-width: 31.25rem;
-            background-color: var(--bg-dark-2);
-            padding: 2.5rem;
-            border-radius: 0.75rem;
-            border: 0.0625rem solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 1.5rem;
-            min-height: 12.5rem;
-        }
-
-        .interactive-placeholder p {
-            font-size: 1rem;
-            color: var(--text-light);
-        }
-
-        /* New section to bridge the gap before the footer */
-        .pre-footer-bridge {
-            background-color: var(--bg-dark-1); /* Match footer background */
-            padding: 4rem 0; /* Provide the desired space */
-            text-align: center;
-            color: var(--text-light);
-            font-size: 1.1rem;
-        }
-        .pre-footer-bridge p {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* Site Footer Styles */
-        .site-footer {
-            background-color: var(--bg-dark-1);
-            color: var(--text-light);
-            padding: 1.25rem 1rem;
-            font-size: 0.85rem;
-            width: 100%;
-            /* No margin-top needed here, pre-footer-bridge handles it */
-        }
-        .site-footer .container {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .social-links {
-            margin-top: 0.5rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .social-links a {
-            color: inherit;
-            font-size: 1.2rem;
-            transition: color 0.3s ease;
-            text-decoration: none;
-        }
-        .social-links a:hover {
-            color: var(--highlight-color);
-        }
-        .contact-info {
-            margin-top: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.25rem;
-        }
-        .contact-info a {
-            color: inherit;
-            text-decoration: none;
-        }
-        .contact-info a:hover {
-            color: var(--highlight-color);
-        }
-
-        /* Media Queries for responsiveness */
-        @media (max-width: 1200px) {
-            .main-nav ul.navbar-links {
-                gap: 1.5rem; /* Reduce gap for slightly smaller screens */
-            }
-            .main-nav ul.navbar-links li a {
-                font-size: 0.95rem; /* Shrink font to fit more items */
-            }
-
-            /* Hide login/signup from main nav and show in 'more' menu */
-            .nav-auth-item.desktop-only {
-                display: none;
-            }
-            .more-menu-wrapper {
-                display: block; /* Show the '...' button */
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-navbar .container {
-                flex-wrap: wrap; /* Allow logo and toggle to wrap */
-            }
-            .main-navbar .navbar-brand {
-                flex-grow: 1; /* Allow brand to take space */
-            }
-            .main-nav { /* Target the nav wrapper */
-                display: none; /* Hide desktop nav */
-                width: 100%;
-                order: 2; /* Place below logo on mobile */
-            }
-            .main-navbar .nav-toggle {
-                display: block; /* Show hamburger icon */
-            }
-            .main-nav.is-open { /* When mobile nav is open */
-                display: flex;
-                flex-direction: column; /* Stack vertically in mobile menu */
-                text-align: center;
-                gap: 0.5rem; /* Smaller gap for stacked items */
-            }
-            .main-nav ul.navbar-links { /* The ul inside main-nav */
-                flex-direction: column; /* Stack items */
-                width: 100%;
-                gap: 0.5rem;
-            }
-            .navbar-brand {
-                font-size: 1.2rem;
-            }
-            .navbar-logo-img {
-                height: 2rem;
-            }
-            /* Ensure auth items are visible in the mobile menu */
-            .nav-auth-item.desktop-only {
-                display: list-item;  
-            }
-            /* Hide the 'more' menu wrapper when hamburger is active */
-            .more-menu-wrapper {
-                display: none;
-            }
-
-            .hero-section {
-                padding-top: calc(var(--navbar-height) + 3rem); /* Adjusted for smaller screens */
-                padding-bottom: 5rem;
-                min-height: 60vh;
-            }
-            .hero-content h1 {
-                font-size: 3.5rem;
-            }
-            .hero-content .tagline {
-                font-size: 1.5rem;
-            }
-            .slogan-animation-wrapper {
-                font-size: 1.4rem; /* Adjusted for mobile */
-            }
-            .cta-button {
-                padding: 0.6rem 1.5rem;
-                font-size: 1rem;
-            }
-
-            .content-section {
-                padding: 3rem 0;
-            }
-            h2 {
-                font-size: 2.2rem;
-                margin-bottom: 2rem;
-            }
-            .section-intro {
-                font-size: 1rem;
-                margin-bottom: 2rem;
-            }
-            .about-grid, .heroes-grid {
-                grid-template-columns: 1fr; /* Stack on smaller screens (1x4) */
-                gap: 1.5rem;
-            }
-            .about-card, .hero-link-card {
-                padding: 1.5rem;
-            }
-            .about-card .card-icon, .hero-link-icon {
-                font-size: 2.5rem;
-            }
-            .about-card h3, .hero-link-card h3 {
-                font-size: 1.3rem;
-            }
-            .about-card p, .hero-link-card p {
-                font-size: 0.9rem;
-            }
-
-            .engaging-content {
-                flex-direction: column;
-                gap: 1.5rem;
-            }
-            .engaging-image-container, .interactive-placeholder {
-                min-width: unset;
-                max-width: 100%;
-            }
-            .interactive-placeholder {
-                padding: 1.5rem;
-                min-height: 9.375rem;
-            }
-            .interactive-placeholder p {
-                font-size: 0.9rem;
-            }
-
-            .pre-footer-bridge {
-                padding: 3rem 0;
-            }
-            .site-footer {
-                font-size: 0.8rem;
-                padding: 1rem 0.8rem;
-            }
-            .social-links {
-                gap: 0.8rem;
-            }
-            .social-links a {
-                font-size: 1.1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .navbar-brand {
-                font-size: 1.1rem;
-            }
-            .navbar-logo-img {
-                height: 1.8rem;
-            }
-            .main-nav ul.navbar-links li a {
-                font-size: 0.85rem;
-            }
-
-            .hero-section {
-                padding-top: calc(var(--navbar-height) + 2rem); /* Further adjusted for very small screens */
-                padding-bottom: 4rem;
-                min-height: 50vh;
-            }
-            .hero-content h1 {
-                font-size: 2.5rem;
-            }
-            .hero-content .tagline {
-                font-size: 1.2rem;
-            }
-            .slogan-animation-wrapper {
-                font-size: 1.1rem; /* Further adjusted for very small screens */
-            }
-            .cta-button {
-                padding: 0.5rem 1.2rem;
-                font-size: 0.9rem;
-            }
-
-            h2 {
-                font-size: 1.8rem;
-                margin-bottom: 1.5rem;
-            }
-            .section-intro {
-                font-size: 0.95rem;
-                margin-bottom: 1.5rem;
-            }
-            .about-grid, .heroes-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            .about-card, .hero-link-card {
-                padding: 1.2rem;
-            }
-            .about-card .card-icon, .hero-link-icon {
-                font-size: 2rem;
-            }
-            .about-card h3, .hero-link-card h3 {
-                font-size: 1.2rem;
-            }
-            .about-card p, .hero-link-card p {
-                font-size: 0.85rem;
-            }
-            .interactive-placeholder {
-                padding: 1rem;
-                min-height: 7.5rem;
-            }
-            .interactive-placeholder p {
-                font-size: 0.85rem;
-            }
-            .pre-footer-bridge {
-                padding: 2rem 0;
-            }
-            .site-footer .container {
-                padding: 0 1rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header class="hero-section" id="page-top">
-        <nav class="main-navbar">
-            <div class="container">
-                <a href="{% url 'main_site:home' %}" class="navbar-brand">
-                    <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
-                    Pegumax Inc.
-                </a>
-                <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                </button>
-                <nav class="main-nav"> {# This is the actual nav element #}
-                    <ul class="navbar-links"> {# Moved navbar-links class here #}
-                        <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
-                        <li><a href="{% url 'main_site:about' %}">About Us</a></li>
-                        <li><a href="{% url 'main_site:community' %}">Community</a></li>
-                        <li><a href="{% url 'main_site:store' %}">Store</a></li>
-                        {# These are the main auth links, conditionally displayed by CSS #}
-                        {% if user.is_authenticated %}
-                            <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:account' %}">Account</a></li>
-                        {% else %}
-                            <li class="nav-auth-item desktop-only"><a href="{% url 'login' %}">Login</a></li>
-                            <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
-                        {% endif %}
-                    </ul>
-                </nav>
-                {# This will be the "..." menu, appearing only in the specific breakpoint #}
-                <div class="more-menu-wrapper">
-                    <button class="more-toggle" aria-label="More navigation links" aria-expanded="false" onclick="toggleMoreDropdown(event)">...</button>
-                    <ul class="more-dropdown-content">
-                        {% if user.is_authenticated %}
-                            <li><a href="{% url 'main_site:account' %}">Account</a></li>
-                            <li><a href="{% url 'logout' %}">Sign Out</a></li>
-                        {% else %}
-                            <li><a href="{% url 'login' %}">Login</a></li>
-                            <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <div class="hero-content">
-            <h1>Welcome to <span class="highlight">Pegumax Inc.</span></h1>
-            <p class="tagline">Architecting Tomorrow's Reality. We Forge Advanced Solutions for a Smarter, Connected World.</p>
-            <div class="slogan-animation-wrapper"> {# New wrapper for slogan and cursor #}
-                <span id="animated-slogan" class="animated-text"></span><span class="typing-cursor"></span> {# Separate cursor #}
-            </div>
-            <a href="#overview" class="cta-button hero-cta">Discover Our Vision</a>
+{% block title %}Pegumax Inc. — Local-first software, built to be owned{% endblock %}
+{% block description %}Pegumax Inc. is a small studio building fast, private, mostly-free local-first apps — Apex Studio, Student Suite, LucidCut, Game Portal and more. Software you actually own.{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-bg" style="background-image:url('{% static 'img/img3.png' %}')"></div>
+  <div class="hero-fade"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <h1 class="reveal">Software that's<br><span class="rotator" id="rotator">private</span><br><span class="g">by design.</span></h1>
+        <p class="sub reveal" style="--d:.12s">We're a tiny team building fast, local-first apps you actually own — media tools, study suites, and games. Most are free; we only charge for the ones that cost real money to run.</p>
+        <div class="hero-cta reveal" style="--d:.18s">
+          <a class="btn btn-acc btn-lg magnetic" href="{% url 'main_site:software_center' %}">Explore the Software Center</a>
+          <button class="btn btn-ghost btn-lg" data-feedback="idea">Share an idea</button>
         </div>
-        <div class="hero-overlay"></div>
-    </header>
-
-    <main>
-        <section id="overview" class="content-section overview-section">
-            <div class="container">
-                <h2>Our <span class="highlight">Unwavering Passion</span>: Engineering Tomorrow, Today</h2>
-                <p class="section-intro">At Pegumax Inc., we aren't just building technology; we're crafting the very fabric of the future. Our core philosophy is rooted in a fervent dedication to pushing boundaries and democratizing access to unparalleled innovation. We believe that groundbreaking advancements should empower every individual, not just a privileged few.</p>
-                <div class="about-grid">
-                    <div class="about-card">
-                        <div class="card-icon">⚡</div>
-                        <h3>Bridging the Digital Divide</h3>
-                        <p>Deploying solutions that transcend barriers, ensuring digital age power is accessible to all.</p>
-                    </div>
-                    <div class="about-card">
-                        <div class="card-icon">🚀</div>
-                        <h3>Unleashing Human Potential</h3>
-                        <p>Augmenting human capability with technology engineered for productivity, creativity, and discovery.</p>
-                    </div>
-                    <div class="about-card">
-                        <div class="card-icon">💎</div>
-                        <h3>Affordability, Uncompromised Excellence</h3>
-                        <p>Delivering premium, next-gen tech that sets new benchmarks for value and quality, affordably.</p>
-                    </div>
-                    <div class="about-card">
-                        <div class="card-icon">✨</div>
-                        <h3>Pioneering Sustainable Innovation</h3>
-                        <p>Dedicated to eco-conscious designs and sustainable practices for technology that enhances planet and lives.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="site-heroes" class="content-section site-heroes-section">
-            <div class="container">
-                <h2>Explore Pegumax</h2>
-                <div class="heroes-grid">
-                    <a href="{% url 'main_site:software_center' %}" class="hero-link-card">
-                        <div class="hero-link-icon"><i class="fas fa-cubes"></i></div>
-                        <h3>Software Center</h3>
-                        <p>Discover our suite of innovative applications.</p>
-                    </a>
-                    <a href="{% url 'main_site:about' %}" class="hero-link-card">
-                        <div class="hero-link-icon"><i class="fas fa-info-circle"></i></div>
-                        <h3>About Us</h3>
-                        <p>Learn about our mission, vision, and values.</p>
-                    </a>
-                    <a href="{% url 'main_site:community' %}" class="hero-link-card">
-                        <div class="hero-link-icon"><i class="fas fa-users"></i></div>
-                        <h3>Community Hub</h3>
-                        <p>Connect with fellow innovators and users.</p>
-                    </a>
-                    <a href="{% url 'main_site:store' %}" class="hero-link-card">
-                        <div class="hero-link-icon"><i class="fas fa-store"></i></div>
-                        <h3>Our Store</h3>
-                        <p>Get official Pegumax gear and software licenses (Coming Soon).</p>
-                    </a>
-                </div>
-            </div>
-        </section>
-        <section id="interactive-zone" class="content-section engaging-section">
-            <div class="container">
-               <h2>Experience <span class="highlight">Innovation</span></h2>
-                <p class="section-intro">Dive into interactive demos, explore our latest breakthroughs, or join a live tech talk. (Content coming soon!)</p>
-                <div class="engaging-content">
-                    <div class="engaging-image-container">
-                        <img src="{% static 'img/img5.webp' %}" alt="Interactive Technology Showcase">
-                    </div>
-                    <div class="interactive-placeholder">
-                        <p>Imagine a space here for a small, interactive WebGL demo, a video, or a live feed.</p>
-                        <a href="#" class="cta-button">Explore Demos (Soon)</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <section class="pre-footer-bridge">
-        <div class="container">
-            <p>Ready to forge your future with Pegumax Inc.? Explore our solutions or connect with us!</p>
+        <div class="hero-trust reveal" style="--d:.24s">
+          <div class="lbl">Runs natively on</div>
+          <div class="icons">
+            {% include 'partials/icon.html' with name='windows' %}
+            {% include 'partials/icon.html' with name='apple' %}
+            {% include 'partials/icon.html' with name='android' %}
+            {% include 'partials/icon.html' with name='web' %}
+            {% include 'partials/icon.html' with name='linux' %}
+          </div>
         </div>
-    </section>
-
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
-            <p>Empowering the human spirit through technological transcendence.</p>
-            <div class="social-links">
-                <a href="https://www.facebook.com/profile.php?id=61579165562125" target="_blank" aria-label="Follow us on Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/pegumax_llc/" target="_blank" aria-label="Follow us on Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.linkedin.com/company/pegumax/" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-            </div>
-            <div class="contact-info">
-                <p><a href="{% url 'main_site:contact' %}">Contact Us</a></p>
-                <p><a href="{% url 'main_site:policy' %}">Policy</a></p>
-            </div>
+      </div>
+      <div class="hero-vis reveal-s" style="--d:.2s">
+        <div class="appwin tilt">
+          <div class="topbar"><i></i><i></i><i></i><span class="path">~/pegumax/software-center</span></div>
+          <div class="dock">
+            {% for p in products|slice:":4" %}
+            <div class="app"><div class="ai" style="background:linear-gradient(135deg,{{ p.grad }})"><i class="fas {{ p.icon }}"></i></div>
+              <div><div class="nm">{{ p.name }}</div><div class="st">{% if p.status == 'live' %}● ready{% else %}● soon{% endif %}</div></div></div>
+            {% endfor %}
+          </div>
+          <div class="ribbon"><span>local-first · 0 data leaving device</span><span><b>{{ stats.total }}</b> apps</span></div>
         </div>
-    </footer>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <script src="{% static 'js/script.js' %}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('current-year').textContent = new Date().getFullYear();
+<div class="marquee"><div class="track">
+  {% for p in products %}<span>{{ p.name }} <i class="fas fa-circle"></i></span>{% endfor %}
+  {% for p in products %}<span>{{ p.name }} <i class="fas fa-circle"></i></span>{% endfor %}
+</div></div>
 
-            // Mobile navigation toggle
-            const navToggle = document.querySelector('.nav-toggle');
-            const mainNav = document.querySelector('.main-nav'); // Target the nav wrapper
+<section class="sec" style="padding-bottom:3rem;">
+  <div class="wrap"><div class="stats">
+    <div class="stat reveal"><div class="n"><span data-count="{{ stats.live }}">0</span></div><div class="l">Apps available now</div></div>
+    <div class="stat reveal" style="--d:.08s"><div class="n"><span data-count="{{ stats.soon }}">0</span></div><div class="l">In development</div></div>
+    <div class="stat reveal" style="--d:.16s"><div class="n"><span data-count="{{ stats.platforms }}">0</span></div><div class="l">Platforms supported</div></div>
+    <div class="stat reveal" style="--d:.24s"><div class="n"><span data-count="100">0</span>%</div><div class="l">Local-first</div></div>
+  </div></div>
+</section>
 
-            if (navToggle && mainNav) {
-                navToggle.addEventListener('click', () => {
-                    const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
-                    navToggle.setAttribute('aria-expanded', !expanded);
-                    mainNav.classList.toggle('is-open'); // Toggle class on the nav wrapper
-                });
-            }
+<section class="sec" style="padding-top:3rem;">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow c">// the software center</span>
+      <h2>Built to do <span class="g">one thing brilliantly</span></h2>
+      <p>A few of our flagship apps. Each is local-first, private by default, and ready right now.</p>
+    </div>
+    <div class="cards">
+      {% for p in featured_products %}{% include "partials/product_card.html" %}{% endfor %}
+    </div>
+    <div class="center-link reveal"><a class="btn btn-ghost btn-lg" href="{% url 'main_site:software_center' %}">View all software <i class="fas fa-arrow-right"></i></a></div>
+  </div>
+</section>
 
-            // More menu dropdown toggle function
-            function toggleMoreDropdown(event) {
-                event.stopPropagation(); // Prevent document click from immediately closing
-                const moreWrapper = document.querySelector('.more-menu-wrapper');
-                moreWrapper.classList.toggle('active'); // Toggle 'active' class to show/hide dropdown
-            }
+<section class="sec">
+  <div class="wrap">
+    <div class="split">
+      <div class="vis reveal-x">
+        <img src="{% static 'img/img2.png' %}" alt="The four Pegumax promises: fast, private, free where we can, and shaped by your feedback">
+        <div class="float"><i class="fas fa-microchip fi"></i><div class="ft"><b>Engineered local-first</b><br>Your data never has to phone home.</div></div>
+      </div>
+      <div class="reveal" style="--d:.1s">
+        <span class="eyebrow">// why pegumax</span>
+        <h2 style="font-size:clamp(2rem,4.3vw,3rem);margin:1rem 0 1rem;">Four promises we<br>refuse to break</h2>
+        <p style="color:var(--mut);font-size:1.08rem;margin:0;">We're small, so we can build the way we'd want software built for us — and we listen when you tell us what to fix.</p>
+        <div class="feat-list">
+          <div class="feat"><div class="fi"><i class="fas fa-bolt"></i></div><div><h4>Genuinely fast</h4><p>Local-first means no waiting on the cloud to feel instant.</p></div></div>
+          <div class="feat"><div class="fi"><i class="fas fa-lock"></i></div><div><h4>Private by default</h4><p>Your files and data stay on your device. No tracking, no resale.</p></div></div>
+          <div class="feat"><div class="fi"><i class="fas fa-gift"></i></div><div><h4>Free where we can</h4><p>Most apps are free. We only charge for ones that cost money to maintain and run.</p></div></div>
+          <div class="feat"><div class="fi"><i class="fas fa-comment-dots"></i></div><div><h4>Shaped by your feedback</h4><p>Every app has feedback built in. You tell us what to build — we build it.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-            // Close dropdowns when clicking outside
-            window.addEventListener('click', function(event) {
-                const moreWrapper = document.querySelector('.more-menu-wrapper');
-                // Check if the click is outside the dropdown and the toggle button
-                if (moreWrapper && moreWrapper.classList.contains('active') && 
-                    !moreWrapper.contains(event.target) && !event.target.matches('.more-toggle')) {
-                    moreWrapper.classList.remove('active');
-                }
-            });
+<section class="sec">
+  <div class="wrap">
+    <div class="support reveal-s">
+      <div class="glowbg" style="background-image:url('{% static 'img/img11.webp' %}')"></div>
+      <div class="heart">&#9829;</div>
+      <h2>Help keep the studio <span class="g">running</span></h2>
+      <p>We're a small team and most of what we make is free. If our software has helped you, a donation keeps the servers on and the updates coming. And we give <b style="color:var(--ink)">10% of profits to charities and nonprofits</b> — so supporting us helps people in need, too.</p>
+      <button class="btn btn-cy btn-lg magnetic" data-donate><i class="fas fa-heart"></i> Support Pegumax</button>
+      <div class="note"><i class="fas fa-lock"></i> Secure one-time donation · Powered by Stripe</div>
+    </div>
+  </div>
+</section>
 
-            // Expose toggleMoreDropdown to global scope for onclick attribute
-            window.toggleMoreDropdown = toggleMoreDropdown;
-        });
-    </script>
-</body>
-</html>
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow c">// community</span>
+      <h2>Designed <span class="g">in the open</span></h2>
+      <p>Pegumax is shaped by the people who use it. Here's where that happens.</p>
+    </div>
+    <div class="cgrid">
+      <div class="ccard reveal"><div class="ci"><i class="fas fa-comments"></i></div><h4>Forums &amp; idea voting</h4><p>Pitch features, vote on the roadmap, and watch your ideas get built.</p></div>
+      <div class="ccard reveal" style="--d:.1s"><div class="ci"><i class="fas fa-flask"></i></div><h4>Beta programs</h4><p>Get early builds before anyone else and help shape them.</p></div>
+      <div class="ccard reveal" style="--d:.2s"><div class="ci"><i class="fas fa-trophy"></i></div><h4>Events &amp; recognition</h4><p>Webinars, meetups, and a spotlight on our top contributors.</p></div>
+    </div>
+    <div class="center-link reveal"><a class="btn btn-acc btn-lg" href="{% url 'main_site:community' %}">Join the community <i class="fas fa-arrow-right"></i></a></div>
+  </div>
+</section>
+{% endblock %}
 
+{% block precta %}
+<section class="precta">
+  <div class="pbg" style="background-image:url('{% static 'img/img4.png' %}')"></div>
+  <div class="wrap">
+    <span class="eyebrow c reveal">// ready when you are</span>
+    <h2 class="reveal" style="--d:.05s">Forge your future with <span class="g">Pegumax</span></h2>
+    <p class="reveal" style="--d:.1s">Download an app, send us your ideas, or chip in to keep the studio going. Your machine — your rules.</p>
+    <div class="hero-cta reveal" style="--d:.15s;justify-content:center;">
+      <a class="btn btn-acc btn-lg magnetic" href="{% url 'main_site:software_center' %}">Browse software</a>
+      <button class="btn btn-cy btn-lg" data-donate><i class="fas fa-heart"></i> Donate</button>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+{% verbatim %}
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  /* rotating hero word */
+  var rot=document.getElementById('rotator');
+  if(rot && !reduce){
+    var words=['private','fast','yours','feedback-driven','local-first'], wi=0;
+    setInterval(function(){ rot.style.opacity='0'; setTimeout(function(){ wi=(wi+1)%words.length; rot.textContent=words[wi]; rot.style.opacity='1'; },300); },2600);
+  }
+  /* constellation canvas */
+  var canvas=document.getElementById('hero-canvas'); if(!canvas||reduce) return;
+  var ctx=canvas.getContext('2d'), W,H,particles=[],raf=null;
+  function size(){ var r=canvas.parentElement.getBoundingClientRect(); W=canvas.width=r.width; H=canvas.height=r.height; build(); }
+  function build(){ var n=Math.min(80,Math.floor(W*H/16000)); particles=[]; for(var i=0;i<n;i++) particles.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.25,vy:(Math.random()-0.5)*0.25,r:Math.random()*1.6+0.6}); }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<particles.length;i++){
+      var p=particles[i]; p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.283); ctx.fillStyle='rgba(126,232,251,0.7)'; ctx.fill();
+      for(var j=i+1;j<particles.length;j++){ var q=particles[j],dx=p.x-q.x,dy=p.y-q.y,d=dx*dx+dy*dy;
+        if(d<13000){ var a=(1-d/13000)*0.28; ctx.strokeStyle='rgba(124,92,255,'+a+')'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke(); } }
+    }
+    raf=requestAnimationFrame(draw);
+  }
+  size(); raf=requestAnimationFrame(draw);
+  window.addEventListener('resize', size);
+  document.addEventListener('visibilitychange', function(){ if(document.hidden){ if(raf){cancelAnimationFrame(raf);raf=null;} } else if(!raf){ raf=requestAnimationFrame(draw); } });
+})();
+{% endverbatim %}
+</script>
+{% endblock %}

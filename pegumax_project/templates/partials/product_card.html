@@ -1,0 +1,15 @@
+{% load static %}
+<a href="{% url p.url_name %}" class="pcard tilt reveal" data-cat="{{ p.cat }}">
+  <div class="thumb"><img src="{% static p.img_static %}" alt="{{ p.name }}" loading="lazy"></div>
+  {% if p.status == 'live' %}<span class="tag live"><i class="fas fa-circle" style="font-size:.45rem"></i> Live</span>{% else %}<span class="tag soon">Coming soon</span>{% endif %}
+  <div class="body">
+    <div class="ic" style="background:linear-gradient(135deg,{{ p.grad }})"><i class="fas {{ p.icon }}"></i></div>
+    <h3>{{ p.name }}{% if p.free %}<span class="freechip">FREE</span>{% else %}<span class="freechip" style="color:var(--cy-soft);border-color:rgba(34,211,238,.3)">PAID</span>{% endif %}</h3>
+    <div class="tl">{{ p.tagline }}</div>
+    <p>{{ p.desc }}</p>
+    <div class="foot">
+      <span class="plat">{% for pk in p.platforms %}{% include 'partials/icon.html' with name=pk %}{% endfor %}</span>
+      <span class="go">{% if p.status == 'live' %}{% if p.cat == 'game' %}Play{% else %}Open{% endif %}{% else %}Learn more{% endif %} <i class="fas fa-arrow-right"></i></span>
+    </div>
+  </div>
+</a>

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'main_site.apps.MainSiteConfig',
     'django.contrib.humanize',
     'rest_framework',
@@ -85,6 +86,12 @@ STATICFILES_DIRS = [
 ]
 # --- END NEW ORDERING ---
 
+# In local development, let WhiteNoise serve static files straight from the
+# source dirs (the 'assets/' folder) so images work without running collectstatic.
+if DEBUG:
+    WHITENOISE_USE_FINDERS = True
+    WHITENOISE_AUTOREFRESH = True
+
 
 TEMPLATES = [
     {
@@ -95,7 +102,8 @@ TEMPLATES = [
             # This ensures Django looks here, especially if templates are nested like
             # main_site/templates/main_site/student_suite_launch.html
             BASE_DIR / 'main_site' / 'templates',
-            STATIC_ROOT, # Important for Flutter's index.html, if it's served as a template
+            STATIC_ROOT, # Flutter index.html after collectstatic (production)
+            BASE_DIR,    # Lets the Flutter 'frontend/student-suite-web/index.html' resolve from source in dev
         ],
         'APP_DIRS': True, # Keep this True for Django to find templates in app_name/templates/
         'OPTIONS': {
@@ -103,6 +111,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'main_site.context_processors.site',
             ],
         },
     },
@@ -160,13 +169,39 @@ USE_TZ = True
 LOGIN_URL = 'login' # Name of the login URL pattern
 LOGIN_REDIRECT_URL = 'main_site:home' # Redirect after successful login
 LOGOUT_REDIRECT_URL = 'main_site:home' # Redirect after logout
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # TEMPORARY for signup
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
+# --- Email configuration ---
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@yourdomain.com')
+
+# Use real SMTP whenever credentials are configured (e.g. a Gmail app password).
+# Falls back to the console backend for local dev when no credentials are present.
+# Override explicitly with DJANGO_EMAIL_BACKEND if needed.
+if os.environ.get('DJANGO_EMAIL_BACKEND'):
+    EMAIL_BACKEND = os.environ['DJANGO_EMAIL_BACKEND']
+elif EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Gmail rewrites/rejects a "From" that isn't the authenticated account, so default
+# the From address to the SMTP user unless explicitly overridden. This is the fix
+# for emails being logged but never delivered.
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'webmaster@yourdomain.com')
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Where contact / idea / feedback submissions are delivered.
+CONTACT_RECIPIENT_EMAIL = os.environ.get('CONTACT_RECIPIENT_EMAIL', EMAIL_HOST_USER or 'pegumaxinc@gmail.com')
+
+# --- Stripe (donations) ---
+# Publishable key is public (used client-side). Restricted/secret key lives only on the server.
+STRIPE_PUBLISHABLE_KEY = os.environ.get(
+    'STRIPE_PUBLISHABLE_KEY',
+    'pk_live_51RPqGyAt2vKSOayIMOdICSqVK5niDuVm1tUXnt8dZYmNuXYntZNxT9wgUCkHStgs8ljluQRFPyxvoNcWL7K7mZgs00vl92BYx1'
+)
+STRIPE_DONATION_KEY = os.environ.get('STRIPE_DONATION_KEY')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

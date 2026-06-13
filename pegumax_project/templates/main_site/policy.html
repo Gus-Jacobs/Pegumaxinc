@@ -1,651 +1,87 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Policy & Terms - Pegumax Inc. | Software Solutions</title>
-    <meta name="description" content="Read Pegumax Inc.'s comprehensive Policy and Terms of Service. Understand our use of third-party services like Firestore for authentication, Google & OpenAI for AI tools, and Stripe for payments.">
-    <meta name="keywords" content="Pegumax Inc., policy, terms of service, privacy policy, Firestore, Google AI, OpenAI, Stripe, third-party services, liability, user agreement">
-    
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/webp" href="{% static 'img/favicon.png' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        /* Universal box-sizing for consistent layout */
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
 
-        /* Root variables (assuming these are defined in style.css or globally) */
-        :root {
-            --bg-color: #0d0e12;
-            --bg-dark-1: #1a1c23;
-            --bg-dark-2: #22242b;
-            --card-bg: #16181d;
-            --text-color: #e0e0e0;
-            --text-light: #b0b0b0;
-            --highlight-color: #00efff;
-            --border-color: #333740;
-            --primary-font: 'Rajdhani', sans-serif;
-            --secondary-font: 'Orbitron', sans-serif;
-            --danger-color: #ff4d4f;
-            --success-color: #52c41a;
-        }
+{% block title %}Policy & Terms - Pegumax LLC | Software Solutions{% endblock %}
+{% block description %}Read Pegumax LLC's comprehensive Policy and Terms of Service. Understand our use of third-party services like Firestore for authentication, Google & OpenAI for AI tools, and Stripe for payments.{% endblock %}
 
-        /* General Page Styles */
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--primary-font);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            line-height: 1.6; /* Improved readability */
-        }
+{% block content %}
+<header class="phead">
+  <div class="pbg" style="background-image:url('{% static 'img/img3.png' %}')"></div>
+  <div class="wrap">
+    <div class="breadcrumb"><b>Pegumax</b> / Policy</div>
+    <h1>Pegumax LLC <span class="g">Policy &amp; Terms</span></h1>
+    <p>Clarifying our commitments and your responsibilities.</p>
+  </div>
+</header>
 
-        main {
-            flex-grow: 1; /* Allows main content to take up available space */
-        }
+<section class="sec" style="padding-top:1rem;">
+  <div class="wrap">
+    <div class="prose">
+      <h2>Introduction to Our Policy</h2>
+      <p>Welcome to Pegumax LLC We are committed to developing innovative, affordable, and user-centric software solutions. This document outlines our Privacy Policy and Terms of Service, which govern your use of our services. By accessing or using any Pegumax LLC software, website, or service, you agree to be bound by these policies and terms. We encourage you to read them carefully.</p>
 
-        .container {
-            max-width: 1000px; /* Slightly wider for policy text */
-            margin: 0 auto; /* Center the container */
-            padding: 0 1.5rem; /* Responsive horizontal padding */
-        }
+      <h3>Third-Party Service Providers and Your Data</h3>
+      <p>Pegumax LLC leverages industry-leading third-party services to provide robust and secure functionalities. While we integrate these services seamlessly into our offerings, it is crucial to understand that certain aspects of data handling and service provision are governed by the policies of these external providers. <strong>Pegumax LLC disclaims any liability for the actions, omissions, or data handling practices of these third-party services.</strong></p>
+      <ul>
+        <li>
+          <p><strong>Authentication (Google Firebase / Firestore):</strong> Your user authentication, including account creation, login, and secure session management, is primarily handled by Google Firebase. User data related to authentication (such as email addresses and hashed passwords) is stored and secured within Google's Firebase infrastructure, specifically Firestore. Pegumax LLC relies on Firebase's robust security measures and compliance certifications. Any issues or breaches related to the underlying authentication infrastructure are governed by Google's terms and policies.</p>
+        </li>
+        <li>
+          <p><strong>AI Tools (Google AI &amp; OpenAI):</strong> Many of our advanced features, including but not limited to content generation, data analysis, and intelligent assistance, are powered by Artificial Intelligence models and APIs provided by Google (e.g., Gemini, other Google AI services) and OpenAI. When you use features that leverage AI, your input may be sent to these third-party AI providers for processing. Pegumax LLC is not responsible for the accuracy, completeness, or any unintended outputs generated by these AI models. Furthermore, the data handling, privacy, and usage policies of Google AI and OpenAI apply to the data processed by their respective services. Users acknowledge and accept the inherent limitations and potential biases of AI technologies.</p>
+        </li>
+        <li>
+          <p><strong>Payments (Stripe):</strong> All payment transactions for our software and services are securely processed through Stripe, a leading third-party payment gateway. Pegumax LLC does not directly collect, store, or process your sensitive payment card information. This data is handled exclusively by Stripe in accordance with their strict security standards (PCI DSS compliance) and privacy policy. Any payment-related issues, including data breaches or transaction errors occurring within Stripe's system, are the responsibility of Stripe.</p>
+        </li>
+      </ul>
 
-        /* Header Styles (unified for consistency) */
-        .page-header {
-            background-color: var(--bg-dark-1);
-            padding: 1rem 0;
-            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1); /* 1px */
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+      <h3>General Data Privacy</h3>
+      <p>While third-party services handle specific functions, Pegumax LLC is committed to protecting your privacy regarding data we directly collect. We collect only necessary data to provide and improve our services, communicate with you, and ensure security. We do not sell your personal data to third parties. For more detailed information on our data collection, use, and protection practices, please refer to the specific sections within this document or contact us directly.</p>
 
-        .page-header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      <h3>Data Retention and Deletion (Your Rights)</h3>
+      <p>You have the right to access, correct, or delete your personal data.
+      If you wish to delete your account and all associated data, you may do so by
+      using the "Delete Account" feature within the app settings, or by emailing us at
+      <a href="mailto:pegumaxinc@gmail.com">pegumaxinc@gmail.com</a>.
+      Upon request, we will permanently delete your account and data from our active
+      databases within 30 days, except where we are legally required to retain specific records.</p>
 
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-color);
-            font-family: var(--secondary-font);
-            font-size: 1.5rem;
-        }
+      <h3>Charitable Giving</h3>
+      <p>Pegumax LLC donates ten percent (10%) of its company profits to registered charities and nonprofit organizations. <strong>By making a donation to Pegumax LLC, or by purchasing any paid app or service, you acknowledge and consent that a portion of those funds may be allocated to such charitable contributions.</strong> Donations made through our website are voluntary, non-refundable, and processed securely by Stripe. The specific charities, amounts, and timing of any contribution are determined at Pegumax LLC's sole discretion, and no donation creates any obligation, partnership, or beneficiary relationship between you and any third-party organization.</p>
 
-        .navbar-logo-img {
-            height: 2.5rem;
-            margin-right: 0.5rem;
-        }
+      <h2>Terms of Service</h2>
+      <p>These Terms of Service ("Terms") constitute a legally binding agreement between you and Pegumax LLC regarding your use of our software, websites, and services. By accessing or using our services, you agree to comply with and be bound by these Terms.</p>
 
-        .nav-toggle {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
+      <h3>1. Acceptance of Terms</h3>
+      <p>By accessing or using our services, you affirm that you are of legal age to enter into this agreement and that you accept these Terms in full. If you do not agree with any part of these Terms, you must not use our services.</p>
 
-        .hamburger-line {
-            display: block;
-            width: 1.5rem;
-            height: 0.125rem;
-            background-color: var(--highlight-color);
-            margin: 0.25rem 0;
-            transition: all 0.3s ease;
-        }
+      <h3>2. User Responsibilities</h3>
+      <p>You agree to use our services only for lawful purposes and in a manner that does not infringe the rights of, restrict, or inhibit anyone else's use and enjoyment of the services. You are solely responsible for your conduct and any data, text, files, information, usernames, images, graphics, photos, profiles, audio and video clips, sounds, musical works, authorship, applications, links, and other content or materials (collectively, "Content") that you submit, post, or display on or through our services.</p>
+      <ul>
+        <li>Do not misuse our services by introducing viruses, trojans, worms, or other malicious material.</li>
+        <li>Do not attempt to gain unauthorized access to our services, servers, or any connected database.</li>
+        <li>Do not engage in any activity that interferes with or disrupts the services.</li>
+      </ul>
 
-        /* Main Navigation Links (Desktop) */
-        .main-nav ul.navbar-links {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            gap: 2.5rem;
-        }
+      <h3>3. Intellectual Property Rights</h3>
+      <p>All content, features, and functionality on our services, including but not limited to software, designs, text, graphics, images, video, information, applications, and their selection and arrangement, are the exclusive property of Pegumax LLC and its licensors. These are protected by copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws. You may not reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store, or transmit any of the material on our services, except as generally permitted by these Terms.</p>
 
-        .main-nav ul.navbar-links li a {
-            color: var(--text-color);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-            white-space: nowrap;
-        }
+      <h3>4. Disclaimer of Warranties</h3>
+      <p><strong>Our services are provided "as is" and "as available," without any warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, non-infringement, or course of performance.</strong> Pegumax LLC does not warrant that the services will be uninterrupted, secure, or error-free; that defects will be corrected; or that the services or the server that makes them available are free of viruses or other harmful components.</p>
 
-        .main-nav ul.navbar-links li a:hover {
-            color: var(--highlight-color);
-        }
+      <h3>5. Limitation of Liability</h3>
+      <p><strong>In no event shall Pegumax LLC, its affiliates, or their respective directors, employees, or agents be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from (i) your access to or use of or inability to access or use the services; (ii) any conduct or content of any third party on the services; (iii) any content obtained from the services; and (iv) unauthorized access, use, or alteration of your transmissions or content, whether based on warranty, contract, tort (including negligence), or any other legal theory, whether or not we have been informed of the possibility of such damage.</strong></p>
 
-        /* Specific styles for auth links that might be hidden */
-        .nav-auth-item.desktop-only {
-            display: list-item;
-        }
+      <h3>6. Governing Law</h3>
+      <p>These Terms shall be governed and construed in accordance with the laws of Kentucky, without regard to its conflict of law provisions.</p>
 
-        /* More menu wrapper */
-        .more-menu-wrapper {
-            position: relative;
-            display: none;
-        }
+      <h3>7. Changes to Terms</h3>
+      <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will try to provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion. By continuing to access or use our services after those revisions become effective, you agree to be bound by the revised terms.</p>
 
-        .more-toggle {
-            background-color: transparent;
-            border: none;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.25rem 0.5rem;
-            transition: color 0.3s ease;
-        }
+      <h3>8. Contact Us</h3>
+      <p>If you have any questions about these Policy or Terms, please contact us at <a href="{% url 'main_site:contact' %}">contact@pegumaxinc.com</a>.</p>
 
-        .more-toggle:hover {
-            color: var(--highlight-color);
-        }
-
-        .more-dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: var(--card-bg);
-            min-width: 10rem;
-            box-shadow: 0px 0.5rem 1rem 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            border-radius: 0.3rem;
-            overflow: hidden;
-            top: calc(100% + 0.5rem);
-            right: 0;
-            border: 0.0625rem solid var(--border-color);
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .more-dropdown-content li a {
-            color: var(--text-color);
-            padding: 0.75rem 1rem;
-            text-decoration: none;
-            display: block;
-            text-align: left;
-            font-family: var(--primary-font);
-            font-size: 0.95rem;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .more-dropdown-content li a:hover {
-            background-color: var(--bg-dark-2);
-            color: var(--highlight-color);
-        }
-
-        .more-menu-wrapper.active .more-dropdown-content {
-            display: block;
-        }
-
-        /* Policy Page Specific Styles */
-        .policy-hero {
-            background: linear-gradient(rgba(13, 14, 18, 0.8), rgba(13, 14, 18, 0.8)), url("{% static 'img/img8.webp' %}"); /* Placeholder image */
-            background-size: cover;
-            background-position: center;
-            color: #fff;
-            padding: 5rem 0;
-            text-align: center;
-        }
-
-        .policy-hero h1 {
-            font-size: 3.5rem;
-            font-family: var(--secondary-font);
-            margin-bottom: 1rem;
-            text-shadow: 0.125rem 0.125rem 0.25rem rgba(0,0,0,0.5);
-        }
-
-        .policy-hero .tagline {
-            font-size: 1.4rem;
-            font-weight: 300;
-            max-width: 700px;
-            margin: 0 auto 1.5rem auto;
-            opacity: 0.9;
-        }
-
-        .policy-content-section {
-            padding: 4rem 0;
-            background-color: var(--bg-dark-2); /* Slightly lighter background for content */
-        }
-
-        .policy-card {
-            background-color: var(--card-bg);
-            padding: 2.5rem; /* Increased padding */
-            border-radius: 0.625rem;
-            border: 0.0625rem solid var(--border-color);
-            box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.2);
-            margin-bottom: 3rem; /* Spacing between cards */
-        }
-
-        .policy-card h2 {
-            font-size: 2.5rem;
-            font-family: var(--secondary-font);
-            color: var(--highlight-color);
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .policy-card h3 {
-            font-size: 1.8rem;
-            font-family: var(--secondary-font);
-            color: var(--text-color);
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            border-bottom: 0.0625rem solid rgba(0, 255, 255, 0.1);
-            padding-bottom: 0.5rem;
-        }
-        
-        .policy-card p, .policy-card ul {
-            font-size: 1rem;
-            color: var(--text-light);
-            margin-bottom: 1rem;
-        }
-
-        .policy-card ul {
-            list-style-type: disc;
-            margin-left: 2rem;
-            padding-left: 0;
-        }
-
-        .policy-card li {
-            margin-bottom: 0.5rem;
-        }
-
-        .policy-emphasis {
-            font-weight: bold;
-            color: var(--highlight-color);
-        }
-
-        .policy-final-statement {
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--text-color);
-            margin-top: 3rem;
-            padding: 1.5rem;
-            background-color: var(--bg-dark-1);
-            border-radius: 0.625rem;
-            border: 0.0625rem solid var(--highlight-color);
-            box-shadow: 0 0.3125rem 1rem rgba(0, 255, 255, 0.2);
-        }
-
-        /* Site Footer Styles (unified for consistency) */
-        .site-footer {
-            background-color: var(--bg-dark-1);
-            color: var(--text-light);
-            padding: 1.25rem 1rem;
-            font-size: 0.85rem;
-            width: 100%;
-        }
-        .site-footer .container {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .social-links {
-            margin-top: 0.5rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .social-links a {
-            color: inherit;
-            font-size: 1.2rem;
-            transition: color 0.3s ease;
-            text-decoration: none;
-        }
-        .social-links a:hover {
-            color: var(--highlight-color);
-        }
-        .contact-info {
-            margin-top: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.25rem;
-        }
-        .contact-info a {
-            color: inherit;
-            text-decoration: none;
-        }
-        .contact-info a:hover {
-            color: var(--highlight-color);
-        }
-
-        /* Media Queries for responsiveness */
-        @media (max-width: 1200px) {
-            .main-nav ul.navbar-links {
-                gap: 1.5rem;
-            }
-            .main-nav ul.navbar-links li a {
-                font-size: 0.95rem;
-            }
-            .nav-auth-item.desktop-only {
-                display: none;
-            }
-            .more-menu-wrapper {
-                display: block;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .page-header .container {
-                flex-wrap: wrap;
-            }
-            .page-header .navbar-brand {
-                flex-grow: 1;
-            }
-            .page-header .main-nav {
-                display: none;
-                width: 100%;
-                order: 2;
-            }
-            .page-header .nav-toggle {
-                display: block;
-            }
-            .page-header .main-nav.is-open {
-                display: flex;
-                flex-direction: column;
-                text-align: center;
-                gap: 0.5rem;
-            }
-            .main-nav ul.navbar-links {
-                flex-direction: column;
-                width: 100%;
-                gap: 0.5rem;
-            }
-            .navbar-brand {
-                font-size: 1.2rem;
-            }
-            .navbar-logo-img {
-                height: 2rem;
-            }
-            .nav-auth-item.desktop-only {
-                display: list-item;
-            }
-            .more-menu-wrapper {
-                display: none;
-            }
-
-            .policy-hero {
-                padding: 3rem 0;
-            }
-            .policy-hero h1 {
-                font-size: 2.8rem;
-            }
-            .policy-hero .tagline {
-                font-size: 1.2rem;
-            }
-            .policy-content-section {
-                padding: 3rem 0;
-            }
-            .policy-card {
-                padding: 1.875rem;
-                margin-bottom: 2rem;
-            }
-            .policy-card h2 {
-                font-size: 2rem;
-                margin-bottom: 1rem;
-            }
-            .policy-card h3 {
-                font-size: 1.5rem;
-                margin-top: 1.5rem;
-            }
-            .policy-card p, .policy-card ul {
-                font-size: 0.95rem;
-            }
-            .policy-final-statement {
-                font-size: 1rem;
-                padding: 1rem;
-                margin-top: 2rem;
-            }
-            .site-footer {
-                font-size: 0.8rem;
-                padding: 1rem 0.8rem;
-            }
-            .social-links {
-                gap: 0.8rem;
-            }
-            .social-links a {
-                font-size: 1.1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .navbar-brand {
-                font-size: 1.1rem;
-            }
-            .navbar-logo-img {
-                height: 1.8rem;
-            }
-            .main-nav ul.navbar-links {
-                font-size: 0.85rem;
-            }
-
-            .policy-hero h1 {
-                font-size: 2rem;
-            }
-            .policy-hero .tagline {
-                font-size: 1rem;
-            }
-            .policy-content-section {
-                padding: 2rem 0;
-            }
-            .policy-card {
-                padding: 1.25rem;
-                margin-bottom: 1.5rem;
-            }
-            .policy-card h2 {
-                font-size: 1.8rem;
-                margin-bottom: 0.8rem;
-            }
-            .policy-card h3 {
-                font-size: 1.3rem;
-                margin-top: 1rem;
-            }
-            .policy-card p, .policy-card ul {
-                font-size: 0.9rem;
-            }
-            .policy-card ul {
-                margin-left: 1.5rem;
-            }
-            .policy-final-statement {
-                font-size: 0.9rem;
-                padding: 0.8rem;
-                margin-top: 1.5rem;
-            }
-            .site-footer .container {
-                padding: 0 1rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header class="page-header">
-        <div class="container">
-            <a href="{% url 'main_site:home' %}" class="navbar-brand">
-                <img src="{% static 'img/favicon.png' %}" alt="Pegumax Logo" class="navbar-logo-img">
-                <span class="header-logo-text">Pegumax Inc.</span>
-            </a>
-            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
-            <nav class="main-nav">
-                <ul class="navbar-links">
-                    <li><a href="{% url 'main_site:software_center' %}">Software Center</a></li>
-                    <li><a href="{% url 'main_site:about' %}">About Us</a></li>
-                    <li><a href="{% url 'main_site:community' %}">Community</a></li>
-                    <li><a href="{% url 'main_site:store' %}">Store</a></li>
-                    {% if user.is_authenticated %}
-                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:account' %}">Account</a></li>
-                    {% else %}
-                        <li class="nav-auth-item desktop-only"><a href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-auth-item desktop-only"><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-            <div class="more-menu-wrapper">
-                <button class="more-toggle" aria-label="More navigation links" aria-expanded="false" onclick="toggleMoreDropdown(event)">...</button>
-                <ul class="more-dropdown-content">
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'main_site:account' %}">Account</a></li>
-                    {% else %}
-                        <li><a href="{% url 'login' %}">Login</a></li>
-                        <li><a href="{% url 'main_site:signup' %}">Sign Up</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </header>
-
-    <main>
-        <section class="policy-hero">
-            <div class="container">
-                <h1>Pegumax Inc. <span class="highlight">Policy & Terms</span></h1>
-                <p class="tagline">Clarifying our commitments and your responsibilities.</p>
-            </div>
-        </section>
-
-        <section class="policy-content-section">
-            <div class="container">
-                <div class="policy-card">
-                    <h2>Introduction to Our Policy</h2>
-                    <p>Welcome to Pegumax Inc. We are committed to developing innovative, affordable, and user-centric software solutions. This document outlines our Privacy Policy and Terms of Service, which govern your use of our services. By accessing or using any Pegumax Inc. software, website, or service, you agree to be bound by these policies and terms. We encourage you to read them carefully.</p>
-
-                    <h3>Third-Party Service Providers and Your Data</h3>
-                    <p>Pegumax Inc. leverages industry-leading third-party services to provide robust and secure functionalities. While we integrate these services seamlessly into our offerings, it is crucial to understand that certain aspects of data handling and service provision are governed by the policies of these external providers. <span class="policy-emphasis">Pegumax Inc. disclaims any liability for the actions, omissions, or data handling practices of these third-party services.</span></p>
-                    <ul>
-                        <li>
-                            <p><span class="policy-emphasis"><strong>Authentication (Google Firebase / Firestore):</strong></span> Your user authentication, including account creation, login, and secure session management, is primarily handled by Google Firebase. User data related to authentication (such as email addresses and hashed passwords) is stored and secured within Google's Firebase infrastructure, specifically Firestore. Pegumax Inc. relies on Firebase's robust security measures and compliance certifications. Any issues or breaches related to the underlying authentication infrastructure are governed by Google's terms and policies.</p>
-                        </li>
-                        <li>
-                            <p><span class="policy-emphasis"><strong>AI Tools (Google AI & OpenAI):</strong></span> Many of our advanced features, including but not limited to content generation, data analysis, and intelligent assistance, are powered by Artificial Intelligence models and APIs provided by Google (e.g., Gemini, other Google AI services) and OpenAI. When you use features that leverage AI, your input may be sent to these third-party AI providers for processing. Pegumax Inc. is not responsible for the accuracy, completeness, or any unintended outputs generated by these AI models. Furthermore, the data handling, privacy, and usage policies of Google AI and OpenAI apply to the data processed by their respective services. Users acknowledge and accept the inherent limitations and potential biases of AI technologies.</p>
-                        </li>
-                        <li>
-                            <p><span class="policy-emphasis"><strong>Payments (Stripe):</strong></span> All payment transactions for our software and services are securely processed through Stripe, a leading third-party payment gateway. Pegumax Inc. does not directly collect, store, or process your sensitive payment card information. This data is handled exclusively by Stripe in accordance with their strict security standards (PCI DSS compliance) and privacy policy. Any payment-related issues, including data breaches or transaction errors occurring within Stripe's system, are the responsibility of Stripe.</p>
-                        </li>
-                    </ul>
-
-                    <h3>General Data Privacy</h3>
-                    <p>While third-party services handle specific functions, Pegumax Inc. is committed to protecting your privacy regarding data we directly collect. We collect only necessary data to provide and improve our services, communicate with you, and ensure security. We do not sell your personal data to third parties. For more detailed information on our data collection, use, and protection practices, please refer to the specific sections within this document or contact us directly.</p>
-                    <h3>Data Retention and Deletion (Your Rights)</h3>
-                    <p>You have the right to access, correct, or delete your personal data. 
-                    If you wish to delete your account and all associated data, you may do so by 
-                    using the "Delete Account" feature within the app settings, or by emailing us at 
-                    <a href="mailto:pegumaxinc@gmail.com">pegumaxinc@gmail.com</a>. 
-                    Upon request, we will permanently delete your account and data from our active 
-                    databases within 30 days, except where we are legally required to retain specific records.</p>
-                </div>
-
-                <div class="policy-card">
-                    <h2>Terms of Service</h2>
-                    <p>These Terms of Service ("Terms") constitute a legally binding agreement between you and Pegumax Inc. regarding your use of our software, websites, and services. By accessing or using our services, you agree to comply with and be bound by these Terms.</p>
-
-                    <h3>1. Acceptance of Terms</h3>
-                    <p>By accessing or using our services, you affirm that you are of legal age to enter into this agreement and that you accept these Terms in full. If you do not agree with any part of these Terms, you must not use our services.</p>
-
-                    <h3>2. User Responsibilities</h3>
-                    <p>You agree to use our services only for lawful purposes and in a manner that does not infringe the rights of, restrict, or inhibit anyone else's use and enjoyment of the services. You are solely responsible for your conduct and any data, text, files, information, usernames, images, graphics, photos, profiles, audio and video clips, sounds, musical works, authorship, applications, links, and other content or materials (collectively, "Content") that you submit, post, or display on or through our services.</p>
-                    <ul>
-                        <li>Do not misuse our services by introducing viruses, trojans, worms, or other malicious material.</li>
-                        <li>Do not attempt to gain unauthorized access to our services, servers, or any connected database.</li>
-                        <li>Do not engage in any activity that interferes with or disrupts the services.</li>
-                    </ul>
-
-                    <h3>3. Intellectual Property Rights</h3>
-                    <p>All content, features, and functionality on our services, including but not limited to software, designs, text, graphics, images, video, information, applications, and their selection and arrangement, are the exclusive property of Pegumax Inc. and its licensors. These are protected by copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws. You may not reproduce, distribute, modify, create derivative works of, publicly display, publicly perform, republish, download, store, or transmit any of the material on our services, except as generally permitted by these Terms.</p>
-
-                    <h3>4. Disclaimer of Warranties</h3>
-                    <p><span class="policy-emphasis">Our services are provided "as is" and "as available," without any warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, non-infringement, or course of performance.</span> Pegumax Inc. does not warrant that the services will be uninterrupted, secure, or error-free; that defects will be corrected; or that the services or the server that makes them available are free of viruses or other harmful components.</p>
-
-                    <h3>5. Limitation of Liability</h3>
-                    <p><span class="policy-emphasis">In no event shall Pegumax Inc., its affiliates, or their respective directors, employees, or agents be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from (i) your access to or use of or inability to access or use the services; (ii) any conduct or content of any third party on the services; (iii) any content obtained from the services; and (iv) unauthorized access, use, or alteration of your transmissions or content, whether based on warranty, contract, tort (including negligence), or any other legal theory, whether or not we have been informed of the possibility of such damage.</span></p>
-
-                    <h3>6. Governing Law</h3>
-                    <p>These Terms shall be governed and construed in accordance with the laws of Kentucky, without regard to its conflict of law provisions.</p>
-
-                    <h3>7. Changes to Terms</h3>
-                    <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will try to provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion. By continuing to access or use our services after those revisions become effective, you agree to be bound by the revised terms.</p>
-
-                    <h3>8. Contact Us</h3>
-                    <p>If you have any questions about these Policy or Terms, please contact us at <a href="{% url 'main_site:contact' %}" style="color: var(--highlight-color); text-decoration: underline;">contact@pegumaxinc.com</a>.</p>
-                </div>
-
-                <div class="policy-final-statement">
-                    <p><span class="highlight">By using our tools and services, you acknowledge that you have read, understood, and agree to be bound by this Policy and Terms of Service.</span></p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; <span id="current-year">2024</span> Pegumax Inc. All rights reserved.</p>
-            <p>Empowering the human spirit through technological transcendence.</p>
-            <div class="social-links">
-                <a href="https://www.facebook.com/profile.php?id=61579165562125" target="_blank" aria-label="Follow us on Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/pegumax_llc/" target="_blank" aria-label="Follow us on Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.linkedin.com/company/pegumax/" target="_blank" aria-label="Connect with us on LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-            </div>
-            <div class="contact-info">
-                <p>
-                    <a href="{% url 'main_site:contact' %}">Contact Us</a> | 
-                    <a href="{% url 'main_site:policy' %}">Policy</a>
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('current-year').textContent = new Date().getFullYear();
-
-            // Mobile navigation toggle
-            const navToggle = document.querySelector('.nav-toggle');
-            const mainNav = document.querySelector('.main-nav');
-
-            if (navToggle && mainNav) {
-                navToggle.addEventListener('click', () => {
-                    const expanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
-                    navToggle.setAttribute('aria-expanded', !expanded);
-                    mainNav.classList.toggle('is-open');
-                });
-            }
-
-            // More menu dropdown toggle function
-            function toggleMoreDropdown(event) {
-                event.stopPropagation();
-                const moreWrapper = document.querySelector('.more-menu-wrapper');
-                moreWrapper.classList.toggle('active');
-            }
-
-            // Close dropdowns when clicking outside
-            window.addEventListener('click', function(event) {
-                const moreWrapper = document.querySelector('.more-menu-wrapper');
-                if (moreWrapper && moreWrapper.classList.contains('active') && !moreWrapper.contains(event.target)) {
-                    moreWrapper.classList.remove('active');
-                }
-            });
-
-            window.toggleMoreDropdown = toggleMoreDropdown;
-        });
-    </script>
-</body>
-</html>
+      <p><strong>By using our tools and services, you acknowledge that you have read, understood, and agree to be bound by this Policy and Terms of Service.</strong></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

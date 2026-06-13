@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Software Center — Apps, Suites &amp; Games | Pegumax Inc.{% endblock %}
+{% block description %}Browse Pegumax software: Apex Studio, Student Suite, LucidCut, Game Portal, Scribe, Contour and Inference. Local-first tools, suites, and games — most of them free.{% endblock %}
+
+{% block content %}
+<div class="donate-bar">
+  <p><span class="heart">&#9829;</span> Most of these tools are <b>free</b> — donations are what keep them alive and updated.</p>
+  <button data-donate>Support Pegumax</button>
+</div>
+<header class="phead">
+  <div class="pbg" style="background-image:url('{% static 'img/img3.png' %}')"></div>
+  <div class="wrap">
+    <span class="breadcrumb reveal"><b>Pegumax</b> / Software Center</span>
+    <h1 class="reveal" style="--d:.05s">The <span class="g">Software Center</span></h1>
+    <p class="reveal" style="--d:.1s">One studio, a whole shelf of focused apps. Filter by what you need — tools, suites, or games.</p>
+  </div>
+</header>
+<section class="sec" style="padding-top:1rem;">
+  <div class="wrap">
+    <div class="tabs reveal">
+      <button class="tab active" data-filter="all">All</button>
+      <button class="tab" data-filter="tool">Tools</button>
+      <button class="tab" data-filter="suite">Suites</button>
+      <button class="tab" data-filter="game">Games</button>
+    </div>
+    <div class="cards" id="softwareGrid">
+      {% for p in products %}{% include "partials/product_card.html" %}{% endfor %}
+    </div>
+    <div class="unsigned-note reveal">
+      <i class="fas fa-shield-halved"></i>
+      <div>Heads up: our Windows tools currently ship <b>unsigned</b> (no paid code-signing certificate) — that's how we keep them free. Windows SmartScreen may show a "publisher unknown" warning on first run; click <b>More info → Run anyway</b>. <b>These apps are not malware</b> — Windows simply flags any software that doesn't pay for a license.</div>
+    </div>
+  </div>
+</section>
+<section class="sec" style="padding-top:0;">
+  <div class="wrap">
+    <div class="callout reveal-s" style="margin-top:4rem;">
+      <h3>Got an idea for the next app?</h3>
+      <p>The studio is community-driven. Pitch what you want built and the community votes on it — the most-wanted ideas get made.</p>
+      <button class="btn btn-acc btn-lg" data-feedback="idea">Submit an idea</button>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+{% verbatim %}
+document.querySelectorAll('.tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+    tab.classList.add('active');
+    var f=tab.getAttribute('data-filter');
+    document.querySelectorAll('#softwareGrid .pcard').forEach(function(c){
+      c.style.display = (f==='all' || c.getAttribute('data-cat')===f) ? '' : 'none';
+    });
+  });
+});
+{% endverbatim %}
+</script>
+{% endblock %}

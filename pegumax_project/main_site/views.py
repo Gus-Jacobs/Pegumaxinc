@@ -9,6 +9,7 @@ from django.contrib import messages
 import json
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.conf import settings
 from bot_monitor.models import BotStatus, BotActivityLog # Ensure these models exist and app is configured
 from django.utils import timezone
 from django.db.utils import ProgrammingError
@@ -35,19 +36,14 @@ def payment_cancelled_view(request):
 
 
 def software_center_view(request):
-    # This view is intentionally simple, just rendering the template.
-    # Any complex logic or database queries that could fail should be handled
-    # within the JavaScript on the software-center.html page or in separate AJAX views.
-    return render(request, 'software-center.html')
+    return render(request, 'software.html')
 
 def about_view(request):
     return render(request, 'about.html')
 
-@login_required
 def community_view(request):
     return render(request, 'community.html')
 
-@login_required
 def store_view(request):
     return render(request, 'store.html')
 
@@ -60,7 +56,20 @@ def account_view(request):
     return render(request, 'account.html')
 
 def movie_word_scanner_view(request):
-    return render(request, 'movie-word-scanner.html')
+    # Legacy URL — now serves the rebranded LucidCut page.
+    return render(request, 'lucidcut.html')
+
+def lucidcut_view(request):
+    return render(request, 'lucidcut.html')
+
+def scribe_view(request):
+    return render(request, 'scribe.html')
+
+def contour_view(request):
+    return render(request, 'contour.html')
+
+def inference_view(request):
+    return render(request, 'inference.html')
 
 def game_portal(request):
     return render(request, 'game_portal.html')
@@ -84,7 +93,6 @@ def signup_view(request):
 
 @login_required
 @require_POST
-@csrf_exempt
 def edit_profile_view(request):
     if request.method == 'POST':
         form = UserProfileEditForm(request.POST, instance=request.user)
@@ -99,7 +107,6 @@ def edit_profile_view(request):
 
 @login_required
 @require_POST
-@csrf_exempt
 def change_password_view(request):
     if request.method == 'POST':
         form = CustomPasswordChangeForm(user=request.user, data=request.POST)
@@ -147,7 +154,7 @@ def submit_software_idea_view(request):
         subject = f"New Software Idea Submission from {idea_name} ({idea_email})"
         message_body = f"User: {request.user.username if request.user.is_authenticated else 'Guest'}\nEmail: {idea_email}\nType: {idea_type}\n\nIdea Description:\n{idea_text}"
         try:
-            send_mail(subject, message_body, 'noreply@pegumax.com', ['pegumaxinc@gmail.com'])
+            send_mail(subject, message_body, settings.DEFAULT_FROM_EMAIL, [settings.CONTACT_RECIPIENT_EMAIL])
             return JsonResponse({'success': True, 'message': 'Thank you! Your idea has been submitted.'})
         except Exception as e:
             print(f"Error sending idea email: {e}")
@@ -174,7 +181,7 @@ def full_access_pass_inquiry_view(request):
             f"Wants: {interest_wants}"
         )
         try:
-            send_mail(subject, message_body, 'noreply@pegumax.com', ['pegumaxinc@gmail.com'])
+            send_mail(subject, message_body, settings.DEFAULT_FROM_EMAIL, [settings.CONTACT_RECIPIENT_EMAIL])
             return JsonResponse({'success': True, 'message': 'Thank you for your interest! We will be in touch.'})
         except Exception as e:
             print(f"Error sending full access inquiry email: {e}")
@@ -191,7 +198,12 @@ def contact_page_view(request):
         email_subject = f"Contact Form Submission: {subject_user} from {name}"
         email_body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
         try:
-            send_mail(email_subject, email_body, 'noreply@pegumax.com', ['pegumaxinc@gmail.com'])
+            from django.core.mail import EmailMessage
+            EmailMessage(
+                email_subject, email_body, settings.DEFAULT_FROM_EMAIL,
+                [settings.CONTACT_RECIPIENT_EMAIL],
+                reply_to=[email] if email else None,
+            ).send()
             messages.success(request, "Thank you for your message! We'll get back to you soon.")
             return redirect('main_site:contact')
         except Exception as e:
@@ -331,8 +343,122 @@ def submit_subscription_interest_view(request):
         print(f"Wants: {interest_wants}")
 
         return JsonResponse({'success': True, 'message': 'Thanks for your interest! We\'ll notify you when it\'s live.'})
-    
+
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+
+# ============================================================================
+#  Unified message endpoint (contact / feedback / idea / bug) for the new site
+# ============================================================================
+@require_POST
+@csrf_exempt
+def api_submit_message(request):
+    """Accepts JSON or form-encoded messages from the redesigned site's
+    feedback / idea / bug / contact widgets and emails them to the team."""
+    try:
+        data = json.loads(request.body.decode('utf-8')) if request.body else {}
+    except (ValueError, UnicodeDecodeError):
+        data = request.POST
+
+    # Clamp all inputs to sane lengths to limit abuse of this public endpoint.
+    msg_type = (str(data.get('type') or 'message')).strip()[:40]
+    name = ((str(data.get('name') or 'Anonymous')).strip() or 'Anonymous')[:120]
+    email = (str(data.get('email') or '')).strip()[:254]
+    message = (str(data.get('message') or '')).strip()[:5000]
+
+    if not message:
+        return JsonResponse({'success': False, 'message': 'Message cannot be empty.'}, status=400)
+
+    subject = f"[Pegumax {msg_type}] from {name}"
+    body = f"Type: {msg_type}\nName: {name}\nEmail: {email or 'not provided'}\n\nMessage:\n{message}"
+    try:
+        from django.core.mail import EmailMessage
+        EmailMessage(
+            subject, body, settings.DEFAULT_FROM_EMAIL,
+            [settings.CONTACT_RECIPIENT_EMAIL],
+            reply_to=[email] if email else None,
+        ).send()
+        return JsonResponse({'success': True, 'message': 'Thanks! Your message is on its way.'})
+    except Exception as e:
+        print(f"Error sending message email: {e}")
+        return JsonResponse({'success': False, 'message': 'Could not send right now. Please try again.'}, status=500)
+
+
+# ============================================================================
+#  Stripe donations — Embedded Checkout (no full-page redirect)
+# ============================================================================
+def donate_config(request):
+    """Expose the publishable key to the front-end."""
+    return JsonResponse({'publishableKey': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')})
+
+
+@require_POST
+@csrf_exempt
+def create_donation_session(request):
+    """Create an embedded Stripe Checkout Session and return its client secret."""
+    secret_key = getattr(settings, 'STRIPE_DONATION_KEY', None)
+    if not secret_key:
+        return JsonResponse({'error': 'Donations are not configured on the server (STRIPE_DONATION_KEY missing).'}, status=503)
+
+    try:
+        import stripe  # lazy import so the site still runs if stripe isn't installed
+    except ImportError:
+        return JsonResponse({'error': 'The stripe library is not installed on the server. Run: pip install stripe'}, status=503)
+
+    stripe.api_key = secret_key
+
+    try:
+        data = json.loads(request.body.decode('utf-8')) if request.body else {}
+    except (ValueError, UnicodeDecodeError):
+        data = {}
+
+    # Dollars -> cents, clamped to a sane $1–$10,000 range.
+    try:
+        amount_cents = int(round(float(data.get('amount', 5)) * 100))
+    except (TypeError, ValueError):
+        amount_cents = 500
+    amount_cents = max(100, min(amount_cents, 1_000_000))
+
+    origin = request.META.get('HTTP_ORIGIN') or request.build_absolute_uri('/').rstrip('/')
+
+    try:
+        session = stripe.checkout.Session.create(
+            ui_mode='embedded',
+            mode='payment',
+            submit_type='donate',
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': 'Support Pegumax',
+                        'description': 'Thank you for supporting independent, local-first software.',
+                    },
+                    'unit_amount': amount_cents,
+                },
+                'quantity': 1,
+            }],
+            return_url=origin + '/donate/complete/?session_id={CHECKOUT_SESSION_ID}',
+        )
+        return JsonResponse({'clientSecret': session.client_secret})
+    except Exception as e:
+        print(f"Stripe donation session error: {e}")
+        return JsonResponse({'error': 'Could not start the donation. Please try again.'}, status=502)
+
+
+def donation_complete(request):
+    """Return URL after an embedded donation completes. Shows a small thank-you."""
+    session_id = request.GET.get('session_id')
+    status = 'unknown'
+    secret_key = getattr(settings, 'STRIPE_DONATION_KEY', None)
+    if session_id and secret_key:
+        try:
+            import stripe
+            stripe.api_key = secret_key
+            session = stripe.checkout.Session.retrieve(session_id)
+            status = session.get('status', 'unknown')
+        except Exception as e:
+            print(f"Stripe session retrieve error: {e}")
+    return render(request, 'donation_complete.html', {'status': status})
 
 
 

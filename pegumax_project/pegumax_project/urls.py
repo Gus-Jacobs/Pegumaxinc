@@ -5,7 +5,11 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.views.generic import TemplateView
+from django.contrib.sitemaps.views import sitemap
+from main_site.sitemaps import StaticViewSitemap
 from . import views # Import your custom views.py
+
+sitemaps = {"static": StaticViewSitemap}
 
 # --- Define handlers for custom error pages ---
 handler404 = 'pegumax_project.views.custom_404_view'
@@ -15,6 +19,8 @@ handler500 = 'pegumax_project.views.custom_500_view'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain'), name='robots'),
     path('', include('main_site.urls', namespace='main_site')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('bot-api/', include('bot_monitor.urls', namespace='bot_monitor')),

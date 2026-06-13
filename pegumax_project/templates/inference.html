@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Inference — Run the machine. Take over the AI world. | Pegumax Inc.{% endblock %}
+{% block description %}Inference is a strategy game where you run the machine — upgrade your model and seize control of the AI world.{% endblock %}
+
+{% block content %}
+<header class="app-hero">
+  <div class="pbg" style="background-image:url('{% static 'img/inference_hero.png' %}')"></div>
+  <div class="wrap">
+    <div class="app-ic" style="background:linear-gradient(135deg,#8854d0,#a55eea)"><i class="fas fa-microchip"></i></div>
+    <span class="breadcrumb reveal"><b>Pegumax</b> / Software / Inference</span>
+    <h1 class="reveal" style="--d:.05s"><span class="g">Inference</span></h1>
+    <p class="lead reveal" style="--d:.1s">Run the machine. Take over the AI world. Inference is a strategy game where you operate a growing AI — research upgrades, scale your model, and outmaneuver rivals until the whole AI world answers to you.</p>
+    <div class="app-badges reveal" style="--d:.15s"><span>○ In development</span><span class="paid">Paid</span><span>{% include 'partials/icon.html' with name='windows' %} Windows</span></div>
+  </div>
+</header>
+
+<section class="app-body sec" style="padding-top:2rem;">
+  <div class="wrap">
+    <h2 class="section-title reveal">What to <span class="g">expect</span></h2>
+    <ul class="feature-grid">
+      <li class="reveal">Run and scale your own machine from a humble start.</li>
+      <li class="reveal" style="--d:.05s">Research upgrades that make your model smarter and faster.</li>
+      <li class="reveal" style="--d:.1s">Strategic decisions that ripple across the AI world.</li>
+      <li class="reveal" style="--d:.15s">A campaign to seize control, one breakthrough at a time.</li>
+    </ul>
+
+    <div class="callout reveal-s" style="max-width:640px;margin:3rem auto 0;">
+      <h3>Inference is in development</h3>
+      <p>Wishlist it now to be first into the beta — and tell us what would make the perfect AI strategy game.</p>
+      <button class="btn btn-acc btn-lg" data-notify-app="Inference" data-notify-kind="wishlist"><i class="fas fa-star"></i> Wishlist</button>
+    </div>
+  </div>
+</section>
+{% endblock %}

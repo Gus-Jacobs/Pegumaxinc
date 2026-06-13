@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Contour — Your drawing &amp; handwriting guide | Pegumax Inc.{% endblock %}
+{% block description %}Contour teaches you to draw. Upload an image or pick a handwriting style, trace it in AR through your camera, or export coloring-book pages.{% endblock %}
+
+{% block content %}
+<header class="app-hero">
+  <div class="pbg" style="background-image:url('{% static 'img/contour_hero.png' %}')"></div>
+  <div class="wrap">
+    <div class="app-ic" style="background:linear-gradient(135deg,#36e0a0,#22d3ee)"><i class="fas fa-pen-nib"></i></div>
+    <span class="breadcrumb reveal"><b>Pegumax</b> / Software / Contour</span>
+    <h1 class="reveal" style="--d:.05s"><span class="g">Contour</span></h1>
+    <p class="lead reveal" style="--d:.1s">Your drawing and handwriting guide. Upload an image or pick a handwriting style you like, and Contour teaches you to draw it. Trace right through your camera in AR, learn at your own pace, or export your pictures as coloring-book pages for a fun twist.</p>
+    <div class="app-badges reveal" style="--d:.15s"><span>○ In development</span><span class="paid">Paid</span><span>{% include 'partials/icon.html' with name='apple' %} iOS</span><span>{% include 'partials/icon.html' with name='android' %} Android</span></div>
+  </div>
+</header>
+
+<section class="app-body sec" style="padding-top:2rem;">
+  <div class="wrap">
+    <h2 class="section-title reveal">What to <span class="g">expect</span></h2>
+    <ul class="feature-grid">
+      <li class="reveal">Upload any image and learn to draw it step by step.</li>
+      <li class="reveal" style="--d:.05s">Pick a handwriting style and practice until it's yours.</li>
+      <li class="reveal" style="--d:.1s">AR camera tracing — draw along on real paper.</li>
+      <li class="reveal" style="--d:.15s">Export your images as printable coloring-book pages.</li>
+    </ul>
+
+    <div class="callout reveal-s" style="max-width:640px;margin:3rem auto 0;">
+      <h3>Contour is in development</h3>
+      <p>Be first to try it when it drops — and tell us what you'd love to learn to draw.</p>
+      <button class="btn btn-acc btn-lg" data-notify-app="Contour" data-notify-kind="notify"><i class="fas fa-bell"></i> Notify me</button>
+    </div>
+  </div>
+</section>
+{% endblock %}

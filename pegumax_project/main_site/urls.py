@@ -12,7 +12,11 @@ urlpatterns = [
     path('store/', views.store_view, name='store'),
     path('admin-login/', views.admin_login_view, name='admin_login'), # Temporary
     path('account/', views.account_view, name='account'),
-    path('movie-word-scanner/', views.movie_word_scanner_view, name='movie_word_scanner'),
+    path('movie-word-scanner/', views.movie_word_scanner_view, name='movie_word_scanner'), # legacy -> LucidCut
+    path('lucidcut/', views.lucidcut_view, name='lucidcut'),
+    path('scribe/', views.scribe_view, name='scribe'),
+    path('contour/', views.contour_view, name='contour'),
+    path('inference/', views.inference_view, name='inference'),
     path('game-portal/', views.game_portal, name='game_portal'),
     path('apex-studio/', views.apex_studio_view, name='apex_studio'), # NEW APEX STUDIO ROUTE
     path('signup/', views.signup_view, name='signup'),
@@ -38,6 +42,12 @@ urlpatterns = [
     path('submit-subscription-interest/', views.submit_subscription_interest_view, name='submit_subscription_interest'),
     path('payment-success/', views.payment_success_view, name='payment-success'),
     path('payment-cancelled/', views.payment_cancelled_view, name='payment-cancelled'),
+    # --- NEW: unified message endpoint for the redesigned site (contact/feedback/idea/bug) ---
+    path('api/message/', views.api_submit_message, name='api_message'),
+    # --- NEW: Stripe donations (embedded checkout) ---
+    path('donate/config/', views.donate_config, name='donate_config'),
+    path('donate/create-session/', views.create_donation_session, name='create_donation_session'),
+    path('donate/complete/', views.donation_complete, name='donation_complete'),
 ]
 
 
