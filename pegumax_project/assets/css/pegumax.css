@@ -350,8 +350,8 @@ footer.site{flex-shrink:0;border-top:1px solid var(--line);padding:4rem 0 2rem;b
 footer.site .cols{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:2.4rem;margin-bottom:3rem;}
 footer.site .about{color:var(--mut);font-size:.92rem;max-width:32ch;margin-top:1.1rem;}
 footer.site h5{font-family:'Space Grotesk';color:#fff;font-size:.95rem;margin:0 0 1.1rem;}
-footer.site a.fl{display:block;color:var(--mut);font-size:.92rem;margin-bottom:.7rem;transition:color .25s,padding-left .25s;cursor:pointer;}
-footer.site a.fl:hover{color:var(--cy);padding-left:.3rem;}
+footer.site .fl{display:block;color:var(--mut);font-size:.92rem;margin-bottom:.7rem;transition:color .25s,padding-left .25s;cursor:pointer;}
+footer.site .fl:hover{color:var(--cy);padding-left:.3rem;}
 footer.site .bottom{border-top:1px solid var(--line);padding-top:1.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
 footer.site .bottom .copy{color:var(--dim);font-size:.85rem;}
 footer.site .social{display:flex;gap:.7rem;}
