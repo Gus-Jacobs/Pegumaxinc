@@ -1,7 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, IsAdminUser
+from rest_framework.authentication import SessionAuthentication
 # from .serializers import BotActivityLogSerializer # Old name
 from .models import BotActivityLog, BotStatus # Import BotStatus
 from .serializers import (
@@ -25,10 +26,10 @@ class LogReceiverView(APIView):
     # csrf_exempt = True # This is not a standard DRF attribute for exemption.
     # Instead, ensure CsrfViewMiddleware is correctly configured and @method_decorator(csrf_exempt) on dispatch is used.
 
-    authentication_classes = []  # Explicitly disable authentication
-    permission_classes = [] # Explicitly disable permission checks
-    @method_decorator(csrf_exempt) # Keep this decorator on dispatch
-    def dispatch(self, *args, **kwargs): # It's generally better to apply csrf_exempt to dispatch
+    # Effective permission is HasBotAPIKey (set above) — only callers with the
+    # bot API key may submit logs.
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs): # Used by RemoteLogger
@@ -62,7 +63,7 @@ class LogReceiverView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class DashboardDataView(APIView):
-    # permission_classes = [IsAdminUser] # TODO: Add appropriate permissions for dashboard access
+    permission_classes = [IsAdminUser]  # admin-dashboard only for dashboard access
 
     def get(self, request, format=None):
         bot_status_obj = BotStatus.get_status()
@@ -87,7 +88,7 @@ class DashboardDataView(APIView):
         })
 
 class BotLogDataView(APIView): # Renamed from BotLogView to avoid conflict if any
-    # permission_classes = [IsAdminUser] # TODO: Add appropriate permissions
+    permission_classes = [IsAdminUser]  # admin-dashboard only
 
     def get(self, request, format=None):
         bot_id_filter = request.query_params.get('bot_id', None)
@@ -101,7 +102,7 @@ class BotLogDataView(APIView): # Renamed from BotLogView to avoid conflict if an
         return Response(serializer.data)
 
 class AcknowledgeLogsView(APIView):
-    # permission_classes = [IsAdminUser] # TODO: Add appropriate permissions
+    permission_classes = [IsAdminUser]  # admin-dashboard only
 
     def post(self, request, format=None):
         log_ids = request.data.get('log_ids', [])
@@ -127,7 +128,7 @@ class LiveBotStatusDataView(APIView):
     A dedicated API endpoint to provide live status data for all bots,
     formatted specifically for the live_bot_overview.html page.
     """
-    # permission_classes = [IsAdminUser] # TODO: Secure this for admin users
+    permission_classes = [IsAdminUser]  # admin-dashboard only
 
     def get(self, request, format=None):
         bots_data = []
@@ -167,7 +168,7 @@ class LiveBotStatusDataView(APIView):
 
 
 class BotLogDataView(APIView):
-    # permission_classes = [IsAdminUser] # TODO: Add appropriate permissions
+    permission_classes = [IsAdminUser]  # admin-dashboard only
 
     def get(self, request, format=None):
         bot_id_filter = request.query_params.get('bot_id', None)
@@ -193,13 +194,14 @@ class BotLogDataView(APIView):
 
 
 class BotCommandView(APIView): # For bot to send heartbeats and receive commands
-    permission_classes = [HasBotAPIKey] # Bot uses API key
+    authentication_classes = [SessionAuthentication]
 
-    authentication_classes = [] # Explicitly disable authentication
-    permission_classes = [] # Explicitly disable permission checks
-    @method_decorator(csrf_exempt) # Apply csrf_exempt to the dispatch method
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
+    def get_permissions(self):
+        # Admins send commands via PUT (browser session + CSRF from the dashboard);
+        # the bot posts heartbeats via POST, authenticated with its API key.
+        if self.request.method == 'PUT':
+            return [IsAdminUser()]
+        return [HasBotAPIKey()]
 
     def post(self, request, format=None): # Bot sends its status
         bot_id = request.data.get("bot_id", "freelance-bot-main")

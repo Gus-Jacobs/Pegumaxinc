@@ -1,0 +1,240 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Pegumax Inc. — Local-first software, built to be owned{% endblock %}</title>
+<meta name="description" content="{% block description %}Pegumax Inc. is a small team building fast, private, mostly-free local-first software — media tools, study suites, and games.{% endblock %}">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#07070d">
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pegumax Inc.">
+<meta property="og:title" content="{% block og_title %}Pegumax Inc. — Local-first software, built to be owned{% endblock %}">
+<meta property="og:description" content="{% block og_desc %}A small team building fast, private, mostly-free local-first software — media tools, study suites, and games.{% endblock %}">
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/img4.png' %}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{% block tw_title %}Pegumax Inc.{% endblock %}">
+<meta name="twitter:description" content="Fast, private, mostly-free local-first software.">
+<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/img4.png' %}">
+<link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Pegumax Inc.","url":"{{ request.scheme }}://{{ request.get_host }}/","logo":"{{ request.scheme }}://{{ request.get_host }}{% static 'img/favicon.png' %}","description":"A small team building fast, private, mostly-free local-first software.","sameAs":["https://www.facebook.com/profile.php?id=61579165562125","https://www.instagram.com/pegumax_llc/","https://www.linkedin.com/company/pegumax/"]}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="{% static 'css/pegumax.css' %}">
+<script src="https://js.stripe.com/v3/"></script>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="ambient"></div>
+<div class="grain"></div>
+<div class="spotlight" id="spotlight"></div>
+<div class="progress" id="progress"></div>
+
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="{% url 'main_site:home' %}" data-link="home"><img src="{% static 'img/favicon.png' %}" alt="Pegumax"><span class="logo-word">Pegumax</span></a>
+      <ul class="nav-links">
+        <li><a class="{% if active_section == 'home' %}active{% endif %}" href="{% url 'main_site:home' %}">Home</a></li>
+        <li><a class="{% if active_section == 'software' %}active{% endif %}" href="{% url 'main_site:software_center' %}">Software</a></li>
+        <li><a class="{% if active_section == 'about' %}active{% endif %}" href="{% url 'main_site:about' %}">About</a></li>
+        <li><a class="{% if active_section == 'community' %}active{% endif %}" href="{% url 'main_site:community' %}">Community</a></li>
+        <li><a class="{% if active_section == 'store' %}active{% endif %}" href="{% url 'main_site:store' %}">Store</a></li>
+      </ul>
+      <div class="nav-cta">
+        {% if user.is_authenticated %}
+          <a class="btn btn-ghost" href="{% url 'main_site:account' %}">Account</a>
+        {% else %}
+          <button class="btn btn-ghost" data-modal="login">Log in</button>
+        {% endif %}
+        <button class="btn btn-cy" data-donate>&#9829; Donate</button>
+      </div>
+      <button class="hamb" id="hamb" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="{% url 'main_site:home' %}" data-link="home">Home</a>
+  <a href="{% url 'main_site:software_center' %}" data-link="software">Software</a>
+  <a href="{% url 'main_site:about' %}" data-link="about">About</a>
+  <a href="{% url 'main_site:community' %}" data-link="community">Community</a>
+  <a href="{% url 'main_site:store' %}" data-link="store">Store</a>
+  <div class="mm-cta">
+    {% if user.is_authenticated %}
+      <a class="btn btn-ghost btn-lg" href="{% url 'main_site:account' %}">Account</a>
+    {% else %}
+      <button class="btn btn-ghost btn-lg" data-modal="login">Log in</button>
+    {% endif %}
+    <button class="btn btn-cy btn-lg" data-donate>&#9829; Donate</button>
+  </div>
+</div>
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+{% block precta %}{% endblock %}
+
+<footer class="site">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <a class="brand" href="{% url 'main_site:home' %}"><img src="{% static 'img/favicon.png' %}" alt="Pegumax"><span class="logo-word">Pegumax</span></a>
+        <p class="about">A small team building local-first software, built to be owned. Fast, private, and mostly free — for everyone.</p>
+      </div>
+      <div>
+        <h5>Products</h5>
+        <a class="fl" href="{% url 'main_site:apex_studio' %}">Apex Studio</a>
+        <a class="fl" href="{% url 'main_site:student_suite_launch' %}">Student Suite</a>
+        <a class="fl" href="{% url 'main_site:lucidcut' %}">LucidCut</a>
+        <a class="fl" href="{% url 'main_site:game_portal' %}">Game Portal</a>
+        <a class="fl" href="{% url 'main_site:scribe' %}">Scribe</a>
+      </div>
+      <div>
+        <h5>Company</h5>
+        <a class="fl" href="{% url 'main_site:about' %}" data-link="about">About</a>
+        <a class="fl" href="{% url 'main_site:community' %}" data-link="community">Community</a>
+        <a class="fl" href="{% url 'main_site:store' %}" data-link="store">Store</a>
+        <a class="fl" data-feedback="feedback">Feedback</a>
+      </div>
+      <div>
+        <h5>Account</h5>
+        {% if user.is_authenticated %}
+          <a class="fl" href="{% url 'main_site:account' %}">Account</a>
+          <form method="post" action="{% url 'logout' %}" style="margin:0;">{% csrf_token %}<button type="submit" class="fl">Log out</button></form>
+        {% else %}
+          <a class="fl" data-modal="login">Log in</a>
+          <a class="fl" data-modal="signup">Sign up</a>
+        {% endif %}
+        <a class="fl" data-donate>Donate &#9829;</a>
+        <a class="fl" href="{% url 'main_site:policy' %}">Policy</a>
+      </div>
+    </div>
+    <div class="bottom">
+      <span class="copy">© <span id="year">2026</span> Pegumax Inc. All rights reserved. Empowering the human spirit through good software.</span>
+      <div class="social">
+        <a href="https://www.facebook.com/profile.php?id=61579165562125" target="_blank" rel="noopener" aria-label="Facebook">{% include 'partials/icon.html' with name='facebook' %}</a>
+        <a href="https://www.instagram.com/pegumax_llc/" target="_blank" rel="noopener" aria-label="Instagram">{% include 'partials/icon.html' with name='instagram' %}</a>
+        <a href="https://www.linkedin.com/company/pegumax/" target="_blank" rel="noopener" aria-label="LinkedIn">{% include 'partials/icon.html' with name='linkedin' %}</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<button class="totop" id="totop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+<button class="fab" data-feedback="feedback"><i class="fas fa-comment-dots"></i> <span>Feedback</span></button>
+
+<!-- AUTH MODAL -->
+<div class="modal" id="authModal">
+  <div class="ovl" data-close></div>
+  <div class="box">
+    <button class="close" data-close>&times;</button>
+    <div id="loginForm">
+      <h3>Welcome back</h3>
+      <p class="msub">Log in to your Pegumax account</p>
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="/">
+        <label>Username</label><input class="field" name="username" autocomplete="username" required>
+        <label>Password</label><input class="field" type="password" name="password" autocomplete="current-password" required>
+        <button class="btn btn-acc btn-lg" type="submit" style="margin-top:.6rem;">Log in</button>
+      </form>
+      <div class="swap">New here? <a data-swap="signup">Create an account</a></div>
+    </div>
+    <div id="signupForm" style="display:none;">
+      <h3>Create your account</h3>
+      <p class="msub">Join Pegumax — it only takes a moment</p>
+      <form method="post" action="{% url 'main_site:signup' %}">
+        {% csrf_token %}
+        <label>Username</label><input class="field" name="username" autocomplete="username" required>
+        <label>Email</label><input class="field" type="email" name="email" autocomplete="email" required>
+        <label>Password</label><input class="field" type="password" name="password1" autocomplete="new-password" required>
+        <label>Confirm password</label><input class="field" type="password" name="password2" autocomplete="new-password" required>
+        <button class="btn btn-acc btn-lg" type="submit" style="margin-top:.6rem;">Create account</button>
+      </form>
+      <div class="swap">Already have an account? <a data-swap="login">Log in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- FEEDBACK MODAL -->
+<div class="modal" id="msgModal">
+  <div class="ovl" data-close-msg></div>
+  <div class="box">
+    <button class="close" data-close-msg>&times;</button>
+    <h3>Send us a note</h3>
+    <p class="msub">Idea, feedback, or bug — we read every one.</p>
+    <form data-msgform>
+      <label>Type</label>
+      <div class="seg" data-typeseg>
+        <button type="button" data-t="idea" class="active">&#128161; Idea</button>
+        <button type="button" data-t="feedback">&#128172; Feedback</button>
+        <button type="button" data-t="bug">&#128027; Bug</button>
+      </div>
+      <label>Name</label><input class="field" name="name" placeholder="Your name">
+      <label>Email</label><input class="field" type="email" name="email" placeholder="you@email.com">
+      <label>Message</label><textarea class="field" name="message" placeholder="What's on your mind?" required></textarea>
+      <button class="btn btn-acc btn-lg" type="submit" style="margin-top:.5rem;"><i class="fas fa-paper-plane"></i> Send</button>
+      <div class="form-note" data-note></div>
+    </form>
+  </div>
+</div>
+
+<!-- DONATE MODAL -->
+<div class="modal" id="donateModal">
+  <div class="ovl" data-close-donate></div>
+  <div class="box wide">
+    <button class="close" data-close-donate>&times;</button>
+    <div id="donateStep1">
+      <h3>Support Pegumax</h3>
+      <p class="msub">We're a small team and most of our apps are free. Donations keep them alive — thank you. &#128153;</p>
+      <div class="amt-grid" id="amtGrid">
+        <button data-amt="3">$3</button>
+        <button data-amt="5" class="active">$5</button>
+        <button data-amt="10">$10</button>
+        <button data-amt="25">$25</button>
+        <button data-amt="50">$50</button>
+        <button data-amt="custom">Custom</button>
+      </div>
+      <input class="field" id="customAmt" type="number" min="1" step="1" placeholder="Enter amount (USD)" style="display:none;">
+      <button class="btn btn-cy btn-lg" id="donateContinue" style="width:100%;margin-top:.4rem;">Continue to payment</button>
+      <div class="stripe-secure"><i class="fas fa-lock"></i> Secure payment · Powered by <b>stripe</b></div>
+    </div>
+    <div id="donateStep2" style="display:none;">
+      <h3>Complete your donation</h3>
+      <p class="msub">You're donating <b id="donateAmtLabel">$5</b> — thank you!</p>
+      <div id="donate-checkout"></div>
+      <div class="stripe-secure"><i class="fas fa-lock"></i> Powered by <b>stripe</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFY / WISHLIST MODAL -->
+<div class="modal" id="notifyModal">
+  <div class="ovl" data-close-notify></div>
+  <div class="box">
+    <button class="close" data-close-notify>&times;</button>
+    <h3 id="notifyTitle">Get notified</h3>
+    <p class="msub" id="notifySub">Leave your email and we'll let you know the moment it's ready.</p>
+    <form id="notifyForm">
+      <label>Email</label>
+      <input class="field" type="email" name="email" placeholder="you@email.com" required>
+      <label>Anything you'd love to see? <span style="color:var(--dim)">(optional)</span></label>
+      <textarea class="field" name="note" rows="3" placeholder="Optional — tell us what you're hoping for"></textarea>
+      <button class="btn btn-cy btn-lg" type="submit" style="margin-top:.5rem;"><i class="fas fa-bell"></i> <span id="notifyBtnLabel">Add me to the list</span></button>
+      <div class="form-note" data-note></div>
+    </form>
+  </div>
+</div>
+
+<script id="site-config" type="application/json">{ "stripePk": "{{ stripe_pk|escapejs }}" }</script>
+<script src="{% static 'js/pegumax.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thank you — Pegumax Inc.</title>
+<link rel="icon" type="image/png" href="/static/img/favicon.png">
+<style>
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#07070d;color:#edeef5;
+    font-family:'Segoe UI',system-ui,sans-serif;text-align:center;padding:2rem;}
+  .card{max-width:480px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);
+    border-radius:24px;padding:3rem 2.4rem;box-shadow:0 40px 100px rgba(0,0,0,.6);}
+  .icon{font-size:3.4rem;margin-bottom:1rem;}
+  h1{font-size:1.9rem;margin:0 0 .6rem;}
+  p{color:#9a9cb0;line-height:1.6;margin:0 0 1.6rem;}
+  a{display:inline-block;background:linear-gradient(120deg,#22d3ee,#7ee8fb);color:#04121a;
+    font-weight:700;text-decoration:none;padding:.8rem 1.6rem;border-radius:12px;}
+  .secure{margin-top:1.4rem;font-size:.78rem;color:#6b6d82;}
+  .secure b{color:#635bff;}
+</style>
+</head>
+<body>
+  <div class="card">
+    {% if status == 'complete' %}
+      <div class="icon">💜</div>
+      <h1>Thank you so much!</h1>
+      <p>Your donation came through. Support like yours is exactly what keeps the studio running and the updates coming. We truly appreciate it.</p>
+    {% else %}
+      <div class="icon">🙏</div>
+      <h1>Thanks for stopping by</h1>
+      <p>If your donation didn't complete, no worries at all — you can try again any time. Either way, thank you for the support.</p>
+    {% endif %}
+    <a href="/">Back to Pegumax</a>
+    <div class="secure">🔒 Secure payment · Powered by <b>stripe</b></div>
+  </div>
+</body>
+</html>

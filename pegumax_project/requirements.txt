@@ -4,4 +4,5 @@ gunicorn
 psycopg2-binary
 whitenoise
 djangorestframework
+stripe
 
