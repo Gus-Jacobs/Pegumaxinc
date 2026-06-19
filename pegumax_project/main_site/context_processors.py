@@ -44,7 +44,7 @@ PRODUCTS = [
     },
     {
         "key": "scribe", "name": "Scribe", "cat": "suite",
-        "status": "soon", "free": True, "featured": False,
+        "status": "live", "free": True, "featured": False,
         "tagline": "Your offline document editor",
         "desc": "A free, fully-offline document editor. No accounts, no cloud, no nonsense — just write.",
         "img_static": "img/scribe_hero.png", "icon": "fa-feather",

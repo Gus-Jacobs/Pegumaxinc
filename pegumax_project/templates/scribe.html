@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Scribe — Your offline document editor | Pegumax Inc.{% endblock %}
-{% block description %}Scribe is a free, fully-offline document editor. No accounts, no cloud, no nonsense — just write.{% endblock %}
+{% block description %}Scribe is a free, fully-offline document editor. No accounts, no cloud, no nonsense — just write. Download for Windows.{% endblock %}
 
 {% block content %}
 <header class="app-hero">
@@ -11,24 +11,30 @@
     <span class="breadcrumb reveal"><b>Pegumax</b> / Software / Scribe</span>
     <h1 class="reveal" style="--d:.05s"><span class="g">Scribe</span></h1>
     <p class="lead reveal" style="--d:.1s">Your offline document editor. Scribe is a free, fully-offline writing tool — no accounts, no cloud, no nonsense. Just open it and write, with everything saved right on your own machine.</p>
-    <div class="app-badges reveal" style="--d:.15s"><span>○ In development</span><span class="free">Free</span><span>{% include 'partials/icon.html' with name='windows' %} Windows</span></div>
+    <div class="app-badges reveal" style="--d:.15s"><span class="live">● Live</span><span class="free">Free</span><span>{% include 'partials/icon.html' with name='windows' %} Windows 64-bit</span></div>
   </div>
 </header>
 
 <section class="app-body sec" style="padding-top:2rem;">
   <div class="wrap">
-    <h2 class="section-title reveal">What to <span class="g">expect</span></h2>
+    <h2 class="section-title reveal">Key <span class="g">features</span></h2>
     <ul class="feature-grid">
       <li class="reveal">Fully offline — your documents never leave your device.</li>
-      <li class="reveal" style="--d:.05s">No account required. Open and write instantly.</li>
+      <li class="reveal" style="--d:.05s">No account required — open it and start writing instantly.</li>
       <li class="reveal" style="--d:.1s">Clean, distraction-free writing experience.</li>
-      <li class="reveal" style="--d:.15s">Free, with no subscription and no upsells.</li>
+      <li class="reveal" style="--d:.15s">Completely free — no subscription, no upsells.</li>
     </ul>
 
-    <div class="callout reveal-s" style="max-width:640px;margin:3rem auto 0;">
-      <h3>Scribe is in development</h3>
-      <p>Want to know the moment it launches? Drop us a note and we'll let you know — and tell us what you'd want in an offline editor.</p>
-      <button class="btn btn-acc btn-lg" data-notify-app="Scribe" data-notify-kind="notify"><i class="fas fa-bell"></i> Notify me</button>
+    <h2 class="section-title reveal" style="margin-top:3.5rem;">Download</h2>
+    <div class="dl-row reveal">
+      <a class="dl-btn primary" href="https://github.com/Gus-Jacobs/Scribe/releases/download/v1.0.0/Scribe-1.0.0.Setup.exe" target="_blank" rel="noopener noreferrer">{% include 'partials/icon.html' with name='windows' %} Windows</a>
+      <span class="dl-btn disabled">{% include 'partials/icon.html' with name='apple' %} macOS <span class="soon">Soon</span></span>
+      <span class="dl-btn disabled">{% include 'partials/icon.html' with name='linux' %} Linux <span class="soon">Soon</span></span>
+    </div>
+    <p class="small-note">*Windows 64-bit available now. Mac and Linux coming soon.</p>
+    <div class="unsigned-note reveal">
+      <i class="fas fa-shield-halved"></i>
+      <div>This Windows build ships <b>unsigned</b> (no paid code-signing certificate) so we can keep it free. Windows SmartScreen may warn "publisher unknown" — click <b>More info → Run anyway</b>. <b>It is not malware</b>; Windows flags any app that doesn't pay for a license.</div>
     </div>
   </div>
 </section>
