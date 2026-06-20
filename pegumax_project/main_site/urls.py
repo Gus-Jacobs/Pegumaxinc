@@ -8,6 +8,9 @@ urlpatterns = [
     path('', views.home_view, name='home'),
     path('software-center/', views.software_center_view, name='software_center'),
     path('about/', views.about_view, name='about'),
+    # Personal portfolio — direct-URL only (pegumax.com/AugustineJacobs). Not linked in nav/footer.
+    path('AugustineJacobs/', views.portfolio_view, name='portfolio'),
+    path('AugustineJacobs', views.portfolio_view),  # tolerate no trailing slash
     path('community/', views.community_view, name='community'),
     path('store/', views.store_view, name='store'),
     path('admin-login/', views.admin_login_view, name='admin_login'), # Temporary

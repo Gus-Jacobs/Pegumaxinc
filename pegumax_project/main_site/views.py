@@ -41,6 +41,11 @@ def software_center_view(request):
 def about_view(request):
     return render(request, 'about.html')
 
+def portfolio_view(request):
+    # Personal portfolio reachable only via direct URL (pegumax.com/AugustineJacobs).
+    # Intentionally not linked from the nav/footer.
+    return render(request, 'portfolio.html')
+
 def community_view(request):
     return render(request, 'community.html')
 
