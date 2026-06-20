@@ -300,6 +300,15 @@
   .langkey .lk b{width:8px;height:8px;border-radius:2px;display:inline-block}
   .projcard .badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--disp);font-size:10px;letter-spacing:1px;
     color:var(--vio);background:rgba(124,92,255,.1);border:1px solid rgba(124,92,255,.4);border-radius:6px;padding:4px 10px;margin-top:14px;align-self:flex-start}
+  /* project links (GitHub / live on Pegumax) */
+  .projlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+  .projlinks .plink{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;
+    padding:7px 13px;border-radius:8px;border:1px solid var(--line);transition:.18s;text-decoration:none}
+  .projlinks .plink i{font-size:14px}
+  .plink.gh{background:rgba(255,255,255,.05);color:var(--ink)}
+  .plink.gh:hover{color:var(--hi);border-color:var(--hi);transform:translateY(-2px)}
+  .plink.site{background:rgba(0,239,255,.12);border-color:rgba(0,239,255,.4);color:var(--hi)}
+  .plink.site:hover{color:var(--vio);border-color:var(--vio);transform:translateY(-2px)}
 
   .certfilters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
   .certfilters button{padding:8px 15px;font-family:var(--disp);font-size:12px;letter-spacing:.5px;color:var(--mut);
@@ -575,6 +584,26 @@ var PROJECTS=[
    langs:[['JavaScript',39.4],['CSS',37.1],['HTML',23.6]]}
 ];
 
+/* Per-project links, keyed by PROJECTS name.
+   gh   = GitHub repo URL (single)
+   ghs  = multiple repos [[label,url],...]  (e.g. the staged static builds)
+   site = the project's live page in the Pegumax software center (Django-resolved). */
+var PROJECT_LINKS={
+  'Inference':{site:'{% url "main_site:inference" %}'},
+  'Student Suite':{site:'{% url "main_site:student_suite_launch" %}'},
+  'Contour':{site:'{% url "main_site:contour" %}'},
+  'LucidCut':{gh:'https://github.com/Gus-Jacobs/LucidCut',site:'{% url "main_site:lucidcut" %}'},
+  'Scribe':{gh:'https://github.com/Gus-Jacobs/Scribe',site:'{% url "main_site:scribe" %}'},
+  'ApexConverter':{gh:'https://github.com/Gus-Jacobs/ApexConverter',site:'{% url "main_site:apex_studio" %}'},
+  'Game Portal':{gh:'https://github.com/Gus-Jacobs/Nancy-Drew-Game-Portal',site:'{% url "main_site:game_portal" %}'},
+  'Pegumax Inc.':{gh:'https://github.com/Gus-Jacobs/Pegumaxinc',site:'{% url "main_site:home" %}'},
+  'Meme Generator':{gh:'https://github.com/Gus-Jacobs/Meme-Generator'},
+  'Movie Word Scanner':{gh:'https://github.com/Gus-Jacobs/Movie-Word-Scanner'},
+  'Music Mania':{gh:'https://github.com/Gus-Jacobs/Music-Mania-Webpage'},
+  'Static Builds (1–3)':{ghs:[['Build 1','https://github.com/Gus-Jacobs/Static-Build-1'],['Build 2','https://github.com/Gus-Jacobs/Static-Build-2'],['Build 3','https://github.com/Gus-Jacobs/Static-Build-3']]},
+  'Original Portfolio':{gh:'https://github.com/Gus-Jacobs/Portfolio'}
+};
+
 var SKILLS=[
   {cat:'Web Development',items:[['HTML',90,'bi-filetype-html'],['CSS',85,'bi-filetype-css'],['JavaScript',60,'bi-filetype-js'],['TypeScript',80,'bi-braces'],['React',40,'bi-bezier2'],['jQuery',45,'bi-code-slash']]},
   {cat:'Programming Languages',items:[['Python',80,'bi-filetype-py'],['C#',70,'bi-hash'],['Java',70,'bi-cup-hot'],['Dart',60,'bi-phone'],['Django',40,'bi-server'],['PHP',30,'bi-filetype-php']]},
@@ -651,9 +680,15 @@ var CERT_ICON={w3schools:'bi-mortarboard',qrps:'bi-patch-check',google:'bi-googl
   var seg=p.langs.map(function(l){return '<span style="width:'+l[1]+'%;background:'+langColor(l[0])+'"></span>';}).join('');
   var key=p.langs.map(function(l){return '<span class="lk"><b style="background:'+langColor(l[0])+'"></b>'+l[0]+' '+l[1]+'%</span>';}).join('');
   var badge=p.badge?'<span class="badge"><i class="bi bi-stars"></i>'+p.badge+'</span>':'';
+  var lk=PROJECT_LINKS[p.name]||{};
+  var links='';
+  if(lk.gh)links+='<a class="plink gh" href="'+lk.gh+'" target="_blank" rel="noopener"><i class="bi bi-github"></i> GitHub</a>';
+  if(lk.ghs)links+=lk.ghs.map(function(r){return '<a class="plink gh" href="'+r[1]+'" target="_blank" rel="noopener"><i class="bi bi-github"></i> '+r[0]+'</a>';}).join('');
+  if(lk.site)links+='<a class="plink site" href="'+lk.site+'" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i> View on Pegumax</a>';
+  var linksrow=links?'<div class="projlinks">'+links+'</div>':'';
   var el=document.createElement('div');el.className='projcard stag';
   el.innerHTML='<div class="top"><div class="pico"><i class="bi '+p.icon+'"></i></div><h3>'+p.name+'</h3></div>'+
-    '<div class="tagline">'+p.tagline+'</div><div class="langbar">'+seg+'</div><div class="langkey">'+key+'</div>'+badge;
+    '<div class="tagline">'+p.tagline+'</div><div class="langbar">'+seg+'</div><div class="langkey">'+key+'</div>'+badge+linksrow;
   g.appendChild(el);});})();
 
 // skills
