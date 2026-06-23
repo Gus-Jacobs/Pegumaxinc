@@ -84,6 +84,19 @@
         </div>
       </div>
 
+      <!-- Learning & Gamification -->
+      <div class="acct-card reveal-s">
+        <h3><i class="fas fa-graduation-cap"></i> Learning &amp; Ranks</h3>
+        {% if academy_profile %}
+        <div class="acct-row"><span>Skill Level</span> <b>Level {{ academy_profile.current_level }}</b></div>
+        <div class="acct-row"><span>Total XP</span> <b>{{ academy_profile.total_xp }} XP</b></div>
+        {% endif %}
+        <div class="acct-actions">
+          <a href="{% url 'academy:dashboard' %}" class="btn btn-cy">Learning Dashboard</a>
+          <a href="{% url 'academy:storefront' %}" class="btn btn-ghost">Browse Store</a>
+        </div>
+      </div>
+
       <!-- Security & Activity -->
       <div class="acct-card reveal-s">
         <h3><i class="fas fa-shield-alt"></i> Security &amp; Activity</h3>

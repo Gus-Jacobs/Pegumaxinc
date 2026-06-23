@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Learning Dashboard — {{ user.username|capfirst }} | Pegumax{% endblock %}
+
+{% block extra_head %}
+<style>
+  .dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem;margin-top:1.4rem;}
+  .dash-card{background:var(--bg2,#11111b);border:1px solid var(--line,rgba(255,255,255,.08));border-radius:16px;padding:1.4rem;}
+  .dash-card h3{font-family:'Space Grotesk',sans-serif;margin:0 0 .8rem;display:flex;align-items:center;gap:.5rem;}
+  .rank-card{grid-column:1/-1;background:linear-gradient(135deg,rgba(124,92,255,.18),rgba(34,211,238,.1));border-color:rgba(124,92,255,.4);}
+  .rank-top{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;}
+  .level-badge{width:5.5rem;height:5.5rem;border-radius:50%;display:grid;place-items:center;flex-shrink:0;
+    background:radial-gradient(circle at 50% 30%,#7c5cff,#3a2a8c);box-shadow:0 0 26px rgba(124,92,255,.5);
+    font-family:'Space Grotesk',sans-serif;color:#fff;text-align:center;line-height:1;}
+  .level-badge b{font-size:1.8rem;display:block;}
+  .level-badge span{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;opacity:.8;}
+  .xp-wrap{flex:1;min-width:220px;}
+  .xp-bar{height:14px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;margin:.4rem 0;}
+  .xp-bar > span{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#36e0a0);transition:width .6s;}
+  .teaser-band{grid-column:1/-1;text-align:center;background:rgba(34,211,238,.08);border:1px dashed rgba(34,211,238,.4);
+    border-radius:14px;padding:1rem 1.4rem;font-family:'Space Grotesk',sans-serif;color:var(--cy);}
+  .item-row{display:flex;align-items:center;gap:.7rem;padding:.6rem 0;border-bottom:1px solid var(--line,rgba(255,255,255,.06));}
+  .item-row:last-child{border-bottom:none;}
+  .badge-ico{width:2.4rem;height:2.4rem;border-radius:10px;display:grid;place-items:center;flex-shrink:0;
+    background:rgba(247,183,49,.15);color:#f7b731;}
+  .promo-code{font-family:'JetBrains Mono',monospace;background:rgba(54,224,160,.12);border:1px dashed rgba(54,224,160,.5);
+    color:var(--grn);padding:.5rem .8rem;border-radius:8px;display:inline-block;letter-spacing:.05em;font-weight:700;}
+  .empty{color:var(--mut);font-size:.9rem;}
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="phead" style="min-height:auto;">
+  <div class="pbg" style="background-image:url('{% static 'img/img8.webp' %}')"></div>
+  <div class="wrap">
+    <span class="breadcrumb"><b>Pegumax</b> / Learning Dashboard</span>
+    <h1 class="g">{{ user.username|capfirst }}'s progress</h1>
+    <p>Your courses, ranks, certificates and rewards — all in one place.</p>
+  </div>
+</header>
+
+<section class="sec" style="padding-top:0;">
+  <div class="wrap">
+
+    {% if just_completed %}
+    <div class="msg-list"><li class="success" style="display:block;">
+      🏆 You completed <b>{{ just_completed.title }}</b>! Your certificate is ready and your reward code
+      <span class="promo-code">{{ just_completed.promo }}</span> is below.
+    </li></div>
+    {% endif %}
+
+    <div class="dash-grid">
+
+      <!-- Skill Ranking -->
+      <div class="dash-card rank-card">
+        <h3><i class="fas fa-ranking-star" style="color:#b9a4ff"></i> Skill Ranking</h3>
+        <div class="rank-top">
+          <div class="level-badge"><div><b>{{ profile.current_level }}</b><span>Level</span></div></div>
+          <div class="xp-wrap">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--mut);">
+              <span>{{ profile.total_xp }} XP total</span>
+              <span>{{ profile.xp_into_level }} / {{ profile.xp_to_next_level }} to Level {{ profile.current_level|add:1 }}</span>
+            </div>
+            <div class="xp-bar"><span style="width:{{ profile.level_progress_percent }}%"></span></div>
+          </div>
+        </div>
+        <div class="teaser-band" style="margin-top:1rem;">
+          <i class="fas fa-bullhorn"></i> Get skills, earn ranks. Share it on the community when it opens!
+        </div>
+      </div>
+
+      <!-- My Courses -->
+      <div class="dash-card">
+        <h3><i class="fas fa-book-open" style="color:var(--cy)"></i> My Courses</h3>
+        {% for p in progresses %}
+        <div class="item-row">
+          <div style="flex:1;">
+            <a href="{% url 'academy:course_detail' p.course.slug %}" style="color:#fff;text-decoration:none;font-weight:500;">{{ p.course.title }}</a>
+            <div style="font-size:.78rem;color:var(--mut);">
+              {{ p.passed_count }}/{{ p.course.module_count }} modules
+              {% if p.completed %}· <span style="color:var(--grn)">Completed ({{ p.final_score }}%)</span>
+              {% elif p.is_locked %}· <span style="color:var(--red)">Locked</span>
+              {% else %}· {{ p.attempts_remaining }} attempts left{% endif %}
+            </div>
+          </div>
+          {% if p.completed %}<i class="fas fa-trophy" style="color:#f7b731"></i>
+          {% elif p.is_locked %}<i class="fas fa-lock" style="color:var(--red)"></i>
+          {% else %}<a class="btn btn-ghost" href="{% url 'academy:lesson' p.course.slug p.next_module_number %}">Continue</a>{% endif %}
+        </div>
+        {% empty %}
+        <p class="empty">No courses yet. <a href="{% url 'academy:storefront' %}">Browse the store →</a></p>
+        {% endfor %}
+      </div>
+
+      <!-- Certificates -->
+      <div class="dash-card">
+        <h3><i class="fas fa-certificate" style="color:var(--grn)"></i> Certificates</h3>
+        {% for c in certificates %}
+        <div class="item-row">
+          <div class="badge-ico" style="background:rgba(54,224,160,.15);color:var(--grn)"><i class="fas fa-award"></i></div>
+          <div style="flex:1;">
+            <b>{{ c.certification_name }}</b>
+            <div style="font-size:.78rem;color:var(--mut);">Issued {{ c.date_issued|date:"M j, Y" }}</div>
+          </div>
+          <a class="btn btn-cy" href="{% url 'academy:certificate' c.unique_uuid %}" target="_blank" rel="noopener">View</a>
+        </div>
+        {% empty %}
+        <p class="empty">Complete a course to earn your first certificate.</p>
+        {% endfor %}
+      </div>
+
+      <!-- Achievements -->
+      <div class="dash-card">
+        <h3><i class="fas fa-medal" style="color:#f7b731"></i> Achievements</h3>
+        {% for a in achievements %}
+        <div class="item-row">
+          <div class="badge-ico"><i class="fas fa-star"></i></div>
+          <div style="flex:1;"><b>{{ a.name }}</b>
+            <div style="font-size:.78rem;color:var(--mut);">{{ a.description }}</div></div>
+        </div>
+        {% empty %}
+        <p class="empty">No badges yet — pass quizzes and finish courses to unlock them.</p>
+        {% endfor %}
+      </div>
+
+      <!-- Reward codes -->
+      <div class="dash-card">
+        <h3><i class="fas fa-ticket" style="color:var(--cy)"></i> Reward Codes</h3>
+        {% for promo in promo_codes %}
+        <div class="item-row">
+          <div style="flex:1;">
+            <span class="promo-code">{{ promo.code_string }}</span>
+            <div style="font-size:.78rem;color:var(--mut);margin-top:.3rem;">
+              {{ promo.discount_percentage }}% off {{ promo.target_tag }} · expires {{ promo.expiration_date|date:"M j, Y" }}</div>
+          </div>
+        </div>
+        {% empty %}
+        <p class="empty">Finish a course to unlock a 50% reward code.</p>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

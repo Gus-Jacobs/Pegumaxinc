@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ module.title }} — {{ course.title }} | Pegumax{% endblock %}
+
+{% block extra_head %}
+<style>
+  .lesson-wrap{display:grid;grid-template-columns:240px 1fr;gap:1.6rem;align-items:start;}
+  @media(max-width:860px){.lesson-wrap{grid-template-columns:1fr;}}
+  .lesson-nav{background:var(--bg2,#11111b);border:1px solid var(--line,rgba(255,255,255,.08));border-radius:14px;padding:.8rem;position:sticky;top:90px;}
+  .lesson-nav a{display:flex;gap:.55rem;align-items:center;padding:.45rem .55rem;border-radius:8px;text-decoration:none;color:var(--mut);font-size:.88rem;}
+  .lesson-nav a.active{background:rgba(124,92,255,.16);color:#fff;}
+  .lesson-nav a.done{color:var(--grn);}
+  .lesson-nav .dot{width:1.4rem;height:1.4rem;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-size:.7rem;background:rgba(255,255,255,.06);}
+  .lesson-body{background:var(--bg2,#11111b);border:1px solid var(--line,rgba(255,255,255,.08));border-radius:16px;padding:1.6rem 1.8rem;}
+  .lesson-body h1{font-family:'Space Grotesk',sans-serif;font-size:1.9rem;margin:.2rem 0 1rem;}
+  .lesson-body h2{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;margin:1.4rem 0 .5rem;color:var(--cy);}
+  .lesson-body p{line-height:1.75;color:#d7d7e3;margin:.6rem 0;}
+  .lesson-body pre{background:#0b0b13;border:1px solid var(--line,rgba(255,255,255,.08));border-radius:10px;padding:1rem;overflow:auto;}
+  .lesson-body code{font-family:'JetBrains Mono',monospace;font-size:.86rem;}
+  .lesson-body p code{background:rgba(124,92,255,.15);padding:.08rem .35rem;border-radius:5px;}
+  .quiz-box{margin-top:2rem;background:#0d0d16;border:1px solid rgba(124,92,255,.4);border-radius:16px;padding:1.4rem 1.6rem;}
+  .quiz-box h3{font-family:'Space Grotesk',sans-serif;margin:0 0 .3rem;}
+  .quiz-opt{display:block;background:var(--bg3,#16161f);border:1px solid var(--line,rgba(255,255,255,.08));border-radius:10px;
+    padding:.8rem 1rem;margin:.5rem 0;cursor:pointer;transition:border-color .15s;}
+  .quiz-opt:hover{border-color:rgba(34,211,238,.5);}
+  .quiz-opt input{margin-right:.6rem;}
+  .lesson-foot{display:flex;justify-content:space-between;margin-top:1.4rem;gap:.6rem;}
+  .passed-flag{background:rgba(54,224,160,.12);border:1px solid rgba(54,224,160,.4);color:var(--grn);padding:.8rem 1rem;border-radius:10px;margin-top:1.5rem;}
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="phead" style="min-height:auto;padding-bottom:1rem;">
+  <div class="pbg" style="background-image:url('{% static 'img/img8.webp' %}')"></div>
+  <div class="wrap">
+    <span class="breadcrumb"><b>Pegumax</b> / <a href="{% url 'academy:storefront' %}">Store</a> /
+      <a href="{% url 'academy:course_detail' course.slug %}">{{ course.title }}</a></span>
+    <h1 class="g" style="font-size:1.6rem;">Module {{ module.module_number }} of {{ course.module_count }}</h1>
+  </div>
+</header>
+
+<section class="sec" style="padding-top:0;">
+  <div class="wrap">
+    {% if messages %}
+    <ul class="msg-list" style="max-width:none;margin-bottom:1rem;">
+      {% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="lesson-wrap">
+      <nav class="lesson-nav">
+        {% for m in modules %}
+          <a class="{% if m.module_number == module.module_number %}active{% endif %}
+             {% if m.module_number in progress.passed_modules %}done{% endif %}"
+             href="{% url 'academy:lesson' course.slug m.module_number %}">
+            <span class="dot">{% if m.module_number in progress.passed_modules %}<i class="fas fa-check"></i>{% else %}{{ m.module_number }}{% endif %}</span>
+            {{ m.title|truncatechars:26 }}
+          </a>
+        {% endfor %}
+      </nav>
+
+      <div>
+        <article class="lesson-body">
+          {{ content_html|safe }}
+        </article>
+
+        {% if already_passed %}
+          <div class="passed-flag"><i class="fas fa-check-circle"></i> You've already passed this module's quiz.</div>
+        {% elif quiz.question %}
+          <form class="quiz-box" method="post" action="{% url 'academy:submit_quiz' course.slug module.module_number %}">
+            {% csrf_token %}
+            <h3><i class="fas fa-flask"></i> Validation Quiz</h3>
+            <p style="color:var(--mut);font-size:.86rem;">Pass to earn XP. {{ progress.attempts_remaining }} attempt(s) remaining before the course locks.</p>
+            <p style="font-weight:600;margin-top:.8rem;">{{ quiz.question }}</p>
+            {% for opt in quiz.options %}
+              <label class="quiz-opt"><input type="radio" name="answer" value="{{ forloop.counter0 }}" required>{{ opt }}</label>
+            {% endfor %}
+            <button class="btn btn-acc btn-lg" type="submit" style="margin-top:.6rem;">Submit answer</button>
+          </form>
+        {% endif %}
+
+        <div class="lesson-foot">
+          {% if module.module_number > 1 %}
+            <a class="btn btn-ghost" href="{% url 'academy:lesson' course.slug module.module_number|add:'-1' %}">&larr; Previous</a>
+          {% else %}<span></span>{% endif %}
+          {% if already_passed and not is_final %}
+            <a class="btn btn-cy" href="{% url 'academy:lesson' course.slug module.module_number|add:'1' %}">Next module &rarr;</a>
+          {% elif is_final and progress.completed %}
+            <a class="btn btn-cy" href="{% url 'academy:dashboard' %}">View certificate &rarr;</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
