@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
     'main_site.apps.MainSiteConfig',
+    'academy.apps.AcademyConfig',
     'django.contrib.humanize',
     'rest_framework',
     'bot_monitor',
@@ -112,6 +113,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'main_site.context_processors.site',
+                'academy.context_processors.gamification',
             ],
         },
     },
@@ -202,6 +204,16 @@ STRIPE_PUBLISHABLE_KEY = os.environ.get(
     'pk_live_51RPqGyAt2vKSOayIMOdICSqVK5niDuVm1tUXnt8dZYmNuXYntZNxT9wgUCkHStgs8ljluQRFPyxvoNcWL7K7mZgs00vl92BYx1'
 )
 STRIPE_DONATION_KEY = os.environ.get('STRIPE_DONATION_KEY')
+
+# --- Stripe (storefront: courses + merch) ---
+# Secret key for creating Checkout Sessions on the server. Falls back to the
+# donation key so a single configured key powers the whole storefront if desired.
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY') or STRIPE_DONATION_KEY
+# Webhook signing secret (Stripe Dashboard -> Developers -> Webhooks). Required
+# to verify webhook authenticity in production.
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
+# Default currency for the storefront.
+STRIPE_CURRENCY = os.environ.get('STRIPE_CURRENCY', 'usd')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

@@ -235,6 +235,50 @@
 
 <script id="site-config" type="application/json">{ "stripePk": "{{ stripe_pk|escapejs }}" }</script>
 <script src="{% static 'js/pegumax.js' %}"></script>
+
+{# ---- Global gamification level-up celebration (fires on any page) ---- #}
+{% if academy_level_up %}
+<div class="modal open" id="levelUpModal" style="z-index:9999;">
+  <div class="ovl" data-levelup-close></div>
+  <div class="box" style="text-align:center;max-width:420px;">
+    <button class="close" data-levelup-close>&times;</button>
+    <div style="font-size:3.2rem;line-height:1;margin:.4rem 0;">🎉</div>
+    <h3 style="font-size:1.6rem;">Level Up!</h3>
+    <p class="msub">You've reached <b style="color:var(--cy);font-size:1.3rem;">Level {{ academy_level_up }}</b></p>
+    <p style="color:var(--mut);font-size:.92rem;">Keep going — get skills, earn ranks. Share it on the community when it opens!</p>
+    <a class="btn btn-cy btn-lg" href="{% url 'academy:dashboard' %}" style="margin-top:.6rem;">View my rank</a>
+    <button class="btn btn-ghost btn-lg" data-levelup-close style="margin-top:.5rem;">Keep learning</button>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script>
+(function(){
+  function fireConfetti(){
+    if (typeof confetti !== 'function') return;
+    var end = Date.now() + 1200;
+    var colors = ['#7c5cff','#22d3ee','#36e0a0','#f7b731'];
+    (function frame(){
+      confetti({particleCount:4, angle:60, spread:60, origin:{x:0}, colors:colors});
+      confetti({particleCount:4, angle:120, spread:60, origin:{x:1}, colors:colors});
+      if (Date.now() < end) requestAnimationFrame(frame);
+    })();
+    confetti({particleCount:140, spread:80, origin:{y:0.6}, colors:colors});
+  }
+  function closeLevelUp(){
+    var m = document.getElementById('levelUpModal');
+    if (m) m.classList.remove('open');
+  }
+  document.querySelectorAll('[data-levelup-close]').forEach(function(el){
+    el.addEventListener('click', closeLevelUp);
+  });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLevelUp(); });
+  // Fire once the confetti lib has loaded.
+  if (document.readyState !== 'loading') setTimeout(fireConfetti, 250);
+  else document.addEventListener('DOMContentLoaded', function(){ setTimeout(fireConfetti, 250); });
+})();
+</script>
+{% endif %}
+
 {% block extra_js %}{% endblock %}
 </body>
 </html>

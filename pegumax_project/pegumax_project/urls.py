@@ -22,6 +22,7 @@ urlpatterns = [
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain'), name='robots'),
     path('', include('main_site.urls', namespace='main_site')),
+    path('academy/', include('academy.urls', namespace='academy')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('bot-api/', include('bot_monitor.urls', namespace='bot_monitor')),
 

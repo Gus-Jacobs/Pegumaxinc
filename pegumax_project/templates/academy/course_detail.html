@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ course.title }} | Pegumax Courses{% endblock %}
+{% block description %}{{ course.summary|truncatewords:30 }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  .course-head{display:grid;grid-template-columns:1.6fr 1fr;gap:1.6rem;align-items:start;}
+  @media(max-width:760px){.course-head{grid-template-columns:1fr;}}
+  .buy-box{background:var(--bg2,#11111b);border:1px solid var(--line,rgba(255,255,255,.08));border-radius:16px;padding:1.4rem;position:sticky;top:90px;}
+  .buy-box .price{font-family:'JetBrains Mono',monospace;font-size:2rem;color:var(--cy);font-weight:700;}
+  .mod-list{margin-top:1rem;display:grid;gap:.55rem;}
+  .mod-row{display:flex;align-items:center;gap:.8rem;background:var(--bg2,#11111b);border:1px solid var(--line,rgba(255,255,255,.08));
+    border-radius:12px;padding:.8rem 1rem;text-decoration:none;color:inherit;transition:border-color .15s;}
+  .mod-row:hover{border-color:rgba(34,211,238,.5);}
+  .mod-num{width:2rem;height:2rem;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;
+    background:rgba(124,92,255,.18);color:#b9a4ff;font-size:.85rem;}
+  .mod-row.done .mod-num{background:rgba(54,224,160,.18);color:var(--grn);}
+  .mod-row.locked{opacity:.55;}
+  .mod-title{flex:1;font-weight:500;}
+  .progress-bar{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin:.5rem 0;}
+  .progress-bar > span{display:block;height:100%;background:linear-gradient(90deg,#22d3ee,#36e0a0);}
+  .lock-note{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.35);color:var(--red);
+    padding:.7rem 1rem;border-radius:10px;font-size:.9rem;margin-top:.6rem;}
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="phead">
+  <div class="pbg" style="background-image:url('{% static 'img/img8.webp' %}')"></div>
+  <div class="wrap">
+    <span class="breadcrumb"><b>Pegumax</b> / <a href="{% url 'academy:storefront' %}">Store</a> / Course</span>
+    <h1 class="g">{{ course.title }}</h1>
+    <p>{{ course.summary }}</p>
+  </div>
+</header>
+
+<section class="sec" style="padding-top:0;">
+  <div class="wrap">
+
+    {% if messages %}
+    <ul class="msg-list" style="max-width:none;margin-bottom:1rem;">
+      {% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="course-head">
+      <div>
+        <span class="eyebrow c">Curriculum</span>
+        <h2 class="g">{{ course.module_count }} modules</h2>
+
+        {% if owned and progress %}
+        <div class="progress-bar"><span style="width:{{ progress.progress_percent }}%"></span></div>
+        <p style="color:var(--mut);font-size:.9rem;">{{ progress.passed_count }} / {{ course.module_count }} modules passed
+          · {{ progress.attempts_remaining }} attempt(s) before lock</p>
+          {% if progress.is_locked %}
+          <div class="lock-note"><i class="fas fa-lock"></i> This course is locked — you've used all your retakes.
+            Re-purchase below for a {{ second_chance_discount }}% second-chance discount to reset your attempts.</div>
+          {% endif %}
+        {% endif %}
+
+        <div class="mod-list">
+          {% for m in modules %}
+            {% if owned and not progress.is_locked %}
+              <a class="mod-row {% if progress and m.module_number in progress.passed_modules %}done{% endif %}"
+                 href="{% url 'academy:lesson' course.slug m.module_number %}">
+                <span class="mod-num">{% if progress and m.module_number in progress.passed_modules %}<i class="fas fa-check"></i>{% else %}{{ m.module_number }}{% endif %}</span>
+                <span class="mod-title">{{ m.title }}</span>
+                <i class="fas fa-chevron-right" style="color:var(--mut)"></i>
+              </a>
+            {% else %}
+              <div class="mod-row locked">
+                <span class="mod-num">{{ m.module_number }}</span>
+                <span class="mod-title">{{ m.title }}</span>
+                <i class="fas fa-lock" style="color:var(--mut)"></i>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <aside class="buy-box">
+        {% if owned and not progress.is_locked %}
+          <div class="price">Owned</div>
+          <p style="color:var(--mut);font-size:.9rem;">You have full access to this course.</p>
+          <a class="btn btn-cy btn-lg" style="width:100%;" href="{% url 'academy:lesson' course.slug progress.next_module_number %}">
+            {% if progress.passed_count %}Continue{% else %}Start course{% endif %}</a>
+          {% if progress.completed %}
+            <a class="btn btn-ghost btn-lg" style="width:100%;margin-top:.5rem;" href="{% url 'academy:dashboard' %}">View certificate</a>
+          {% endif %}
+        {% else %}
+          {% if progress.is_locked %}
+            <p style="color:var(--red);font-size:.82rem;"><del>${{ course.price|floatformat:0 }}</del> second-chance</p>
+            <div class="price">${{ course.price|floatformat:0|add:"0" }}<span style="font-size:.9rem;color:var(--mut)"> · 50% off applied at checkout</span></div>
+          {% else %}
+            <div class="price">${{ course.price|floatformat:0 }}</div>
+          {% endif %}
+          <ul style="color:var(--mut);font-size:.9rem;line-height:1.9;list-style:none;padding:0;margin:.6rem 0;">
+            <li><i class="fas fa-check" style="color:var(--grn)"></i> {{ course.module_count }} full modules + quizzes</li>
+            <li><i class="fas fa-check" style="color:var(--grn)"></i> XP, levels & achievements</li>
+            <li><i class="fas fa-check" style="color:var(--grn)"></i> Printable certificate on completion</li>
+            <li><i class="fas fa-check" style="color:var(--grn)"></i> 50% reward code when you finish</li>
+          </ul>
+          <form method="post" action="{% url 'academy:checkout_course' course.slug %}">
+            {% csrf_token %}
+            <button class="btn btn-acc btn-lg" type="submit" style="width:100%;">
+              {% if progress.is_locked %}Re-purchase (50% off){% else %}Buy now{% endif %}</button>
+          </form>
+          <div class="stripe-secure" style="margin-top:.6rem;"><i class="fas fa-lock"></i> Secure checkout · <b>stripe</b></div>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

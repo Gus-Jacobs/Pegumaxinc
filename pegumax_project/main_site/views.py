@@ -50,7 +50,9 @@ def community_view(request):
     return render(request, 'community.html')
 
 def store_view(request):
-    return render(request, 'store.html')
+    # The storefront now lives in the academy app (courses + merch). Keep the
+    # legacy main_site:store URL working by handing off to it.
+    return redirect('academy:storefront')
 
 @login_required
 def admin_login_view(request):

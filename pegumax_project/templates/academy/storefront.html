@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}Store — Courses & Merch | Pegumax Inc.{% endblock %}
+{% block description %}Buy ship-first technical courses and Pegumax studio merch. Earn XP, levels, certificates and reward codes as you learn.{% endblock %}
+
+{% block extra_head %}
+<style>
+  .shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-top:1.4rem;}
+  .shop-card{background:var(--bg2,#11111b);border:1px solid var(--line,rgba(255,255,255,.08));border-radius:16px;
+    padding:1.3rem;display:flex;flex-direction:column;gap:.6rem;transition:transform .18s,border-color .18s;}
+  .shop-card:hover{transform:translateY(-4px);border-color:rgba(34,211,238,.5);}
+  .shop-card h3{font-family:'Space Grotesk',sans-serif;font-size:1.18rem;margin:0;}
+  .shop-card .sum{color:var(--mut);font-size:.92rem;flex:1;}
+  .shop-card .price{font-family:'JetBrains Mono',monospace;font-size:1.35rem;color:var(--cy);font-weight:700;}
+  .shop-card .tags{display:flex;flex-wrap:wrap;gap:.35rem;}
+  .pill{font-size:.7rem;font-family:'JetBrains Mono',monospace;background:rgba(34,211,238,.12);color:var(--cy);
+    border:1px solid rgba(34,211,238,.3);padding:.12rem .5rem;border-radius:999px;}
+  .owned-badge{font-size:.72rem;color:var(--grn);border:1px solid rgba(54,224,160,.4);
+    background:rgba(54,224,160,.1);padding:.2rem .6rem;border-radius:999px;align-self:flex-start;}
+  .shop-card .row{display:flex;gap:.5rem;margin-top:.4rem;}
+  .shop-card form{margin:0;flex:1;}
+  .shop-card .btn{width:100%;}
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="phead">
+  <div class="pbg" style="background-image:url('{% static 'img/img10.webp' %}')"></div>
+  <div class="wrap">
+    <span class="breadcrumb reveal"><b>Pegumax</b> / Store</span>
+    <h1 class="reveal g" style="--d:.05s">Learn it. <span class="g">Build it.</span> Own it.</h1>
+    <p class="reveal" style="--d:.1s">Ship-first technical courses and studio merch. Every course you finish
+      earns XP, levels, a printable certificate, and a 50% reward code.</p>
+    {% if user.is_authenticated %}
+      <a class="btn btn-cy reveal" style="--d:.16s;margin-top:.6rem;" href="{% url 'academy:dashboard' %}">
+        <i class="fas fa-trophy"></i> My Learning Dashboard</a>
+    {% endif %}
+  </div>
+</header>
+
+<section class="sec" style="padding-top:1rem;">
+  <div class="wrap">
+    <span class="eyebrow c">Courses</span>
+    <h2 class="g">Automated, ship-first courses</h2>
+    {% if courses %}
+    <div class="shop-grid">
+      {% for course in courses %}
+      <div class="shop-card reveal">
+        <div class="tags">
+          {% if course.domain_tag %}<span class="pill">{{ course.domain_tag }}</span>{% endif %}
+          <span class="pill">{{ course.module_count }} modules</span>
+        </div>
+        <h3>{{ course.title }}</h3>
+        <p class="sum">{{ course.summary|truncatewords:24 }}</p>
+        <div class="price">${{ course.price|floatformat:0 }}</div>
+        {% if course.id in owned_course_ids %}
+          <span class="owned-badge"><i class="fas fa-check-circle"></i> Owned</span>
+          <a class="btn btn-cy" href="{% url 'academy:course_detail' course.slug %}">Continue learning</a>
+        {% else %}
+          <div class="row">
+            <a class="btn btn-ghost" href="{% url 'academy:course_detail' course.slug %}">Details</a>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'academy:checkout_course' course.slug %}">
+              {% csrf_token %}
+              <button class="btn btn-acc" type="submit">Buy ${{ course.price|floatformat:0 }}</button>
+            </form>
+            {% else %}
+            <button class="btn btn-acc" data-modal="login" style="flex:1;">Log in to buy</button>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="sum" style="color:var(--mut)">No courses published yet. Run <code>python manage.py seed_courses</code>.</p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="sec" style="padding-top:0;">
+  <div class="wrap">
+    <span class="eyebrow c">Merch</span>
+    <h2 class="g">Studio merch</h2>
+    {% if merch_items %}
+    <div class="shop-grid">
+      {% for item in merch_items %}
+      <div class="shop-card reveal">
+        <div class="tags">
+          {% for t in item.tag_list %}<span class="pill">{{ t }}</span>{% endfor %}
+        </div>
+        <h3>{{ item.name }}</h3>
+        <p class="sum">{{ item.description }}</p>
+        <div class="price">${{ item.price|floatformat:0 }}</div>
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'academy:checkout_merch' item.id %}">
+          {% csrf_token %}
+          <button class="btn btn-acc" type="submit">Buy ${{ item.price|floatformat:0 }}</button>
+        </form>
+        {% else %}
+        <button class="btn btn-acc" data-modal="login">Log in to buy</button>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="sum" style="color:var(--mut)">Merch coming soon.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
