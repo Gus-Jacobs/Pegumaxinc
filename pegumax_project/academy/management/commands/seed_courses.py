@@ -16,27 +16,28 @@ from django.db import transaction
 from django.utils.text import slugify
 
 from academy import course_content as cc
-from academy.models import Course, CourseModule, MerchItem
+from academy.models import Course, CourseModule, MerchItem, COURSE_PRICE
 
 
 def _courses_dir() -> Path:
     return Path(settings.BASE_DIR) / "Courses"
 
 
-# A small starter merch catalogue mapped to course domains.
+# A small starter merch catalogue mapped to course domains, with Developer
+# Tier gating to demonstrate the gamified unlock (Printful sync replaces these).
 SEED_MERCH = [
-    {"name": "Pegumax Builder Tee", "price": 28,
-     "description": "Soft cotton tee for the build-it-yourself crowd.",
-     "tags": "flutter,electron,csharp", "base_image_url": ""},
-    {"name": "Local-First Hoodie", "price": 54,
-     "description": "Heavyweight hoodie — own your stack, own your software.",
-     "tags": "django,system-design,sql", "base_image_url": ""},
-    {"name": "Hacker Sticker Pack", "price": 9,
+    {"name": "Hacker Sticker Pack", "price": 9, "product_type": "sticker",
      "description": "Vinyl sticker set for laptops and water bottles.",
-     "tags": "pentest,cybersecurity,unix", "base_image_url": ""},
-    {"name": "Prompt Engineer Mug", "price": 16,
+     "tags": "pentest,cybersecurity,unix", "required_dev_tier": 1, "base_image_url": ""},
+    {"name": "Prompt Engineer Mug", "price": 16, "product_type": "mug",
      "description": "Ceramic mug for the AI-leverage maximalists.",
-     "tags": "ai-coding,python-ai,local-ai,machine-learning", "base_image_url": ""},
+     "tags": "ai-coding,python-ai,local-ai,machine-learning", "required_dev_tier": 1, "base_image_url": ""},
+    {"name": "Pegumax Builder Tee", "price": 28, "product_type": "tee",
+     "description": "Soft cotton tee for the build-it-yourself crowd.",
+     "tags": "flutter,electron,csharp", "required_dev_tier": 2, "base_image_url": ""},
+    {"name": "Local-First Hoodie", "price": 54, "product_type": "hoodie",
+     "description": "Heavyweight hoodie — own your stack, own your software. Dev Tier 3 flex.",
+     "tags": "django,system-design,sql", "required_dev_tier": 3, "base_image_url": ""},
 ]
 
 
@@ -46,8 +47,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--fresh", action="store_true",
                             help="Delete existing academy course data before seeding.")
-        parser.add_argument("--no-merch", action="store_true",
-                            help="Skip seeding the starter merch catalogue.")
+        parser.add_argument("--demo-merch", action="store_true",
+                            help="Also seed placeholder demo merch (off by default; "
+                                 "real merch comes from `sync_printful`).")
 
     @transaction.atomic
     def handle(self, *args, **opts):
@@ -78,7 +80,9 @@ class Command(BaseCommand):
                 defaults={
                     "title": parsed["title"],
                     "summary": parsed["subtitle"] or f"A practical, ship-first course: {parsed['title']}.",
-                    "price": meta["price"],
+                    # Flat $12 across the catalogue — the bundle play: buy a course,
+                    # earn 50% off matching merch.
+                    "price": COURSE_PRICE,
                     "domain_tag": meta["tag"],
                     "source_file": path.name,
                     "published": True,
@@ -103,7 +107,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(
                 f"  [ok] {course.title}  [{meta['tag']}]  - {len(kept_numbers)} modules"))
 
-        if not opts["no_merch"]:
+        if opts["demo_merch"]:
             for item in SEED_MERCH:
                 MerchItem.objects.update_or_create(
                     name=item["name"],
@@ -111,6 +115,8 @@ class Command(BaseCommand):
                         "description": item["description"],
                         "price": item["price"],
                         "tags": item["tags"],
+                        "product_type": item.get("product_type", ""),
+                        "required_dev_tier": item.get("required_dev_tier", 1),
                         "base_image_url": item["base_image_url"],
                         "active": True,
                     },

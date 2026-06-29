@@ -1,0 +1,43 @@
+{% extends "academy/legal/_base.html" %}
+{% block title %}Store Return Policy | Pegumax{% endblock %}
+{% block legal_crumb %}Return Policy{% endblock %}
+{% block legal_title %}Return &amp; Refund Policy{% endblock %}
+
+{% block legal_body %}
+<p>Pegumax merchandise is made just for you, on demand. Please review this policy carefully
+before ordering — especially sizing.</p>
+
+<div class="legal-callout">
+  <p style="margin:0;"><b>Print-on-demand — made to order.</b></p>
+  <p style="margin:.4rem 0 0;">All physical merchandise is custom-made to order. Because of this, we do not offer refunds or exchanges for buyer's remorse or if you order the wrong size. Refunds or replacements are only issued if an item arrives damaged or misprinted by our manufacturing partner.</p>
+</div>
+
+<h2>1. Damaged or misprinted items</h2>
+<p>If your item arrives <b>damaged, defective, or misprinted</b>, we'll make it right with a free
+replacement or a refund. To file a claim:</p>
+<ul>
+  <li>Contact us at <a href="mailto:pegumaxinc@gmail.com">pegumaxinc@gmail.com</a> within
+      <b>30 days</b> of delivery.</li>
+  <li>Include your order number and clear photos of the issue (and the shipping label/packaging
+      where relevant).</li>
+  <li>Once verified with our manufacturing partner, we'll arrange a reprint or refund at no cost to you.</li>
+</ul>
+
+<h2>2. Wrong size or change of mind</h2>
+<p>Because each item is produced specifically for your order, we <b>cannot</b> accept returns or
+issue refunds for incorrect size selection, change of mind, or buyer's remorse. Please use the
+size guide and double-check your variant (size/color) before checking out.</p>
+
+<h2>3. Lost or significantly delayed shipments</h2>
+<p>If a tracked order is lost in transit, contact us and we'll work with the carrier and our
+manufacturing partner to resolve it, including a replacement where appropriate.</p>
+
+<h2>4. Order changes &amp; cancellations</h2>
+<p>Because items enter production quickly, we generally cannot change or cancel an order once it
+has been submitted to manufacturing. Contact us immediately if you spot an error and we'll help
+where it's still possible.</p>
+
+<h2>5. Online courses</h2>
+<p>Courses are digital products delivered instantly and are <b>non-refundable</b> once access has
+been granted. See our <a href="{% url 'academy:terms' %}">Terms of Service</a> for details.</p>
+{% endblock %}

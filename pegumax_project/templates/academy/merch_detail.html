@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ item.name }} — Store | Pegumax{% endblock %}
+{% block description %}{{ item.description|striptags|truncatewords:30 }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  .pd-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;}
+  @media(max-width:760px){.pd-grid{grid-template-columns:1fr;}}
+  .pd-gallery{position:sticky;top:90px;}
+  .pd-img{border-radius:16px;overflow:hidden;background:#0f0f18;border:1px solid var(--line,rgba(255,255,255,.08));
+    display:grid;place-items:center;min-height:380px;color:var(--cy);font-size:5rem;}
+  .pd-img img{width:100%;height:100%;object-fit:cover;transition:opacity .25s;}
+  .pd-info h1{font-family:'Space Grotesk',sans-serif;font-size:2rem;margin:.2rem 0;}
+  .pd-price{font-family:'JetBrains Mono',monospace;font-size:2rem;color:var(--cy);font-weight:700;}
+  .pd-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin:.4rem 0;}
+  .pill{font-size:.72rem;font-family:'JetBrains Mono',monospace;background:rgba(34,211,238,.12);color:var(--cy);
+    border:1px solid rgba(34,211,238,.3);padding:.15rem .55rem;border-radius:999px;}
+  .pill.tier{background:rgba(247,183,49,.14);color:#f7b731;border-color:rgba(247,183,49,.4);}
+  .pd-desc{color:#d7d7e3;line-height:1.7;margin:1rem 0;}
+  .opt-label{font-family:'Space Grotesk',sans-serif;font-weight:600;margin:1.1rem 0 .5rem;font-size:.95rem;}
+  .opt-label .sel{color:var(--cy);font-weight:500;}
+  /* Color swatches (image thumbnails) */
+  .swatches{display:flex;flex-wrap:wrap;gap:.6rem;}
+  .swatch{width:3rem;height:3rem;border-radius:10px;overflow:hidden;border:2px solid transparent;cursor:pointer;
+    background:#0f0f18;padding:0;position:relative;}
+  .swatch img{width:100%;height:100%;object-fit:cover;}
+  .swatch.active{border-color:var(--cy,#22d3ee);box-shadow:0 0 0 3px rgba(34,211,238,.25);}
+  /* Size pills */
+  .sizes{display:flex;flex-wrap:wrap;gap:.5rem;}
+  .size-opt{min-width:3rem;padding:.55rem .8rem;border-radius:9px;border:1px solid var(--line,rgba(255,255,255,.15));
+    background:transparent;color:var(--ink,#eef0ff);font-weight:600;cursor:pointer;font-family:'Space Grotesk',sans-serif;}
+  .size-opt.active{border-color:var(--cy,#22d3ee);background:rgba(34,211,238,.12);color:var(--cy);}
+  .size-opt:disabled{opacity:.3;cursor:not-allowed;text-decoration:line-through;}
+  .qty-row{display:flex;align-items:center;gap:.6rem;margin:1.1rem 0;}
+  .qty-row input{width:4rem;padding:.5rem;border-radius:8px;border:1px solid var(--line,rgba(255,255,255,.15));
+    background:#0f0f18;color:#fff;text-align:center;font-family:'JetBrains Mono',monospace;}
+  .pd-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.4rem;}
+  .pd-actions .btn{flex:1;min-width:160px;}
+  .btn[disabled]{opacity:.5;cursor:not-allowed;}
+  .lock-note{background:rgba(247,183,49,.1);border:1px solid rgba(247,183,49,.4);color:#f7b731;
+    padding:.85rem 1.1rem;border-radius:10px;margin-top:.8rem;}
+  .promo-note{background:rgba(54,224,160,.1);border:1px dashed rgba(54,224,160,.5);color:var(--grn);
+    padding:.7rem 1rem;border-radius:10px;margin:.8rem 0;font-size:.9rem;}
+  .promo-note b{font-family:'JetBrains Mono',monospace;}
+  .pick-hint{color:var(--mut);font-size:.84rem;margin-top:.4rem;}
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="phead" style="min-height:auto;">
+  <div class="pbg" style="background-image:url('{% static 'img/img10.webp' %}')"></div>
+  <div class="wrap">
+    <span class="breadcrumb"><b>Pegumax</b> / <a href="{% url 'academy:storefront' %}">Store</a> / {{ item.name }}</span>
+  </div>
+</header>
+
+<section class="sec" style="padding-top:1rem;">
+  <div class="wrap">
+    {% if messages %}
+    <ul class="msg-list" style="max-width:none;margin-bottom:1rem;">
+      {% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="pd-grid">
+      <div class="pd-gallery">
+        <div class="pd-img">
+          {% if item.base_image_url %}
+            <img id="pdMainImage" src="{{ item.base_image_url }}" alt="{{ item.name }}">
+          {% else %}<i class="fas fa-shirt"></i>{% endif %}
+        </div>
+      </div>
+
+      <div class="pd-info">
+        <div class="pd-tags">
+          {% for t in item.tag_list %}<span class="pill">{{ t }}</span>{% endfor %}
+          {% if item.required_dev_tier > 1 %}<span class="pill tier">Dev Tier {{ item.required_dev_tier }}+</span>{% endif %}
+        </div>
+        <h1>{{ item.name }}</h1>
+        <div class="pd-price" id="pdPrice">${{ item.price|floatformat:2 }}</div>
+
+        <div class="pd-desc">{{ description_html|safe }}</div>
+
+        {% if user_code_count %}
+        <div class="promo-note"><i class="fas fa-ticket"></i> You have <b>{{ user_code_count }}</b> reward code{{ user_code_count|pluralize }}
+          (50% off one item each). Add this to your cart and choose where to apply your code(s) at checkout.</div>
+        {% endif %}
+
+        {% if user.is_authenticated and locked %}
+          <div class="lock-note"><i class="fas fa-lock"></i>
+            This item unlocks at <b>Level {{ unlock_level }}</b>.
+            You're at Level {{ level }} — keep earning XP to unlock it.</div>
+        {% elif user.is_authenticated %}
+          {% if colors %}
+          <div class="opt-label">Color: <span class="sel" id="selColorLabel">—</span></div>
+          <div class="swatches" id="swatches">
+            {% for c in colors %}
+            <button type="button" class="swatch" data-color="{{ c.name }}" data-image="{{ c.image }}" title="{{ c.name }}">
+              {% if c.image %}<img src="{{ c.image }}" alt="{{ c.name }}">{% endif %}
+            </button>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          {% if sizes %}
+          <div class="opt-label">Size: <span class="sel" id="selSizeLabel">—</span></div>
+          <div class="sizes" id="sizes">
+            {% for s in sizes %}<button type="button" class="size-opt" data-size="{{ s }}">{{ s }}</button>{% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="qty-row">
+            <span class="opt-label" style="margin:0;">Qty</span>
+            <input type="number" id="pdQty" value="1" min="1" max="20">
+          </div>
+
+          <form id="pdForm" method="post" action="{% url 'academy:cart_add' %}">
+            {% csrf_token %}
+            <input type="hidden" name="merch_id" value="{{ item.id }}">
+            <input type="hidden" name="variant_id" id="pdVariantId" value="">
+            <input type="hidden" name="qty" id="pdQtyHidden" value="1">
+            <div class="pd-actions">
+              <button type="button" class="btn btn-acc btn-lg" id="addToCartBtn" {% if variants_json %}disabled{% endif %}>
+                <i class="fas fa-cart-plus"></i> Add to cart</button>
+              <button type="submit" class="btn btn-cy btn-lg" id="buyNowBtn" {% if variants_json %}disabled{% endif %}>
+                Buy it now</button>
+            </div>
+            {% if variants_json %}<div class="pick-hint" id="pickHint">Pick a color and size to continue.</div>{% endif %}
+          </form>
+          <div class="stripe-secure" style="margin-top:.6rem;"><i class="fas fa-lock"></i> Secure checkout · <b>stripe</b></div>
+        {% else %}
+          <button class="btn btn-acc btn-lg" data-modal="login" style="width:100%;margin-top:1rem;">Log in to buy</button>
+        {% endif %}
+
+        <a class="btn btn-ghost" href="{% url 'academy:storefront' %}" style="margin-top:.6rem;">&larr; Back to store</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{ variants_json|json_script:"variant-data" }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  var dataEl = document.getElementById('variant-data');
+  var variants = dataEl ? JSON.parse(dataEl.textContent) : [];
+  var hasVariants = variants.length > 0;
+  var addBtn = document.getElementById('addToCartBtn');
+  var buyBtn = document.getElementById('buyNowBtn');
+  var vidInput = document.getElementById('pdVariantId');
+  var qtyInput = document.getElementById('pdQty');
+  var qtyHidden = document.getElementById('pdQtyHidden');
+  var priceEl = document.getElementById('pdPrice');
+  var mainImg = document.getElementById('pdMainImage');
+  var hint = document.getElementById('pickHint');
+  var colorLabel = document.getElementById('selColorLabel');
+  var sizeLabel = document.getElementById('selSizeLabel');
+  var swatches = Array.prototype.slice.call(document.querySelectorAll('.swatch'));
+  var sizeBtns = Array.prototype.slice.call(document.querySelectorAll('.size-opt'));
+  var selColor = null, selSize = null;
+
+  function find(){ return variants.find(function(v){ return v.color===selColor && v.size===selSize; }); }
+
+  function refresh(){
+    // Toggle size availability for the chosen color.
+    sizeBtns.forEach(function(b){
+      var ok = !selColor || variants.some(function(v){ return v.color===selColor && v.size===b.dataset.size; });
+      b.disabled = !ok;
+      if(!ok && b.dataset.size===selSize){ selSize=null; b.classList.remove('active'); if(sizeLabel) sizeLabel.textContent='—'; }
+    });
+    var v = find();
+    var ready = !hasVariants || !!v;
+    if(addBtn) addBtn.disabled = !ready;
+    if(buyBtn) buyBtn.disabled = !ready;
+    if(v){
+      vidInput.value = v.variant_id || v.id || '';
+      if(priceEl && v.price) priceEl.textContent = '$' + parseFloat(v.price).toFixed(2);
+      if(hint) hint.style.display='none';
+    } else {
+      vidInput.value = '';
+      if(hint) hint.style.display = (selColor && !selSize) ? 'block' : (selColor?'none':'block');
+    }
+  }
+
+  swatches.forEach(function(sw){
+    sw.addEventListener('click', function(){
+      selColor = sw.dataset.color;
+      swatches.forEach(function(s){ s.classList.remove('active'); });
+      sw.classList.add('active');
+      if(colorLabel) colorLabel.textContent = selColor;
+      if(mainImg && sw.dataset.image){ mainImg.style.opacity=0; setTimeout(function(){ mainImg.src=sw.dataset.image; mainImg.style.opacity=1; },120); }
+      refresh();
+    });
+  });
+  sizeBtns.forEach(function(b){
+    b.addEventListener('click', function(){
+      if(b.disabled) return;
+      selSize = b.dataset.size;
+      sizeBtns.forEach(function(s){ s.classList.remove('active'); });
+      b.classList.add('active');
+      if(sizeLabel) sizeLabel.textContent = selSize;
+      refresh();
+    });
+  });
+  if(qtyInput){ qtyInput.addEventListener('change', function(){
+    var q = Math.max(1, parseInt(qtyInput.value||'1',10)); qtyInput.value=q; if(qtyHidden) qtyHidden.value=q;
+  }); }
+
+  // Preselect the first color so an image/colour is shown immediately.
+  if(swatches.length){ swatches[0].click(); }
+  refresh();
+
+  // Add to cart = AJAX (drive-in animation); Buy it now = normal submit -> cart.
+  if(addBtn){
+    addBtn.addEventListener('click', function(){
+      if(addBtn.disabled) return;
+      window.PegumaxCart.add({
+        merch_id: document.querySelector('#pdForm [name=merch_id]').value,
+        variant_id: vidInput.value,
+        qty: (qtyHidden && qtyHidden.value) || 1
+      });
+    });
+  }
+})();
+</script>
+{% endblock %}

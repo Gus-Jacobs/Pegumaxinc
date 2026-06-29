@@ -4,6 +4,7 @@ Exposes the logged-in user's academy profile and a one-shot ``level_up`` flag
 (popped from the session) so the base template can fire the global level-up
 modal + confetti on whatever page the user happens to be viewing.
 """
+from . import cart as cart_utils
 from .models import UserProfile
 
 LEVEL_UP_SESSION_KEY = "academy_level_up"
@@ -19,4 +20,11 @@ def gamification(request):
         level_up = request.session.pop(LEVEL_UP_SESSION_KEY, None)
         if level_up is not None:
             request.session.modified = True
-    return {"academy_profile": profile, "academy_level_up": level_up}
+
+    cart = cart_utils.get_cart(request.session)
+    return {
+        "academy_profile": profile,
+        "academy_level_up": level_up,
+        "cart_count": cart_utils.cart_count(cart),
+        "cart_total": cart_utils.cart_total(cart),
+    }

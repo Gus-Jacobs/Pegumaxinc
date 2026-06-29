@@ -1,0 +1,42 @@
+{% comment %}Merch card. Expects `entry` = {item, locked, unlock_level} and optional `active_promo`.{% endcomment %}
+{% load static %}
+<div class="shop-card reveal {% if entry.locked %}locked-card{% endif %}">
+  {% if entry.locked %}
+    {# Locked: grayed out + not clickable until the required level is reached. #}
+    <div class="merch-thumb">
+      {% if entry.item.base_image_url %}<img src="{{ entry.item.base_image_url }}" alt="{{ entry.item.name }}" loading="lazy">{% else %}<i class="fas fa-shirt"></i>{% endif %}
+      <span class="lock-pip"><i class="fas fa-lock"></i></span>
+    </div>
+    <div class="tags">
+      {% for t in entry.item.tag_list %}<span class="pill">{{ t }}</span>{% endfor %}
+      <span class="pill tier">Level {{ entry.unlock_level }}</span>
+    </div>
+    <h3>{{ entry.item.name }}</h3>
+    <p class="sum">{{ entry.item.description|truncatewords:18 }}</p>
+    <div class="price">${{ entry.item.price|floatformat:0 }}</div>
+    <button class="btn btn-ghost locked-btn" disabled>
+      <i class="fas fa-lock"></i> Reach Level {{ entry.unlock_level }} to unlock</button>
+  {% else %}
+    <a class="merch-thumb" href="{% url 'academy:merch_detail' entry.item.slug %}">
+      {% if entry.item.base_image_url %}<img src="{{ entry.item.base_image_url }}" alt="{{ entry.item.name }}" loading="lazy">{% else %}<i class="fas fa-shirt"></i>{% endif %}
+    </a>
+    <div class="tags">
+      {% for t in entry.item.tag_list %}<span class="pill">{{ t }}</span>{% endfor %}
+      {% if entry.item.unlock_level > 1 %}<span class="pill tier">Level {{ entry.item.unlock_level }}+</span>{% endif %}
+    </div>
+    <h3><a href="{% url 'academy:merch_detail' entry.item.slug %}" style="color:inherit;text-decoration:none;">{{ entry.item.name }}</a></h3>
+    <p class="sum">{{ entry.item.description|truncatewords:18 }}</p>
+    <div class="price">${{ entry.item.price|floatformat:0 }}</div>
+    {% if user.is_authenticated %}
+      {% if entry.item.variants %}
+        <a class="btn btn-acc" href="{% url 'academy:merch_detail' entry.item.slug %}">
+          <i class="fas fa-sliders"></i> Select options</a>
+      {% else %}
+        <button class="btn btn-acc add-cart-card" type="button" data-merch-id="{{ entry.item.id }}">
+          <i class="fas fa-cart-plus"></i> Add to cart</button>
+      {% endif %}
+    {% else %}
+      <button class="btn btn-acc" data-modal="login">Log in to buy</button>
+    {% endif %}
+  {% endif %}
+</div>

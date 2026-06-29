@@ -1,0 +1,59 @@
+{% extends "academy/legal/_base.html" %}
+{% block title %}Store Terms of Service | Pegumax{% endblock %}
+{% block legal_crumb %}Terms of Service{% endblock %}
+{% block legal_title %}Store &amp; Academy Terms of Service{% endblock %}
+
+{% block legal_body %}
+<p>These Terms govern your purchase and use of online courses and physical merchandise sold
+through the Pegumax Store &amp; Academy. By creating an account or making a purchase, you agree
+to these Terms. They supplement — and do not replace — our main site Terms.</p>
+
+<h2>1. Accounts</h2>
+<p>You must provide accurate information and are responsible for activity under your account.
+You must be able to form a binding contract to make a purchase. Keep your credentials secure.</p>
+
+<h2>2. Courses &amp; digital content</h2>
+<ul>
+  <li>Purchasing a course grants you a <b>personal, non-transferable, non-exclusive license</b>
+      to access its content for your own learning.</li>
+  <li>You may not redistribute, resell, publicly post, or share course materials or your access.</li>
+  <li>Course access is granted immediately on purchase. As digital content delivered instantly,
+      course purchases are generally <b>non-refundable</b> once access has been granted.</li>
+  <li>Quizzes, XP, levels, certificates, and Developer Tiers are provided for educational and
+      motivational purposes and carry no monetary value.</li>
+</ul>
+
+<h2>3. Merchandise (print-on-demand)</h2>
+<ul>
+  <li>Physical items are <b>custom-made to order</b> through our manufacturing partner (Printful).</li>
+  <li>Returns and refunds for merchandise are governed by our
+      <a href="{% url 'academy:returns' %}">Return Policy</a>, which you should read before buying.</li>
+  <li>Product images are mockups; actual colors may vary slightly by display and manufacturing.</li>
+</ul>
+
+<h2>4. Reward codes &amp; promotions</h2>
+<p>Completion reward codes and promotional discounts are single-use, apply to one item, have no
+cash value, are non-transferable, and expire on the stated date. We may modify or discontinue
+promotions at any time.</p>
+
+<h2>5. Pricing &amp; payment</h2>
+<p>Prices are shown at checkout in USD and processed by Stripe. You authorize us to charge your
+selected payment method for the total shown, including any applicable taxes and shipping.</p>
+
+<h2>6. Acceptable use</h2>
+<p>You agree not to misuse the platform, attempt to bypass access controls or payment, scrape or
+copy content, or interfere with the service or other users.</p>
+
+<h2>7. Intellectual property</h2>
+<p>All course content, designs, branding, and site materials are owned by Pegumax LLC or its
+licensors and are protected by law. Your license does not transfer ownership.</p>
+
+<h2>8. Disclaimers &amp; limitation of liability</h2>
+<p>The store and courses are provided "as is" without warranties of any kind. To the maximum
+extent permitted by law, Pegumax LLC is not liable for indirect or consequential damages, and
+our total liability for any claim is limited to the amount you paid for the relevant product.</p>
+
+<h2>9. Changes &amp; governing law</h2>
+<p>We may update these Terms; continued use after changes constitutes acceptance. These Terms are
+governed by the laws of the jurisdiction in which Pegumax LLC operates.</p>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% autoescape off %}Thanks for your order!
+
+We've received your Pegumax order and it's being prepared. Here's what you bought:
+
+{% for item in items %}- {{ item.quantity }}x {{ item.description }}{% if item.amount %} (${{ item.amount }}){% endif %}
+{% endfor %}
+You'll get another email with tracking information as soon as your item ships.
+
+Thanks for supporting independent software,
+The Pegumax Team{% endautoescape %}

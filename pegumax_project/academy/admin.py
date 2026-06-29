@@ -1,4 +1,8 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.core.management import call_command
+from django.shortcuts import redirect
+from django.urls import path
+from io import StringIO
 
 from .models import (
     Achievement,
@@ -36,8 +40,28 @@ class CourseModuleAdmin(admin.ModelAdmin):
 
 @admin.register(MerchItem)
 class MerchItemAdmin(admin.ModelAdmin):
-    list_display = ("name", "price", "tags", "active")
-    search_fields = ("name", "tags")
+    list_display = ("name", "price", "product_type", "required_level", "active",
+                    "printful_sync_id")
+    list_filter = ("active", "product_type", "required_level")
+    search_fields = ("name", "tags", "printful_sync_id")
+    change_list_template = "admin/academy/merchitem/change_list.html"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom = [path("sync-printful/", self.admin_site.admin_view(self.sync_printful_view),
+                       name="academy_merchitem_sync_printful")]
+        return custom + urls
+
+    def sync_printful_view(self, request):
+        """Run the sync_printful management command from the admin."""
+        out = StringIO()
+        try:
+            call_command("sync_printful", stdout=out, stderr=out)
+            summary = out.getvalue().strip().splitlines()[-1] if out.getvalue().strip() else "Done."
+            self.message_user(request, f"Printful sync complete. {summary}", messages.SUCCESS)
+        except Exception as e:
+            self.message_user(request, f"Printful sync failed: {e}", messages.ERROR)
+        return redirect("admin:academy_merchitem_changelist")
 
 
 @admin.register(UserCourseProgress)

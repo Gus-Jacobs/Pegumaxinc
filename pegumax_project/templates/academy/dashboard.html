@@ -26,6 +26,14 @@
   .promo-code{font-family:'JetBrains Mono',monospace;background:rgba(54,224,160,.12);border:1px dashed rgba(54,224,160,.5);
     color:var(--grn);padding:.5rem .8rem;border-radius:8px;display:inline-block;letter-spacing:.05em;font-weight:700;}
   .empty{color:var(--mut);font-size:.9rem;}
+  /* Certificate items: title runs normally, actions sit on their own row below. */
+  .cert-item{padding:.8rem 0;border-bottom:1px solid var(--line,rgba(255,255,255,.06));}
+  .cert-item:last-child{border-bottom:none;}
+  .cert-head{display:flex;align-items:center;gap:.7rem;}
+  .cert-info{flex:1;min-width:0;}
+  .cert-info b{display:block;color:#fff;line-height:1.3;}
+  .cert-actions{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:.7rem;}
+  .cert-actions .btn{flex:0 0 auto;}
 </style>
 {% endblock %}
 
@@ -77,10 +85,10 @@
           <div style="flex:1;">
             <a href="{% url 'academy:course_detail' p.course.slug %}" style="color:#fff;text-decoration:none;font-weight:500;">{{ p.course.title }}</a>
             <div style="font-size:.78rem;color:var(--mut);">
-              {{ p.passed_count }}/{{ p.course.module_count }} modules
-              {% if p.completed %}· <span style="color:var(--grn)">Completed ({{ p.final_score }}%)</span>
-              {% elif p.is_locked %}· <span style="color:var(--red)">Locked</span>
-              {% else %}· {{ p.attempts_remaining }} attempts left{% endif %}
+              {{ p.answered_count }}/{{ p.course.module_count }} answered
+              {% if p.completed %}· <span style="color:var(--grn)">Passed ({{ p.final_score }}%)</span>
+              {% elif p.is_locked %}· <span style="color:var(--red)">Locked — failed ({{ p.final_score }}%)</span>
+              {% else %}· {{ p.attempts_remaining }} attempt(s) left{% endif %}
             </div>
           </div>
           {% if p.completed %}<i class="fas fa-trophy" style="color:#f7b731"></i>
@@ -96,13 +104,18 @@
       <div class="dash-card">
         <h3><i class="fas fa-certificate" style="color:var(--grn)"></i> Certificates</h3>
         {% for c in certificates %}
-        <div class="item-row">
-          <div class="badge-ico" style="background:rgba(54,224,160,.15);color:var(--grn)"><i class="fas fa-award"></i></div>
-          <div style="flex:1;">
-            <b>{{ c.certification_name }}</b>
-            <div style="font-size:.78rem;color:var(--mut);">Issued {{ c.date_issued|date:"M j, Y" }}</div>
+        <div class="cert-item">
+          <div class="cert-head">
+            <div class="badge-ico" style="background:rgba(54,224,160,.15);color:var(--grn)"><i class="fas fa-award"></i></div>
+            <div class="cert-info">
+              <b>{{ c.certification_name }}</b>
+              <div style="font-size:.78rem;color:var(--mut);">Issued {{ c.date_issued|date:"M j, Y" }}</div>
+            </div>
           </div>
-          <a class="btn btn-cy" href="{% url 'academy:certificate' c.unique_uuid %}" target="_blank" rel="noopener">View</a>
+          <div class="cert-actions">
+            <a class="btn btn-cy" href="{% url 'academy:certificate' c.unique_uuid %}" target="_blank" rel="noopener">View certificate</a>
+            {% include "academy/_linkedin_button.html" with cert=c %}
+          </div>
         </div>
         {% empty %}
         <p class="empty">Complete a course to earn your first certificate.</p>
@@ -127,13 +140,16 @@
       <div class="dash-card">
         <h3><i class="fas fa-ticket" style="color:var(--cy)"></i> Reward Codes</h3>
         {% for promo in promo_codes %}
-        <div class="item-row">
+        <a class="item-row" style="text-decoration:none;color:inherit;"
+           href="{% url 'academy:storefront' %}?promo={{ promo.code_string|urlencode }}"
+           title="Shop with this code applied">
           <div style="flex:1;">
             <span class="promo-code">{{ promo.code_string }}</span>
             <div style="font-size:.78rem;color:var(--mut);margin-top:.3rem;">
-              {{ promo.discount_percentage }}% off {{ promo.target_tag }} · expires {{ promo.expiration_date|date:"M j, Y" }}</div>
+              {{ promo.discount_percentage }}% off any one item · expires {{ promo.expiration_date|date:"M j, Y" }}</div>
           </div>
-        </div>
+          <span class="btn btn-ghost" style="pointer-events:none;"><i class="fas fa-arrow-right"></i> Shop</span>
+        </a>
         {% empty %}
         <p class="empty">Finish a course to unlock a 50% reward code.</p>
         {% endfor %}

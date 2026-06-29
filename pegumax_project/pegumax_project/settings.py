@@ -17,6 +17,23 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load a local .env file into os.environ for development. Two rules keep this
+# safe: (1) real environment variables (e.g. Render's) always win, and (2) blank
+# entries in .env are ignored, so leaving a key empty falls back to the code
+# default below instead of clobbering it with an empty string. Looks next to
+# manage.py first, then the repo root.
+try:
+    from dotenv import dotenv_values
+    for _env_path in (BASE_DIR / '.env', BASE_DIR.parent / '.env'):
+        if _env_path.exists():
+            for _k, _v in dotenv_values(_env_path).items():
+                if _v not in (None, '') and _k not in os.environ:
+                    os.environ[_k] = _v
+except ImportError:
+    # python-dotenv isn't installed (e.g. minimal prod image) — that's fine,
+    # the app reads real environment variables directly.
+    pass
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -214,6 +231,33 @@ STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY') or STRIPE_DONATION_KEY
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
 # Default currency for the storefront.
 STRIPE_CURRENCY = os.environ.get('STRIPE_CURRENCY', 'usd')
+
+# Make the academy logger (Printful fulfillment, webhook) visible on the console.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {'console': {'class': 'logging.StreamHandler'}},
+    'loggers': {
+        'academy': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+    },
+}
+
+# --- Printful (merch sync) ---
+# Private token from the Printful dashboard (Settings -> API). Used by the
+# `sync_printful` management command to pull products into MerchItem.
+PRINTFUL_API_KEY = os.environ.get('PRINTFUL_API_KEY', '')
+# Optional store id for accounts with multiple Printful stores.
+PRINTFUL_STORE_ID = os.environ.get('PRINTFUL_STORE_ID', '')
+# Whether paid orders are CONFIRMED to Printful (real manufacturing + charges the
+# owner's card) vs. created as safe DRAFTs. Defaults to LIVE in production
+# (DEBUG=False) and DRAFT locally (DEBUG=True). Override explicitly if needed:
+#   PRINTFUL_CONFIRM_ORDERS=True   -> confirm (live fulfillment)
+#   PRINTFUL_CONFIRM_ORDERS=False  -> drafts only (safe testing)
+_pf_confirm_env = os.environ.get('PRINTFUL_CONFIRM_ORDERS')
+if _pf_confirm_env is not None:
+    PRINTFUL_CONFIRM_ORDERS = _pf_confirm_env.strip().lower() in ('1', 'true', 'yes', 'on')
+else:
+    PRINTFUL_CONFIRM_ORDERS = not DEBUG
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

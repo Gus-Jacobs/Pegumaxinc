@@ -13,6 +13,7 @@ from django.conf import settings
 from bot_monitor.models import BotStatus, BotActivityLog # Ensure these models exist and app is configured
 from django.utils import timezone
 from django.db.utils import ProgrammingError
+from django.db import IntegrityError
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
@@ -91,9 +92,15 @@ def signup_view(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('main_site:home')
+            try:
+                user = form.save()
+            except IntegrityError:
+                # Belt-and-suspenders: a race or duplicate slips past validation.
+                form.add_error('username', 'That username is already taken. Please choose another.')
+            else:
+                login(request, user)
+                messages.success(request, f'Welcome, {user.username}! Your account is ready.')
+                return redirect('main_site:home')
     else:
         form = SignUpForm()
     return render(request, 'main_site/signup.html', {'form': form})

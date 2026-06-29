@@ -23,6 +23,27 @@ DEFAULT_ATTEMPTS = 2          # 1 initial attempt + 1 retake per the spec.
 SECOND_CHANCE_DISCOUNT = 50   # % off a re-purchase of a locked course.
 REWARD_DISCOUNT = 50          # % off the completion promo code.
 PROMO_VALID_DAYS = 30
+PASS_THRESHOLD = 70           # Aggregate course score (%) required to pass.
+COURSE_PRICE = 12             # Flat course price (USD) — drives the bundle play.
+
+# Gamified "Developer Tier" → minimum level required to reach that tier.
+# Dev 1: levels 1-4, Dev 2: levels 5-9, Dev 3: level 10+.
+TIER_MIN_LEVELS = {1: 1, 2: 5, 3: 10}
+MAX_DEV_TIER = max(TIER_MIN_LEVELS)
+
+
+def dev_tier_for_level(level: int) -> int:
+    """Map a level to its Developer Tier (highest tier whose floor it meets)."""
+    tier = 1
+    for t, min_level in sorted(TIER_MIN_LEVELS.items()):
+        if level >= min_level:
+            tier = t
+    return tier
+
+
+def min_level_for_tier(tier: int) -> int:
+    """Lowest level that unlocks the given Developer Tier."""
+    return TIER_MIN_LEVELS.get(int(tier), 1)
 
 
 def level_for_xp(total_xp: int) -> int:
@@ -50,14 +71,27 @@ def xp_for_level(level: int) -> int:
 # ---------------------------------------------------------------------------
 class MerchItem(models.Model):
     name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=220, unique=True, null=True, blank=True)
+    # Description may contain Markdown/HTML (rendered on the product page).
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    base_image_url = models.URLField(blank=True)
+    base_image_url = models.URLField(blank=True, max_length=500)
     # Comma-separated domain tags mapping merch to course domains.
     tags = models.CharField(
         max_length=255, blank=True,
         help_text="Comma-separated domain tags, e.g. 'flutter,cybersecurity'.",
     )
+    # Free-text product type used by the ?type= storefront filter (e.g. 'hoodie').
+    product_type = models.CharField(max_length=60, blank=True)
+    # Gamification: minimum Developer Tier required to purchase.
+    required_dev_tier = models.PositiveIntegerField(default=1)
+    # Minimum account level required to purchase. Auto-derived from a
+    # "Developer N ..." naming convention by sync_printful; 0 = no level gate.
+    required_level = models.PositiveIntegerField(default=0)
+    # --- Printful sync ---
+    printful_sync_id = models.CharField(max_length=120, blank=True, db_index=True)
+    # [{ "id", "name", "size", "color", "price", "image" }, ...]
+    variants = models.JSONField(default=list, blank=True)
     # Optional pre-created Stripe price; falls back to inline price_data.
     price_id = models.CharField(max_length=120, blank=True)
     active = models.BooleanField(default=True)
@@ -69,16 +103,65 @@ class MerchItem(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            base = slugify(self.name)[:200] or "item"
+            slug = base
+            i = 2
+            while MerchItem.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
+            # update_or_create() passes update_fields on the update path; make
+            # sure the freshly-generated slug is actually persisted.
+            uf = kwargs.get("update_fields")
+            if uf is not None and "slug" not in uf:
+                kwargs["update_fields"] = list(uf) + ["slug"]
+        super().save(*args, **kwargs)
+
     @property
     def tag_list(self):
         return [t.strip() for t in self.tags.split(",") if t.strip()]
+
+    @property
+    def name_level(self):
+        """Parse a required level from a 'Developer N ...' product name (0 = none)."""
+        import re
+        m = re.search(r"developer\s+(\d+)", (self.name or "").lower())
+        return int(m.group(1)) if m else 0
+
+    @property
+    def unlock_level(self):
+        """Account level required to buy this item (always >= 1).
+
+        Highest of: the explicit required_level, the level parsed from the name,
+        and the floor of any required Developer Tier.
+        """
+        candidates = [self.required_level or 0, self.name_level]
+        if self.required_dev_tier and self.required_dev_tier > 1:
+            candidates.append(min_level_for_tier(self.required_dev_tier))
+        return max(candidates) or 1
+
+    # Back-compat alias used by older templates/views.
+    @property
+    def min_level_required(self):
+        return self.unlock_level
+
+    def is_unlocked_for_level(self, level: int) -> bool:
+        return int(level or 1) >= self.unlock_level
+
+    def is_unlocked_for(self, profile) -> bool:
+        """True if the given UserProfile's level meets the unlock level."""
+        level = profile.current_level if profile else 1
+        return self.is_unlocked_for_level(level)
 
 
 class Course(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, unique=True)
     summary = models.TextField(blank=True)
-    price = models.DecimalField(max_digits=8, decimal_places=2, default=49)
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=COURSE_PRICE)
     # Stripe product/price mapping (optional — inline price_data is the fallback).
     price_id = models.CharField(max_length=120, blank=True)
     # Domain tag used for merch mapping + completion promo codes.
@@ -132,8 +215,13 @@ class UserCourseProgress(models.Model):
     completed = models.BooleanField(default=False)
     final_score = models.PositiveIntegerField(default=0)
     attempts_remaining = models.IntegerField(default=DEFAULT_ATTEMPTS)
-    # Module numbers the user has already passed (drives sequential unlock + score).
+    # Module numbers answered correctly this attempt (the running correct tally).
     passed_modules = models.JSONField(default=list, blank=True)
+    # Every module the student has submitted an answer for this attempt — drives
+    # sequential progress regardless of whether the answer was right or wrong.
+    answered_modules = models.JSONField(default=list, blank=True)
+    # Per-module correctness this attempt: {"<module_number>": true/false}.
+    module_results = models.JSONField(default=dict, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -152,21 +240,51 @@ class UserCourseProgress(models.Model):
 
     @property
     def passed_count(self):
+        """Number of modules answered correctly this attempt (the correct tally)."""
         return len(self.passed_modules or [])
 
     @property
-    def progress_percent(self):
+    def answered_count(self):
+        return len(self.answered_modules or [])
+
+    @property
+    def correct_count(self):
+        """Alias for the running correct tally used in aggregate grading."""
+        return self.passed_count
+
+    @property
+    def current_score(self):
+        """Aggregate score so far: correct / total modules * 100."""
         total = self.course.module_count or 1
         return int(round(100 * self.passed_count / total))
+
+    @property
+    def progress_percent(self):
+        """How far through the course the student is (answered, not correct)."""
+        total = self.course.module_count or 1
+        return int(round(100 * self.answered_count / total))
 
     def has_passed(self, module_number: int) -> bool:
         return module_number in (self.passed_modules or [])
 
+    def has_answered(self, module_number: int) -> bool:
+        return module_number in (self.answered_modules or [])
+
+    def result_for(self, module_number: int):
+        """True/False if answered, else None."""
+        return (self.module_results or {}).get(str(module_number))
+
+    def reset_attempt(self):
+        """Clear per-attempt answers so the student can retake the whole course."""
+        self.passed_modules = []
+        self.answered_modules = []
+        self.module_results = {}
+
     def next_module_number(self):
-        """Lowest module number the user is allowed to attempt next."""
-        passed = set(self.passed_modules or [])
+        """Lowest module number the student hasn't answered yet this attempt."""
+        answered = set(self.answered_modules or [])
         for m in self.course.modules.values_list("module_number", flat=True):
-            if m not in passed:
+            if m not in answered:
                 return m
         return self.course.final_module_number
 
@@ -203,6 +321,9 @@ class GeneratedPromoCode(models.Model):
     target_tag = models.CharField(max_length=60, blank=True)
     expiration_date = models.DateTimeField()
     active_status = models.BooleanField(default=True)
+    # Single-use redemption tracking (mirrors Stripe max_redemptions=1).
+    redeemed = models.BooleanField(default=False)
+    redeemed_at = models.DateTimeField(null=True, blank=True)
     # Best-effort link to the matching Stripe promotion code, if created.
     stripe_promotion_code_id = models.CharField(max_length=120, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -211,16 +332,25 @@ class GeneratedPromoCode(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.code_string} ({self.discount_percentage}% off {self.target_tag})"
+        state = " [redeemed]" if self.redeemed else ""
+        return f"{self.code_string} ({self.discount_percentage}% off {self.target_tag}){state}"
 
     def save(self, *args, **kwargs):
         if not self.expiration_date:
             self.expiration_date = timezone.now() + timedelta(days=PROMO_VALID_DAYS)
         super().save(*args, **kwargs)
 
+    def mark_redeemed(self):
+        if not self.redeemed:
+            self.redeemed = True
+            self.redeemed_at = timezone.now()
+            self.save(update_fields=["redeemed", "redeemed_at"])
+
     @property
     def is_valid(self):
-        return self.active_status and self.expiration_date > timezone.now()
+        """Valid = active, not yet redeemed (single-use), and unexpired."""
+        return (self.active_status and not self.redeemed
+                and self.expiration_date > timezone.now())
 
 
 # ---------------------------------------------------------------------------
@@ -256,6 +386,15 @@ class UserProfile(models.Model):
     def level_progress_percent(self):
         span = self.xp_to_next_level or 1
         return max(0, min(100, int(round(100 * self.xp_into_level / span))))
+
+    @property
+    def dev_tier(self):
+        """Gamified Developer Tier derived from the current level."""
+        return dev_tier_for_level(self.current_level)
+
+    @property
+    def dev_tier_label(self):
+        return f"Dev {self.dev_tier}"
 
 
 class Achievement(models.Model):
