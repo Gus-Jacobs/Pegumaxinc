@@ -1,0 +1,16 @@
+{% autoescape off %}Congratulations — you passed {{ course_title }}!
+
+You completed the course with a {{ score }}% aggregate score. Outstanding work.
+
+View / download your certificate:
+{{ certificate_url }}
+
+As a reward, here's {{ discount }}% off any item in the store:
+
+    {{ promo_code }}
+
+Redeem it here:
+{{ store_url }}
+
+Keep building,
+The Pegumax Team{% endautoescape %}

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 {% load humanize %}
-{% block title %}Store — Courses & Merch | Pegumax Inc.{% endblock %}
-{% block description %}Buy ship-first technical courses and Pegumax studio merch. Earn XP, levels, certificates and reward codes as you learn.{% endblock %}
+{% block title %}Store — Courses & Merch | Pegumax LLC{% endblock %}
+{% block description %}Ship-first technical courses ($12) and Pegumax studio merch. Finish a course for 50% off a shirt. Earn XP, levels and Developer Tiers as you learn.{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -14,13 +14,40 @@
   .shop-card .sum{color:var(--mut);font-size:.92rem;flex:1;}
   .shop-card .price{font-family:'JetBrains Mono',monospace;font-size:1.35rem;color:var(--cy);font-weight:700;}
   .shop-card .tags{display:flex;flex-wrap:wrap;gap:.35rem;}
+  .shop-card form{margin:0;}
+  .shop-card .btn{width:100%;}
+  .shop-card .locked-btn{opacity:.7;cursor:not-allowed;font-size:.8rem;}
+  /* Locked (below required level): grayed out, not clickable. */
+  .shop-card.locked-card{filter:grayscale(.85) brightness(.7);opacity:.75;pointer-events:none;}
+  .shop-card.locked-card .merch-thumb{cursor:not-allowed;}
+  .merch-thumb{position:relative;display:grid;place-items:center;height:150px;border-radius:12px;overflow:hidden;
+    background:linear-gradient(135deg,rgba(124,92,255,.18),rgba(34,211,238,.1));color:var(--cy);font-size:2.4rem;}
+  .merch-thumb img{width:100%;height:100%;object-fit:cover;}
+  .merch-thumb .lock-pip{position:absolute;top:.5rem;right:.5rem;background:rgba(0,0,0,.6);color:#fff;
+    width:1.8rem;height:1.8rem;border-radius:50%;display:grid;place-items:center;font-size:.8rem;}
   .pill{font-size:.7rem;font-family:'JetBrains Mono',monospace;background:rgba(34,211,238,.12);color:var(--cy);
     border:1px solid rgba(34,211,238,.3);padding:.12rem .5rem;border-radius:999px;}
+  .pill.tier{background:rgba(247,183,49,.14);color:#f7b731;border-color:rgba(247,183,49,.4);}
   .owned-badge{font-size:.72rem;color:var(--grn);border:1px solid rgba(54,224,160,.4);
     background:rgba(54,224,160,.1);padding:.2rem .6rem;border-radius:999px;align-self:flex-start;}
   .shop-card .row{display:flex;gap:.5rem;margin-top:.4rem;}
-  .shop-card form{margin:0;flex:1;}
-  .shop-card .btn{width:100%;}
+  .shop-card .row form{flex:1;}
+  /* Tabs */
+  .store-tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:1.2rem;border-bottom:1px solid var(--line,rgba(255,255,255,.08));}
+  .store-tabs button{background:none;border:none;color:var(--mut);font-family:'Space Grotesk',sans-serif;font-weight:600;
+    font-size:1rem;padding:.7rem 1.1rem;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .store-tabs button.active{color:#fff;border-bottom-color:var(--cy,#22d3ee);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+  .tier-chip{display:inline-flex;align-items:center;gap:.4rem;font-family:'Space Grotesk',sans-serif;
+    background:rgba(124,92,255,.16);color:#b9a4ff;border:1px solid rgba(124,92,255,.4);
+    padding:.3rem .8rem;border-radius:999px;font-size:.82rem;font-weight:600;}
+  .filter-chip{display:inline-flex;align-items:center;gap:.5rem;background:rgba(34,211,238,.1);
+    border:1px solid rgba(34,211,238,.4);color:var(--cy);padding:.3rem .8rem;border-radius:999px;font-size:.82rem;margin-left:.5rem;}
+  .filter-chip a{color:var(--cy);text-decoration:none;font-weight:700;}
+  .promo-banner{background:rgba(54,224,160,.1);border:1px dashed rgba(54,224,160,.5);color:var(--grn);
+    border-radius:12px;padding:.8rem 1.1rem;margin-top:1rem;font-size:.92rem;}
+  .promo-banner b{font-family:'JetBrains Mono',monospace;}
 </style>
 {% endblock %}
 
@@ -29,84 +56,122 @@
   <div class="pbg" style="background-image:url('{% static 'img/img10.webp' %}')"></div>
   <div class="wrap">
     <span class="breadcrumb reveal"><b>Pegumax</b> / Store</span>
-    <h1 class="reveal g" style="--d:.05s">Learn it. <span class="g">Build it.</span> Own it.</h1>
-    <p class="reveal" style="--d:.1s">Ship-first technical courses and studio merch. Every course you finish
-      earns XP, levels, a printable certificate, and a 50% reward code.</p>
-    {% if user.is_authenticated %}
-      <a class="btn btn-cy reveal" style="--d:.16s;margin-top:.6rem;" href="{% url 'academy:dashboard' %}">
-        <i class="fas fa-trophy"></i> My Learning Dashboard</a>
-    {% endif %}
+    <h1 class="reveal g" style="--d:.05s">Learn it. <span class="g">Build it.</span> Wear it.</h1>
+    <p class="reveal" style="--d:.1s">Ship-first courses are just <b>$12</b> — finish one and earn 50% off matching studio merch.
+      Level up to unlock higher Developer Tier gear.</p>
+    <div class="reveal" style="--d:.16s;margin-top:.6rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
+      {% if user.is_authenticated %}
+        <span class="tier-chip"><i class="fas fa-ranking-star"></i> {{ profile.dev_tier_label }} · Level {{ profile.current_level }}</span>
+        <a class="btn btn-cy" href="{% url 'academy:dashboard' %}"><i class="fas fa-trophy"></i> My Dashboard</a>
+      {% endif %}
+    </div>
   </div>
 </header>
 
 <section class="sec" style="padding-top:1rem;">
   <div class="wrap">
-    <span class="eyebrow c">Courses</span>
-    <h2 class="g">Automated, ship-first courses</h2>
-    {% if courses %}
-    <div class="shop-grid">
-      {% for course in courses %}
-      <div class="shop-card reveal">
-        <div class="tags">
-          {% if course.domain_tag %}<span class="pill">{{ course.domain_tag }}</span>{% endif %}
-          <span class="pill">{{ course.module_count }} modules</span>
-        </div>
-        <h3>{{ course.title }}</h3>
-        <p class="sum">{{ course.summary|truncatewords:24 }}</p>
-        <div class="price">${{ course.price|floatformat:0 }}</div>
-        {% if course.id in owned_course_ids %}
-          <span class="owned-badge"><i class="fas fa-check-circle"></i> Owned</span>
-          <a class="btn btn-cy" href="{% url 'academy:course_detail' course.slug %}">Continue learning</a>
-        {% else %}
-          <div class="row">
-            <a class="btn btn-ghost" href="{% url 'academy:course_detail' course.slug %}">Details</a>
-            {% if user.is_authenticated %}
-            <form method="post" action="{% url 'academy:checkout_course' course.slug %}">
-              {% csrf_token %}
-              <button class="btn btn-acc" type="submit">Buy ${{ course.price|floatformat:0 }}</button>
-            </form>
-            {% else %}
-            <button class="btn btn-acc" data-modal="login" style="flex:1;">Log in to buy</button>
-            {% endif %}
-          </div>
-        {% endif %}
-      </div>
-      {% endfor %}
-    </div>
-    {% else %}
-    <p class="sum" style="color:var(--mut)">No courses published yet. Run <code>python manage.py seed_courses</code>.</p>
-    {% endif %}
-  </div>
-</section>
 
-<section class="sec" style="padding-top:0;">
-  <div class="wrap">
-    <span class="eyebrow c">Merch</span>
-    <h2 class="g">Studio merch</h2>
-    {% if merch_items %}
-    <div class="shop-grid">
-      {% for item in merch_items %}
-      <div class="shop-card reveal">
-        <div class="tags">
-          {% for t in item.tag_list %}<span class="pill">{{ t }}</span>{% endfor %}
-        </div>
-        <h3>{{ item.name }}</h3>
-        <p class="sum">{{ item.description }}</p>
-        <div class="price">${{ item.price|floatformat:0 }}</div>
-        {% if user.is_authenticated %}
-        <form method="post" action="{% url 'academy:checkout_merch' item.id %}">
-          {% csrf_token %}
-          <button class="btn btn-acc" type="submit">Buy ${{ item.price|floatformat:0 }}</button>
-        </form>
-        {% else %}
-        <button class="btn btn-acc" data-modal="login">Log in to buy</button>
-        {% endif %}
-      </div>
-      {% endfor %}
-    </div>
-    {% else %}
-    <p class="sum" style="color:var(--mut)">Merch coming soon.</p>
+    {% if user_code_count %}
+    <div class="promo-banner"><i class="fas fa-ticket"></i>
+      You have <b>{{ user_code_count }}</b> reward code{{ user_code_count|pluralize }} — each is 50% off one item.
+      Add gear to your <a href="{% url 'academy:cart' %}" style="color:var(--grn);font-weight:700;">cart</a> and pick which item to use each code on.</div>
     {% endif %}
+
+    {% if tag_filter or type_filter %}
+    <p style="margin-top:1rem;color:var(--mut);">
+      Filtering merch{% if tag_filter %} by tag <span class="filter-chip">{{ tag_filter }} <a href="{% url 'academy:storefront' %}">&times;</a></span>{% endif %}
+      {% if type_filter %} by type <span class="filter-chip">{{ type_filter }} <a href="{% url 'academy:storefront' %}">&times;</a></span>{% endif %}
+    </p>
+    {% endif %}
+
+    <div class="store-tabs" id="storeTabs">
+      <button data-tab="courses">Courses</button>
+      <button data-tab="merch">Merch</button>
+    </div>
+
+    <!-- COURSES -->
+    <div class="tab-panel" id="tab-courses">
+      {% if courses %}
+      <div class="shop-grid">
+        {% for course in courses %}
+        <div class="shop-card reveal">
+          <div class="tags">
+            {% if course.domain_tag %}<span class="pill">{{ course.domain_tag }}</span>{% endif %}
+            <span class="pill">{{ course.module_count }} modules</span>
+          </div>
+          <h3>{{ course.title }}</h3>
+          <p class="sum">{{ course.summary|truncatewords:22 }}</p>
+          <div class="price">${{ course.price|floatformat:0 }}</div>
+          {% if course.id in owned_course_ids %}
+            <span class="owned-badge"><i class="fas fa-check-circle"></i> Owned</span>
+            <a class="btn btn-cy" href="{% url 'academy:course_detail' course.slug %}">Continue learning</a>
+          {% else %}
+            <div class="row">
+              <a class="btn btn-ghost" href="{% url 'academy:course_detail' course.slug %}">Details</a>
+              {% if user.is_authenticated %}
+              <form method="post" action="{% url 'academy:checkout_course' course.slug %}">
+                {% csrf_token %}
+                <button class="btn btn-acc" type="submit">Buy ${{ course.price|floatformat:0 }}</button>
+              </form>
+              {% else %}
+              <button class="btn btn-acc" data-modal="login">Log in to buy</button>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="sum" style="color:var(--mut)">No courses published yet. Run <code>python manage.py seed_courses</code>.</p>
+      {% endif %}
+    </div>
+
+    <!-- ALL MERCH -->
+    <div class="tab-panel" id="tab-merch">
+      {% if all_merch %}
+      <div class="shop-grid">
+        {% for entry in all_merch %}{% include "academy/_merch_card.html" %}{% endfor %}
+      </div>
+      {% else %}
+        {% if tag_filter or type_filter %}
+        <p class="sum" style="color:var(--mut)">No merch matches this filter. <a href="{% url 'academy:storefront' %}">Clear filters</a>.</p>
+        {% else %}
+        <div style="text-align:center;padding:2.5rem 1rem;color:var(--mut);">
+          <i class="fas fa-shirt" style="font-size:2.4rem;color:var(--cy);opacity:.6;"></i>
+          <h3 style="margin:.6rem 0;color:#fff;">No merch available yet</h3>
+          <p>Products sync from Printful. An admin can run <code>python manage.py sync_printful</code> to populate the store.</p>
+        </div>
+        {% endif %}
+      {% endif %}
+    </div>
+
   </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  var tabs = document.getElementById('storeTabs');
+  if(!tabs) return;
+  var buttons = tabs.querySelectorAll('button');
+  function show(name){
+    buttons.forEach(function(b){ b.classList.toggle('active', b.dataset.tab===name); });
+    document.querySelectorAll('.tab-panel').forEach(function(p){
+      p.classList.toggle('active', p.id==='tab-'+name);
+    });
+  }
+  buttons.forEach(function(b){ b.addEventListener('click', function(){ show(b.dataset.tab); }); });
+  // Default tab: jump to merch when a filter/promo is active, else Courses.
+  var initial = {% if active_promo or tag_filter or type_filter %}'merch'{% else %}'courses'{% endif %};
+  show(initial);
+
+  // Direct add-to-cart for variant-less items.
+  document.querySelectorAll('.add-cart-card').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(window.PegumaxCart){ window.PegumaxCart.add({merch_id: btn.dataset.merchId, qty: 1}); }
+    });
+  });
+})();
+</script>
 {% endblock %}

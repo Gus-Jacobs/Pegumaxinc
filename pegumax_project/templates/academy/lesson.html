@@ -25,7 +25,18 @@
   .quiz-opt:hover{border-color:rgba(34,211,238,.5);}
   .quiz-opt input{margin-right:.6rem;}
   .lesson-foot{display:flex;justify-content:space-between;margin-top:1.4rem;gap:.6rem;}
-  .passed-flag{background:rgba(54,224,160,.12);border:1px solid rgba(54,224,160,.4);color:var(--grn);padding:.8rem 1rem;border-radius:10px;margin-top:1.5rem;}
+  .lesson-nav a.wrong{color:var(--red);}
+  .lesson-nav a.wrong .dot{background:rgba(255,107,107,.18);}
+  .lesson-nav a.done .dot{background:rgba(54,224,160,.18);color:var(--grn);}
+  .result-flag{padding:.85rem 1.1rem;border-radius:10px;margin-top:1.5rem;font-size:.95rem;}
+  .result-flag.ok{background:rgba(54,224,160,.12);border:1px solid rgba(54,224,160,.4);color:var(--grn);}
+  .result-flag.bad{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.4);color:#ff9b9b;}
+  /* Course completion modal */
+  #courseCompleteModal .box{text-align:center;max-width:460px;}
+  .cc-score{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:3.4rem;line-height:1;
+    background:linear-gradient(120deg,#22d3ee,#36e0a0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin:.3rem 0 0;}
+  .cc-promo{background:rgba(54,224,160,.1);border:1px dashed rgba(54,224,160,.5);border-radius:12px;padding:.8rem 1rem;margin:1rem 0;}
+  .cc-promo .promo-code{font-family:'JetBrains Mono',monospace;color:var(--grn);font-weight:700;font-size:1.25rem;letter-spacing:.06em;display:block;margin-top:.3rem;}
 </style>
 {% endblock %}
 
@@ -51,9 +62,13 @@
       <nav class="lesson-nav">
         {% for m in modules %}
           <a class="{% if m.module_number == module.module_number %}active{% endif %}
-             {% if m.module_number in progress.passed_modules %}done{% endif %}"
+             {% if m.module_number in progress.passed_modules %}done{% elif m.module_number in progress.answered_modules %}wrong{% endif %}"
              href="{% url 'academy:lesson' course.slug m.module_number %}">
-            <span class="dot">{% if m.module_number in progress.passed_modules %}<i class="fas fa-check"></i>{% else %}{{ m.module_number }}{% endif %}</span>
+            <span class="dot">
+              {% if m.module_number in progress.passed_modules %}<i class="fas fa-check"></i>
+              {% elif m.module_number in progress.answered_modules %}<i class="fas fa-times"></i>
+              {% else %}{{ m.module_number }}{% endif %}
+            </span>
             {{ m.title|truncatechars:26 }}
           </a>
         {% endfor %}
@@ -64,18 +79,38 @@
           {{ content_html|safe }}
         </article>
 
-        {% if already_passed %}
-          <div class="passed-flag"><i class="fas fa-check-circle"></i> You've already passed this module's quiz.</div>
+        {% if already_answered %}
+          {% if module_result %}
+            <div class="result-flag ok"><i class="fas fa-check-circle"></i>
+              Correct — nice work on “{{ module.title }}”. (+50 XP)</div>
+          {% else %}
+            <div class="result-flag bad"><i class="fas fa-times-circle"></i>
+              Marked incorrect. No problem — your grade is the course-wide average, so keep going.
+              You only need a 70% aggregate to pass.</div>
+          {% endif %}
+          {% if is_final %}
+            {% if progress.completed %}
+              <div class="result-flag ok" style="margin-top:.7rem;"><i class="fas fa-trophy"></i>
+                Final evaluation passed at {{ progress.final_score }}%! Your certificate and reward code are ready.</div>
+            {% elif progress.is_locked %}
+              <div class="result-flag bad" style="margin-top:.7rem;"><i class="fas fa-lock"></i>
+                Final score {{ progress.final_score }}% — below 70%, attempts exhausted. The course is locked;
+                re-purchase for a 50% second-chance discount to reset.</div>
+            {% endif %}
+          {% endif %}
         {% elif quiz.question %}
           <form class="quiz-box" method="post" action="{% url 'academy:submit_quiz' course.slug module.module_number %}">
             {% csrf_token %}
-            <h3><i class="fas fa-flask"></i> Validation Quiz</h3>
-            <p style="color:var(--mut);font-size:.86rem;">Pass to earn XP. {{ progress.attempts_remaining }} attempt(s) remaining before the course locks.</p>
+            <h3><i class="fas fa-flask"></i> Validation Quiz {% if is_final %}— Final Evaluation{% endif %}</h3>
+            <p style="color:var(--mut);font-size:.86rem;">
+              {% if is_final %}This submits your final answer. Your course grade is your overall average — 70% to pass.
+              {% else %}Answer to record your result. A wrong answer won't block you — your grade is the course average (70% to pass).{% endif %}</p>
             <p style="font-weight:600;margin-top:.8rem;">{{ quiz.question }}</p>
             {% for opt in quiz.options %}
               <label class="quiz-opt"><input type="radio" name="answer" value="{{ forloop.counter0 }}" required>{{ opt }}</label>
             {% endfor %}
-            <button class="btn btn-acc btn-lg" type="submit" style="margin-top:.6rem;">Submit answer</button>
+            <button class="btn btn-acc btn-lg" type="submit" style="margin-top:.6rem;">
+              {% if is_final %}Submit final answer{% else %}Submit answer{% endif %}</button>
           </form>
         {% endif %}
 
@@ -83,14 +118,59 @@
           {% if module.module_number > 1 %}
             <a class="btn btn-ghost" href="{% url 'academy:lesson' course.slug module.module_number|add:'-1' %}">&larr; Previous</a>
           {% else %}<span></span>{% endif %}
-          {% if already_passed and not is_final %}
+          {% if already_answered and not is_final %}
             <a class="btn btn-cy" href="{% url 'academy:lesson' course.slug module.module_number|add:'1' %}">Next module &rarr;</a>
           {% elif is_final and progress.completed %}
             <a class="btn btn-cy" href="{% url 'academy:dashboard' %}">View certificate &rarr;</a>
+          {% elif is_final and not progress.is_locked and not already_answered %}
+            <span></span>
           {% endif %}
         </div>
       </div>
     </div>
   </div>
 </section>
+
+{% if completion %}
+<!-- Course completion celebration (fires its own confetti for a cohesive moment) -->
+<div class="modal open" id="courseCompleteModal" style="z-index:10000;">
+  <div class="ovl" data-cc-close></div>
+  <div class="box">
+    <button class="close" data-cc-close>&times;</button>
+    <div style="font-size:3rem;line-height:1;">🏆</div>
+    <h3 style="font-size:1.7rem;margin-top:.3rem;">Congratulations — Course Complete!</h3>
+    <p class="msub">You passed <b>{{ completion.title }}</b></p>
+    <div class="cc-score">{{ completion.score }}%</div>
+    <p style="color:var(--mut);font-size:.85rem;margin-top:.2rem;">Final aggregate score</p>
+    <div class="cc-promo">
+      <span style="font-size:.82rem;color:var(--mut);">Your 50% merch reward code{% if completion.promo_tag %} ({{ completion.promo_tag }}){% endif %}</span>
+      <span class="promo-code">{{ completion.promo }}</span>
+    </div>
+    <a class="btn btn-cy btn-lg" style="width:100%;" target="_blank" rel="noopener"
+       href="{% url 'academy:certificate' completion.cert_uuid %}"><i class="fas fa-certificate"></i> View Certificate</a>
+    <button class="btn btn-ghost btn-lg" style="width:100%;margin-top:.5rem;" data-cc-close>Keep exploring</button>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script>
+(function(){
+  function burst(){
+    if (typeof confetti !== 'function') return;
+    var colors = ['#7c5cff','#22d3ee','#36e0a0','#f7b731'];
+    confetti({particleCount:160, spread:90, origin:{y:0.55}, colors:colors});
+    var end = Date.now() + 1500;
+    (function frame(){
+      confetti({particleCount:5, angle:60, spread:65, origin:{x:0}, colors:colors});
+      confetti({particleCount:5, angle:120, spread:65, origin:{x:1}, colors:colors});
+      if (Date.now() < end) requestAnimationFrame(frame);
+    })();
+  }
+  function close(){ var m=document.getElementById('courseCompleteModal'); if(m) m.classList.remove('open'); }
+  document.querySelectorAll('[data-cc-close]').forEach(function(el){ el.addEventListener('click', close); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+  if (document.readyState !== 'loading') setTimeout(burst, 250);
+  else document.addEventListener('DOMContentLoaded', function(){ setTimeout(burst, 250); });
+})();
+</script>
+{% endif %}
 {% endblock %}

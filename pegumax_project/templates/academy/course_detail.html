@@ -51,10 +51,12 @@
 
         {% if owned and progress %}
         <div class="progress-bar"><span style="width:{{ progress.progress_percent }}%"></span></div>
-        <p style="color:var(--mut);font-size:.9rem;">{{ progress.passed_count }} / {{ course.module_count }} modules passed
-          · {{ progress.attempts_remaining }} attempt(s) before lock</p>
+        <p style="color:var(--mut);font-size:.9rem;">{{ progress.answered_count }} / {{ course.module_count }} answered
+          · {{ progress.correct_count }} correct so far
+          {% if progress.completed %}· <span style="color:var(--grn)">Passed at {{ progress.final_score }}%</span>
+          {% else %}· grade is your course average (70% to pass) · {{ progress.attempts_remaining }} attempt(s) left{% endif %}</p>
           {% if progress.is_locked %}
-          <div class="lock-note"><i class="fas fa-lock"></i> This course is locked — you've used all your retakes.
+          <div class="lock-note"><i class="fas fa-lock"></i> This course is locked — you scored {{ progress.final_score }}% and used all your attempts.
             Re-purchase below for a {{ second_chance_discount }}% second-chance discount to reset your attempts.</div>
           {% endif %}
         {% endif %}
@@ -64,7 +66,7 @@
             {% if owned and not progress.is_locked %}
               <a class="mod-row {% if progress and m.module_number in progress.passed_modules %}done{% endif %}"
                  href="{% url 'academy:lesson' course.slug m.module_number %}">
-                <span class="mod-num">{% if progress and m.module_number in progress.passed_modules %}<i class="fas fa-check"></i>{% else %}{{ m.module_number }}{% endif %}</span>
+                <span class="mod-num">{% if progress and m.module_number in progress.passed_modules %}<i class="fas fa-check"></i>{% elif progress and m.module_number in progress.answered_modules %}<i class="fas fa-times"></i>{% else %}{{ m.module_number }}{% endif %}</span>
                 <span class="mod-title">{{ m.title }}</span>
                 <i class="fas fa-chevron-right" style="color:var(--mut)"></i>
               </a>
@@ -84,7 +86,7 @@
           <div class="price">Owned</div>
           <p style="color:var(--mut);font-size:.9rem;">You have full access to this course.</p>
           <a class="btn btn-cy btn-lg" style="width:100%;" href="{% url 'academy:lesson' course.slug progress.next_module_number %}">
-            {% if progress.passed_count %}Continue{% else %}Start course{% endif %}</a>
+            {% if progress.answered_count %}Continue{% else %}Start course{% endif %}</a>
           {% if progress.completed %}
             <a class="btn btn-ghost btn-lg" style="width:100%;margin-top:.5rem;" href="{% url 'academy:dashboard' %}">View certificate</a>
           {% endif %}

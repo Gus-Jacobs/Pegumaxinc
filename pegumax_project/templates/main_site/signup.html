@@ -1,5 +1,30 @@
 {% extends "base.html" %}
-{% block title %}Sign up — Pegumax Inc.{% endblock %}
+{% load static %}
+{% block title %}Sign up — Pegumax LLC{% endblock %}
+
+{% block extra_head %}
+<style>
+  .signup-card{max-width:480px;margin:0 auto;}
+  .su-field{margin-bottom:1rem;}
+  .su-field label{display:block;font-size:.85rem;font-weight:600;color:var(--mut);margin-bottom:.35rem;}
+  .su-field input{width:100%;}
+  /* live validation states */
+  .field.valid{border-color:var(--grn,#36e0a0)!important;box-shadow:0 0 0 2px rgba(54,224,160,.18);}
+  .field.invalid{border-color:var(--red,#ff6b6b)!important;box-shadow:0 0 0 2px rgba(255,107,107,.16);}
+  .su-hint{font-size:.78rem;margin-top:.3rem;min-height:1rem;color:var(--mut);}
+  .su-hint.ok{color:var(--grn,#36e0a0);}
+  .su-hint.bad{color:var(--red,#ff6b6b);}
+  .rules{background:rgba(124,92,255,.08);border:1px solid rgba(124,92,255,.3);border-radius:12px;
+    padding:1rem 1.2rem;margin-bottom:1.4rem;font-size:.85rem;color:var(--mut);}
+  .rules h4{margin:0 0 .5rem;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.95rem;}
+  .rules ul{margin:.2rem 0 0;padding-left:1.1rem;line-height:1.7;}
+  .rules li[data-rule]{transition:color .15s;}
+  .rules li.met{color:var(--grn,#36e0a0);}
+  .rules li.met::marker{content:"✓ ";}
+  .server-errors{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.4);color:#ff9b9b;
+    border-radius:10px;padding:.7rem 1rem;margin-bottom:1rem;font-size:.88rem;}
+</style>
+{% endblock %}
 
 {% block content %}
 <section class="sec" style="padding-top:9rem;">
@@ -8,11 +33,62 @@
       <span class="eyebrow c">// join pegumax</span>
       <h2>Create your <span class="g">account</span></h2>
     </div>
-    <div class="form-card reveal-s">
-      <form method="post" action="{% url 'main_site:signup' %}">
+    <div class="form-card signup-card reveal-s">
+
+      {% if form.errors %}
+        <div class="server-errors">
+          <b><i class="fas fa-circle-exclamation"></i> Please fix the following:</b>
+          <ul style="margin:.4rem 0 0;padding-left:1.1rem;">
+            {% for field in form %}{% for e in field.errors %}<li>{{ field.label }}: {{ e }}</li>{% endfor %}{% endfor %}
+            {% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <div class="rules">
+        <h4>Username</h4>
+        <ul>
+          <li data-rule="u-len">At least 3 characters</li>
+          <li data-rule="u-chars">Letters, digits and @ . + - _ only — no spaces</li>
+        </ul>
+        <h4 style="margin-top:.8rem;">Password</h4>
+        <ul>
+          <li data-rule="p-len">At least 8 characters</li>
+          <li data-rule="p-notnum">Not entirely numbers</li>
+          <li data-rule="p-match">Both passwords match</li>
+        </ul>
+      </div>
+
+      <form method="post" action="{% url 'main_site:signup' %}" id="pageSignupForm" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        <button class="btn btn-acc btn-lg" type="submit" style="margin-top:.6rem;justify-content:center;">Create account</button>
+
+        <div class="su-field">
+          <label for="id_username">Username</label>
+          <input class="field {% if form.username.errors %}invalid{% endif %}" type="text" name="username" id="id_username" autocomplete="username"
+                 value="{{ form.username.value|default:'' }}" required>
+          <div class="su-hint" data-for="username"></div>
+        </div>
+
+        <div class="su-field">
+          <label for="id_email">Email</label>
+          <input class="field {% if form.email.errors %}invalid{% endif %}" type="email" name="email" id="id_email" autocomplete="email"
+                 value="{{ form.email.value|default:'' }}" required>
+          <div class="su-hint" data-for="email"></div>
+        </div>
+
+        <div class="su-field">
+          <label for="id_password1">Password</label>
+          <input class="field {% if form.password1.errors %}invalid{% endif %}" type="password" name="password1" id="id_password1" autocomplete="new-password" required>
+          <div class="su-hint" data-for="password1"></div>
+        </div>
+
+        <div class="su-field">
+          <label for="id_password2">Confirm password</label>
+          <input class="field {% if form.password2.errors %}invalid{% endif %}" type="password" name="password2" id="id_password2" autocomplete="new-password" required>
+          <div class="su-hint" data-for="password2"></div>
+        </div>
+
+        <button class="btn btn-acc btn-lg" type="submit" id="signupSubmit" style="margin-top:.4rem;justify-content:center;width:100%;">Create account</button>
       </form>
       <div class="swap" style="text-align:center;margin-top:1.2rem;color:var(--mut);font-size:.9rem;">
         Already have an account? <a href="{% url 'login' %}" style="color:var(--cy);font-weight:600;">Log in</a>
@@ -20,4 +96,9 @@
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/signup-validate.js' %}"></script>
+<script>window.initSignupValidation && window.initSignupValidation('pageSignupForm');</script>
 {% endblock %}

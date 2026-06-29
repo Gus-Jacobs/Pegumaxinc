@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Order Confirmed — Thank you! | Pegumax{% endblock %}
+
+{% block extra_head %}
+<style>
+  .ty-wrap{max-width:640px;margin:0 auto;}
+  .ty-card{background:var(--bg2,#11111b);border:1px solid rgba(54,224,160,.35);border-radius:18px;padding:2rem;text-align:center;}
+  .ty-check{width:4.5rem;height:4.5rem;border-radius:50%;display:grid;place-items:center;margin:0 auto .8rem;
+    background:radial-gradient(circle at 50% 30%,#36e0a0,#10916a);color:#06120c;font-size:2rem;
+    box-shadow:0 0 26px rgba(54,224,160,.5);}
+  .ty-card h1{font-family:'Space Grotesk',sans-serif;font-size:1.9rem;margin:.2rem 0;}
+  .ty-sub{color:var(--mut);}
+  .invoice{text-align:left;background:#0d0d16;border:1px solid var(--line,rgba(255,255,255,.08));border-radius:14px;
+    padding:1.2rem 1.4rem;margin:1.5rem 0;}
+  .invoice .meta{display:flex;justify-content:space-between;color:var(--mut);font-size:.82rem;
+    border-bottom:1px solid var(--line,rgba(255,255,255,.08));padding-bottom:.7rem;margin-bottom:.7rem;}
+  .invoice table{width:100%;border-collapse:collapse;}
+  .invoice td{padding:.5rem 0;border-bottom:1px solid var(--line,rgba(255,255,255,.06));vertical-align:top;}
+  .invoice td.amt{text-align:right;font-family:'JetBrains Mono',monospace;color:var(--cy);white-space:nowrap;}
+  .invoice .total td{border:none;padding-top:.9rem;font-weight:700;color:#fff;font-size:1.1rem;}
+  .invoice .total td.amt{color:#36e0a0;}
+  .email-note{background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.3);color:var(--cy);
+    border-radius:10px;padding:.8rem 1rem;font-size:.9rem;margin-top:.4rem;}
+  .ty-actions{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1.4rem;}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="sec" style="padding-top:7rem;">
+  <div class="wrap ty-wrap">
+    <div class="ty-card reveal">
+      <div class="ty-check"><i class="fas fa-check"></i></div>
+      <h1 class="g">Thank you for your order!</h1>
+      <p class="ty-sub">
+        {% if kind == "course" %}Your purchase is confirmed and your course is unlocked.
+        {% else %}Your payment was received and your order is confirmed.{% endif %}
+      </p>
+
+      <div class="invoice">
+        <div class="meta">
+          <span>Order <b style="color:#fff;">#{{ order_ref|default:"—" }}</b></span>
+          <span>{% now "M j, Y" %}</span>
+        </div>
+        <table>
+          {% for li in lines %}
+          <tr>
+            <td>{{ li.quantity }}× {{ li.description }}</td>
+            <td class="amt">${{ li.amount|floatformat:2 }}</td>
+          </tr>
+          {% empty %}
+          <tr><td>Your purchase</td><td class="amt">${{ total|floatformat:2 }}</td></tr>
+          {% endfor %}
+          <tr class="total">
+            <td>Total paid</td>
+            <td class="amt">${{ total|floatformat:2 }} {{ currency }}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="email-note">
+        <i class="fas fa-envelope"></i>
+        {% if email %}A confirmation{% if is_merch %} &amp; invoice{% endif %} email is on its way to <b>{{ email }}</b>.
+        {% else %}You'll receive a confirmation email shortly.{% endif %}
+        {% if is_merch %}<br>We'll send tracking info once your item ships.{% endif %}
+      </div>
+
+      <div class="ty-actions">
+        {% if kind == "course" and course %}
+          <a class="btn btn-cy btn-lg" href="{% url 'academy:course_detail' course.slug %}">Start the course →</a>
+          <a class="btn btn-ghost btn-lg" href="{% url 'academy:dashboard' %}">My dashboard</a>
+        {% else %}
+          <a class="btn btn-cy btn-lg" href="{% url 'academy:storefront' %}">Keep shopping</a>
+          <a class="btn btn-ghost btn-lg" href="{% url 'academy:dashboard' %}">My dashboard</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

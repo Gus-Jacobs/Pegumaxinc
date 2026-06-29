@@ -3,30 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}Pegumax Inc. — Local-first software, built to be owned{% endblock %}</title>
-<meta name="description" content="{% block description %}Pegumax Inc. is a small team building fast, private, mostly-free local-first software — media tools, study suites, and games.{% endblock %}">
+<title>{% block title %}Pegumax LLC — Local-first software, built to be owned{% endblock %}</title>
+<meta name="description" content="{% block description %}Pegumax LLC is a small team building fast, private, mostly-free local-first software — media tools, study suites, and games.{% endblock %}">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#07070d">
 <link rel="canonical" href="{{ request.build_absolute_uri }}">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Pegumax Inc.">
-<meta property="og:title" content="{% block og_title %}Pegumax Inc. — Local-first software, built to be owned{% endblock %}">
+<meta property="og:site_name" content="Pegumax LLC">
+<meta property="og:title" content="{% block og_title %}Pegumax LLC — Local-first software, built to be owned{% endblock %}">
 <meta property="og:description" content="{% block og_desc %}A small team building fast, private, mostly-free local-first software — media tools, study suites, and games.{% endblock %}">
 <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/img4.png' %}">
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{% block tw_title %}Pegumax Inc.{% endblock %}">
+<meta name="twitter:title" content="{% block tw_title %}Pegumax LLC{% endblock %}">
 <meta name="twitter:description" content="Fast, private, mostly-free local-first software.">
 <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/img4.png' %}">
 <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Pegumax Inc.","url":"{{ request.scheme }}://{{ request.get_host }}/","logo":"{{ request.scheme }}://{{ request.get_host }}{% static 'img/favicon.png' %}","description":"A small team building fast, private, mostly-free local-first software.","sameAs":["https://www.facebook.com/profile.php?id=61579165562125","https://www.instagram.com/pegumax_llc/","https://www.linkedin.com/company/pegumax/"]}
+{"@context":"https://schema.org","@type":"Organization","name":"Pegumax LLC","url":"{{ request.scheme }}://{{ request.get_host }}/","logo":"{{ request.scheme }}://{{ request.get_host }}{% static 'img/favicon.png' %}","description":"A small team building fast, private, mostly-free local-first software.","sameAs":["https://www.facebook.com/profile.php?id=61579165562125","https://www.instagram.com/pegumax_llc/","https://www.linkedin.com/company/pegumax/"]}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="{% static 'css/pegumax.css' %}">
+<style>
+  /* Cart button — hidden until the cart has something, then "drives" in. */
+  .cart-btn{display:none;position:relative;align-items:center;justify-content:center;
+    width:2.6rem;height:2.6rem;border-radius:10px;color:var(--ink,#eef0ff);text-decoration:none;
+    border:1px solid var(--line,rgba(255,255,255,.12));background:rgba(255,255,255,.04);font-size:1rem;}
+  .cart-btn.has-items{display:inline-flex;}
+  .cart-btn:hover{border-color:rgba(34,211,238,.55);color:var(--cy,#22d3ee);}
+  .cart-btn .cart-count{position:absolute;top:-7px;right:-7px;min-width:1.15rem;height:1.15rem;padding:0 .25rem;
+    border-radius:999px;background:linear-gradient(120deg,#7c5cff,#22d3ee);color:#0a0a12;font-size:.7rem;
+    font-weight:800;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;}
+  @keyframes cartDriveIn{
+    0%{transform:translateX(70px) rotate(2deg);opacity:0;}
+    55%{transform:translateX(-7px) rotate(-1deg);opacity:1;}
+    78%{transform:translateX(3px);}
+    100%{transform:translateX(0) rotate(0);opacity:1;}
+  }
+  @keyframes wheelRoll{from{transform:rotate(-30deg) translateY(1px);}to{transform:rotate(0) translateY(0);}}
+  @keyframes badgePop{0%{transform:scale(0);}70%{transform:scale(1.35);}100%{transform:scale(1);}}
+  .cart-btn.drive{animation:cartDriveIn .62s cubic-bezier(.2,.85,.25,1);}
+  .cart-btn.drive i{animation:wheelRoll .62s ease-out;}
+  .cart-count.pop{animation:badgePop .42s ease-out;}
+  /* Lightweight toast */
+  #pegToast{position:fixed;left:50%;bottom:1.4rem;transform:translateX(-50%) translateY(140%);
+    background:#11111b;border:1px solid rgba(34,211,238,.4);color:#eef0ff;padding:.7rem 1.1rem;border-radius:10px;
+    font-size:.9rem;z-index:10001;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.2,.85,.25,1);max-width:90vw;}
+  #pegToast.show{transform:translateX(-50%) translateY(0);}
+  #pegToast.err{border-color:rgba(255,107,107,.5);}
+  /* Signup live-validation states (modal + page) */
+  .field.valid{border-color:#36e0a0!important;box-shadow:0 0 0 2px rgba(54,224,160,.18);}
+  .field.invalid{border-color:#ff6b6b!important;box-shadow:0 0 0 2px rgba(255,107,107,.16);}
+  .su-hint{font-size:.76rem;margin:.2rem 0 .2rem;min-height:.9rem;color:var(--mut);}
+  .su-hint.ok{color:#36e0a0;} .su-hint.bad{color:#ff6b6b;}
+  .su-rules{font-size:.76rem;color:var(--mut);background:rgba(124,92,255,.1);border:1px solid rgba(124,92,255,.3);
+    border-radius:9px;padding:.55rem .7rem;margin:.2rem 0 .8rem;line-height:1.5;}
+</style>
 <script src="https://js.stripe.com/v3/"></script>
 {% block extra_head %}{% endblock %}
 </head>
@@ -49,6 +84,9 @@
       </ul>
       <div class="nav-cta">
         {% if user.is_authenticated %}
+          <a class="cart-btn {% if cart_count %}has-items{% endif %}" id="cartBtn" href="{% url 'academy:cart' %}" aria-label="Cart">
+            <i class="fas fa-cart-shopping"></i><span class="cart-count" id="cartCount">{{ cart_count }}</span>
+          </a>
           <a class="btn btn-ghost" href="{% url 'main_site:account' %}">Account</a>
         {% else %}
           <button class="btn btn-ghost" data-modal="login">Log in</button>
@@ -104,6 +142,14 @@
         <a class="fl" data-feedback="feedback">Feedback</a>
       </div>
       <div>
+        <h5>Store &amp; Academy</h5>
+        <a class="fl" href="{% url 'academy:storefront' %}">Shop</a>
+        <a class="fl" href="{% url 'academy:returns' %}">Return Policy</a>
+        <a class="fl" href="{% url 'academy:terms' %}">Store Terms</a>
+        <a class="fl" href="{% url 'academy:privacy' %}">Store Privacy</a>
+        <span class="fl" style="color:var(--dim,#6b6f8c);font-size:.74rem;cursor:default;">Store purchases only</span>
+      </div>
+      <div>
         <h5>Account</h5>
         {% if user.is_authenticated %}
           <a class="fl" href="{% url 'main_site:account' %}">Account</a>
@@ -117,7 +163,7 @@
       </div>
     </div>
     <div class="bottom">
-      <span class="copy">© <span id="year">2026</span> Pegumax Inc. All rights reserved. Empowering the human spirit through good software.</span>
+      <span class="copy">© <span id="year">2026</span> Pegumax LLC. All rights reserved. Empowering the human spirit through good software.</span>
       <div class="social">
         <a href="https://www.facebook.com/profile.php?id=61579165562125" target="_blank" rel="noopener" aria-label="Facebook">{% include 'partials/icon.html' with name='facebook' %}</a>
         <a href="https://www.instagram.com/pegumax_llc/" target="_blank" rel="noopener" aria-label="Instagram">{% include 'partials/icon.html' with name='instagram' %}</a>
@@ -150,12 +196,19 @@
     <div id="signupForm" style="display:none;">
       <h3>Create your account</h3>
       <p class="msub">Join Pegumax — it only takes a moment</p>
-      <form method="post" action="{% url 'main_site:signup' %}">
+      <div class="su-rules">
+        <b>Username:</b> 3+ chars, letters/digits/@.+-_ (no spaces). &nbsp;<b>Password:</b> 8+ chars, not all numbers.
+      </div>
+      <form method="post" action="{% url 'main_site:signup' %}" id="navSignupForm" novalidate>
         {% csrf_token %}
         <label>Username</label><input class="field" name="username" autocomplete="username" required>
+        <div class="su-hint" data-for="username"></div>
         <label>Email</label><input class="field" type="email" name="email" autocomplete="email" required>
+        <div class="su-hint" data-for="email"></div>
         <label>Password</label><input class="field" type="password" name="password1" autocomplete="new-password" required>
+        <div class="su-hint" data-for="password1"></div>
         <label>Confirm password</label><input class="field" type="password" name="password2" autocomplete="new-password" required>
+        <div class="su-hint" data-for="password2"></div>
         <button class="btn btn-acc btn-lg" type="submit" style="margin-top:.6rem;">Create account</button>
       </form>
       <div class="swap">Already have an account? <a data-swap="login">Log in</a></div>
@@ -235,6 +288,65 @@
 
 <script id="site-config" type="application/json">{ "stripePk": "{{ stripe_pk|escapejs }}" }</script>
 <script src="{% static 'js/pegumax.js' %}"></script>
+<script src="{% static 'js/signup-validate.js' %}"></script>
+<script>window.initSignupValidation && window.initSignupValidation('navSignupForm');</script>
+
+{# ---- Global cart: AJAX add + "drive-in" navbar animation + toast ---- #}
+{% if user.is_authenticated %}
+<script>
+window.PegumaxCart = (function(){
+  var ADD_URL = "{% url 'academy:cart_add' %}";
+  var btn = document.getElementById('cartBtn');
+  var countEl = document.getElementById('cartCount');
+
+  function getCookie(name){
+    var m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return m ? m.pop() : '';
+  }
+  function toast(msg, isErr){
+    var t = document.getElementById('pegToast');
+    if(!t){ t = document.createElement('div'); t.id='pegToast'; document.body.appendChild(t); }
+    t.textContent = msg; t.className = isErr ? 'err' : '';
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+  }
+  function setCount(n){
+    if(!btn || !countEl) return;
+    countEl.textContent = n;
+    if(n > 0){
+      btn.classList.add('has-items');
+      btn.classList.remove('drive'); void btn.offsetWidth; btn.classList.add('drive');
+      countEl.classList.remove('pop'); void countEl.offsetWidth; countEl.classList.add('pop');
+    } else {
+      btn.classList.remove('has-items');
+    }
+  }
+  function add(payload, onDone){
+    var fd = new FormData();
+    Object.keys(payload).forEach(function(k){ fd.append(k, payload[k]); });
+    fetch(ADD_URL, {
+      method: 'POST',
+      headers: {'X-Requested-With':'XMLHttpRequest', 'X-CSRFToken': getCookie('csrftoken')},
+      body: fd
+    }).then(function(r){ return r.json().then(function(d){ return {ok:r.ok, d:d}; }); })
+      .then(function(res){
+        if(res.ok && res.d.ok){
+          setCount(res.d.count);
+          var it = res.d.item || {};
+          var label = it.name + (it.color||it.size ? ' ('+[it.color,it.size].filter(Boolean).join(' / ')+')' : '');
+          toast('🛒 Added ' + label + ' to cart');
+          if(onDone) onDone(true, res.d);
+        } else {
+          toast(res.d.error || 'Could not add to cart', true);
+          if(onDone) onDone(false, res.d);
+        }
+      }).catch(function(){ toast('Network error — please try again.', true); if(onDone) onDone(false); });
+  }
+  return {add:add, setCount:setCount, toast:toast};
+})();
+</script>
+{% endif %}
 
 {# ---- Global gamification level-up celebration (fires on any page) ---- #}
 {% if academy_level_up %}

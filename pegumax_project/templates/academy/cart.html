@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Your Cart | Pegumax Store{% endblock %}
+
+{% block extra_head %}
+<style>
+  .cart-wrap{max-width:840px;margin:0 auto;}
+  .cart-line{display:flex;gap:1rem;align-items:flex-start;background:var(--bg2,#11111b);
+    border:1px solid var(--line,rgba(255,255,255,.08));border-radius:14px;padding:1rem;margin-bottom:.8rem;flex-wrap:wrap;}
+  .cart-line img{width:74px;height:74px;border-radius:10px;object-fit:cover;background:#0f0f18;flex-shrink:0;}
+  .cart-line .meta{flex:1;min-width:200px;}
+  .cart-line .meta h4{font-family:'Space Grotesk',sans-serif;margin:0 0 .2rem;}
+  .cart-line .opt{color:var(--mut);font-size:.85rem;}
+  .cart-line .price{font-family:'JetBrains Mono',monospace;color:var(--cy);font-weight:700;min-width:80px;text-align:right;}
+  .cart-line form{margin:0;}
+  .cart-line .qty{width:3.4rem;padding:.4rem;border-radius:8px;border:1px solid var(--line,rgba(255,255,255,.15));
+    background:#0f0f18;color:#fff;text-align:center;}
+  .line-bottom{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin-top:.6rem;}
+  .code-form{display:flex;align-items:center;gap:.4rem;}
+  .code-form label{color:var(--mut);font-size:.82rem;}
+  .code-form select{background:#0f0f18;color:#fff;border:1px solid rgba(54,224,160,.4);border-radius:8px;padding:.35rem .5rem;font-size:.82rem;}
+  .line-reward{color:var(--grn,#36e0a0);font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;}
+  .no-codes{color:#666980;font-size:.8rem;font-style:italic;}
+  .link-del{background:none;border:none;color:var(--red,#ff6b6b);cursor:pointer;font-size:.8rem;padding:0;}
+  .cart-foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:1.2rem;
+    border-top:1px solid var(--line,rgba(255,255,255,.1));padding-top:1.2rem;gap:1rem;flex-wrap:wrap;}
+  .cart-total{font-family:'JetBrains Mono',monospace;font-size:1.6rem;color:#fff;font-weight:700;}
+  .empty-cart{text-align:center;padding:3rem 1rem;color:var(--mut);}
+  .empty-cart i{font-size:3rem;color:var(--cy);opacity:.6;}
+  .codes-banner{background:rgba(54,224,160,.1);border:1px dashed rgba(54,224,160,.5);color:var(--grn);
+    border-radius:12px;padding:.8rem 1.1rem;margin-bottom:1rem;font-size:.9rem;}
+  .totals-col div{min-width:230px;}
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="phead" style="min-height:auto;">
+  <div class="pbg" style="background-image:url('{% static 'img/img10.webp' %}')"></div>
+  <div class="wrap">
+    <span class="breadcrumb"><b>Pegumax</b> / <a href="{% url 'academy:storefront' %}">Store</a> / Cart</span>
+    <h1 class="g">Your cart</h1>
+  </div>
+</header>
+
+<section class="sec" style="padding-top:1rem;">
+  <div class="wrap cart-wrap">
+    {% if messages %}
+    <ul class="msg-list" style="max-width:none;margin-bottom:1rem;">
+      {% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if lines %}
+      {% if has_codes %}
+      <div class="codes-banner"><i class="fas fa-ticket"></i>
+        You have <b>{{ code_count }}</b> reward code{{ code_count|pluralize }} — each is 50%-off <b>one item</b>.
+        Pick which item to use each on below; a code can only be used once.</div>
+      {% endif %}
+
+      {% for line in lines %}
+      <div class="cart-line">
+        {% if line.image %}<img src="{{ line.image }}" alt="{{ line.name }}">{% else %}<div style="width:74px;height:74px;border-radius:10px;background:#0f0f18;display:grid;place-items:center;color:var(--cy)"><i class="fas fa-shirt"></i></div>{% endif %}
+        <div class="meta">
+          <h4>{{ line.name }}</h4>
+          <div class="opt">
+            {% if line.color %}{{ line.color }}{% endif %}{% if line.color and line.size %} · {% endif %}{% if line.size %}Size {{ line.size }}{% endif %}
+            · ${{ line.unit_price }} each
+          </div>
+
+          <div class="line-bottom">
+            <form method="post" action="{% url 'academy:cart_update' %}">
+              {% csrf_token %}<input type="hidden" name="key" value="{{ line.key }}">
+              <input class="qty" type="number" name="qty" value="{{ line.qty }}" min="0" onchange="this.form.submit()" title="Quantity">
+            </form>
+
+            {% if has_codes %}
+              {% if line.available_codes %}
+              <form method="post" action="{% url 'academy:cart_apply_code' %}" class="code-form">
+                {% csrf_token %}<input type="hidden" name="key" value="{{ line.key }}">
+                <label>Use code:</label>
+                <select name="code" onchange="this.form.submit()">
+                  <option value="">No discount</option>
+                  {% for c in line.available_codes %}
+                  <option value="{{ c.code_string }}" {% if c.code_string == line.assigned_code %}selected{% endif %}>{{ c.code_string }} — {{ c.discount_percentage }}% off</option>
+                  {% endfor %}
+                </select>
+              </form>
+              {% if line.assigned_code %}<span class="line-reward">−${{ line.line_discount|floatformat:2 }}</span>{% endif %}
+              {% else %}
+              <span class="no-codes">No discount codes available</span>
+              {% endif %}
+            {% endif %}
+
+            <form method="post" action="{% url 'academy:cart_remove' %}">
+              {% csrf_token %}<input type="hidden" name="key" value="{{ line.key }}">
+              <button type="submit" class="link-del"><i class="fas fa-trash"></i> Remove</button>
+            </form>
+          </div>
+        </div>
+        <div class="price">${{ line.line_total|floatformat:2 }}</div>
+      </div>
+      {% endfor %}
+
+      <div class="cart-foot">
+        <div class="totals-col">
+          {% if discount %}
+          <div style="color:var(--mut);font-size:.85rem;">Subtotal <span style="float:right;">${{ subtotal|floatformat:2 }}</span></div>
+          <div style="color:var(--grn);font-size:.85rem;">Reward discount <span style="float:right;">−${{ discount|floatformat:2 }}</span></div>
+          {% endif %}
+          <div style="color:var(--mut);font-size:.85rem;margin-top:.3rem;">Total</div>
+          <div class="cart-total">${{ total|floatformat:2 }}</div>
+          <div style="color:var(--mut);font-size:.78rem;">Shipping calculated at checkout.</div>
+        </div>
+        <form method="post" action="{% url 'academy:cart_checkout' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-acc btn-lg"><i class="fas fa-lock"></i> Checkout</button>
+        </form>
+      </div>
+      <a class="btn btn-ghost" href="{% url 'academy:storefront' %}" style="margin-top:1rem;">&larr; Keep shopping</a>
+    {% else %}
+      <div class="empty-cart">
+        <i class="fas fa-cart-shopping"></i>
+        <h3 style="margin:.6rem 0;">Your cart is empty</h3>
+        <p>Browse the store and add some gear.</p>
+        <a class="btn btn-cy" href="{% url 'academy:storefront' %}">Go to store</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

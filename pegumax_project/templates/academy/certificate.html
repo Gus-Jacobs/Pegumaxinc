@@ -6,100 +6,150 @@
 <title>Certificate — {{ course_title }} | Pegumax</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Dancing+Script:wght@600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=DM+Serif+Display:wght@400&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   /* Light/Dark via CSS variables, toggled on <html data-theme>. */
   :root{
-    --paper:#0d0f1a; --ink:#f3f4ff; --muted:#9aa0c0; --accent:#7c5cff; --accent2:#22d3ee;
-    --border:rgba(124,92,255,.55); --seal:#22d3ee; --shadow:rgba(0,0,0,.5);
+    --paper:#0b0d16; --ink:#eef0ff; --muted:#9498bf; --a1:#a78bfa; --a2:#38bdf8;
+    --line:rgba(167,139,250,.4); --wm:rgba(167,139,250,.07); --card:rgba(255,255,255,.04);
+    --seal-glow:drop-shadow(0 0 12px rgba(167,139,250,.45));
   }
   html[data-theme="light"]{
-    --paper:#fbfaf5; --ink:#1b1b2a; --muted:#5b6075; --accent:#5b3df5; --accent2:#0891b2;
-    --border:rgba(91,61,245,.45); --seal:#0891b2; --shadow:rgba(0,0,0,.15);
+    --paper:#eceaf6; --ink:#211d3a; --muted:#5a5680; --a1:#6d28d9; --a2:#0e7490;
+    --line:rgba(109,40,217,.3); --wm:rgba(109,40,217,.10); --card:rgba(109,40,217,.04);
+    --seal-glow:drop-shadow(0 2px 6px rgba(109,40,217,.25));
   }
+
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:#06060c;display:flex;flex-direction:column;align-items:center;gap:1rem;
-    padding:2rem 1rem;font-family:'Cormorant Garamond',serif;}
-  html[data-theme="light"] body{background:#e8e8ef;}
+    padding:2rem 1rem;font-family:'Outfit',sans-serif;}
+  html[data-theme="light"] body{background:#dcdae8;}
 
+  /* ----- Toolbar (screen only) ----- */
   .toolbar{display:flex;gap:.6rem;font-family:'Space Grotesk',sans-serif;}
-  .toolbar button{cursor:pointer;border:1px solid var(--border);background:var(--accent);color:#fff;
-    padding:.55rem 1.1rem;border-radius:8px;font-size:.9rem;font-weight:600;}
+  .toolbar button{cursor:pointer;border:1px solid var(--line);background:var(--a1);color:#fff;
+    padding:.55rem 1.1rem;border-radius:8px;font-size:.9rem;font-weight:600;transition:.18s;}
+  .toolbar button:hover{filter:brightness(1.08);}
   .toolbar button.ghost{background:transparent;color:var(--ink);}
 
-  /* A4 landscape: 297mm x 210mm */
+  /* ----- Certificate (A4 landscape: 297mm x 210mm) ----- */
   .certificate{
-    width:297mm;max-width:100%;aspect-ratio:297/210;background:var(--paper);color:var(--ink);
-    border:2px solid var(--border);border-radius:6px;box-shadow:0 24px 60px var(--shadow);
-    position:relative;padding:18mm 22mm;display:flex;flex-direction:column;
+    width:297mm;max-width:100%;aspect-ratio:297/210;position:relative;overflow:hidden;
+    color:var(--ink);border-radius:8px;box-shadow:0 24px 60px rgba(0,0,0,.5);
+    background:
+      radial-gradient(120% 90% at 50% -5%,rgba(167,139,250,.20),transparent 55%),
+      radial-gradient(90% 70% at 85% 115%,rgba(56,189,248,.16),transparent 55%),
+      var(--paper);
   }
-  .certificate::before{content:"";position:absolute;inset:8mm;border:1px solid var(--border);border-radius:3px;pointer-events:none;
-    background:radial-gradient(circle at 50% 0%,rgba(124,92,255,.08),transparent 60%);}
-  .brand{display:flex;align-items:center;gap:.6rem;font-family:'Space Grotesk',sans-serif;
-    text-transform:uppercase;letter-spacing:.32em;font-size:.8rem;color:var(--accent2);font-weight:600;z-index:1;}
-  .brand img{width:26px;height:26px;}
-  .head{text-align:center;margin-top:6mm;z-index:1;}
-  .head .kicker{font-family:'Space Grotesk',sans-serif;letter-spacing:.4em;text-transform:uppercase;
-    font-size:.72rem;color:var(--muted);}
-  .head h1{font-size:3rem;font-weight:700;color:var(--accent);margin:.2rem 0;}
-  .body-block{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;z-index:1;}
-  .awarded{font-size:1.05rem;color:var(--muted);}
-  .student{font-size:3.4rem;font-weight:700;margin:.3rem 0;line-height:1.05;}
-  .for-completing{font-size:1.05rem;color:var(--muted);margin-top:.4rem;}
-  .course{font-size:1.8rem;font-weight:600;color:var(--accent2);margin-top:.2rem;}
-  .foot{display:flex;justify-content:space-between;align-items:flex-end;z-index:1;margin-top:6mm;}
-  .foot .col{display:flex;flex-direction:column;align-items:center;min-width:60mm;}
-  .sig{font-family:'Dancing Script',cursive;font-size:2.4rem;color:var(--ink);line-height:1;}
-  .sigline{width:60mm;border-top:1px solid var(--muted);margin-top:.2rem;padding-top:.3rem;
-    font-family:'Space Grotesk',sans-serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
-  .seal{width:24mm;height:24mm;border-radius:50%;border:2px solid var(--seal);display:grid;place-items:center;
-    color:var(--seal);font-family:'Space Grotesk',sans-serif;font-size:.6rem;text-align:center;letter-spacing:.1em;line-height:1.3;}
-  .meta{font-family:'Space Grotesk',sans-serif;font-size:.66rem;color:var(--muted);text-align:center;}
-  .meta b{color:var(--ink);}
+  html[data-theme="light"] .certificate{
+    background:
+      radial-gradient(120% 90% at 50% -10%,rgba(167,139,250,.45),transparent 55%),
+      radial-gradient(90% 80% at 90% 120%,rgba(14,116,144,.22),transparent 55%),
+      radial-gradient(70% 60% at 0% 100%,rgba(167,139,250,.20),transparent 60%),
+      linear-gradient(160deg,#f3f1fb,#e6e3f3);
+  }
+  /* inner frame */
+  .certificate::before{content:"";position:absolute;inset:8mm;border:1px solid var(--line);
+    border-radius:14px;background:var(--card);backdrop-filter:blur(1px);pointer-events:none;z-index:1;}
 
+  /* watermark */
+  .watermark{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:0;}
+  .watermark span{font-family:'Fraunces',serif;font-weight:500;font-size:9rem;line-height:1;
+    letter-spacing:.04em;color:var(--wm);white-space:nowrap;}
+
+  /* layout stage: top / center / bottom */
+  .stage{position:relative;z-index:2;height:100%;width:100%;display:grid;
+    grid-template-rows:auto 1fr auto;padding:15mm 18mm 14mm;}
+
+  /* top-left logo — sized for professional authority */
+  .brand{display:flex;align-items:center;gap:.7rem;font-family:'Space Grotesk',sans-serif;
+    font-weight:600;letter-spacing:.26em;text-transform:uppercase;font-size:.72rem;
+    background:linear-gradient(90deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .brand img{width:74px;height:74px;object-fit:contain;filter:var(--seal-glow);}
+
+  /* centered body, spaced vertically */
+  .body-block{display:flex;flex-direction:column;align-items:center;text-align:center;
+    justify-content:space-evenly;padding:6mm 0;}
+  .title-group{display:flex;flex-direction:column;align-items:center;gap:.4rem;}
+  .kicker{font-family:'Space Grotesk',sans-serif;font-size:.7rem;letter-spacing:.44em;
+    text-transform:uppercase;color:var(--muted);}
+  .body-block h1{font-family:'DM Serif Display',serif;font-size:2.7rem;line-height:1;
+    background:linear-gradient(120deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .name-group{display:flex;flex-direction:column;align-items:center;gap:.5rem;}
+  .awarded{font-size:1rem;color:var(--muted);}
+  .student{font-family:'DM Serif Display',serif;font-size:3.1rem;line-height:1.05;color:var(--ink);}
+  .rule{width:38mm;height:1px;background:linear-gradient(90deg,transparent,var(--a1),transparent);}
+  .course-group{display:flex;flex-direction:column;align-items:center;gap:.4rem;}
+  .for-completing{font-size:1rem;color:var(--muted);}
+  .course{font-size:1.55rem;font-weight:600;color:var(--a2);}
+
+  /* bottom: seal | meta column | signature */
+  .foot{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:6mm;}
+  .seal{width:26mm;height:26mm;object-fit:contain;justify-self:start;filter:var(--seal-glow);}
+  .meta{justify-self:center;align-self:end;display:flex;flex-direction:column;align-items:center;gap:.15rem;
+    font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);line-height:1.5;padding-bottom:1mm;}
+  .meta .line{display:flex;gap:.4rem;}
+  .meta .k{text-transform:uppercase;letter-spacing:.08em;}
+  .meta b{color:var(--ink);font-weight:500;}
+  .sig-wrap{justify-self:end;display:flex;flex-direction:column;align-items:center;}
+  .sig{font-family:'Dancing Script',cursive;font-size:2rem;line-height:1;color:var(--ink);}
+  .sigline{margin-top:.15rem;padding-top:.25rem;border-top:1px solid var(--line);
+    font-family:'Space Grotesk',sans-serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);width:58mm;text-align:center;}
+
+  /* ----- Print ----- */
   @page{size:A4 landscape;margin:0;}
   @media print{
     body{background:#fff;padding:0;}
     .toolbar{display:none;}
-    .certificate{box-shadow:none;border-radius:0;width:297mm;height:210mm;}
+    .certificate{box-shadow:none;border-radius:0;width:297mm;height:210mm;aspect-ratio:auto;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact;}
   }
 </style>
 </head>
 <body>
   <div class="toolbar">
-    <button onclick="window.print()"><i></i>🖨 Print / Save as PDF</button>
+    <button onclick="window.print()">🖨 Print / Save as PDF</button>
     <button class="ghost" id="themeToggle">◐ Toggle Light/Dark</button>
   </div>
 
   <div class="certificate" id="cert">
-    <div class="brand"><img src="{% static 'img/favicon.png' %}" alt="">Pegumax Inc.</div>
+    <div class="watermark"><span>Pegumax LLC</span></div>
 
-    <div class="head">
-      <div class="kicker">Certificate of Completion</div>
-      <h1>Certified</h1>
-    </div>
+    <div class="stage">
+      <div class="brand"><img src="{% static 'img/favicon.png' %}" alt=""></div>
 
-    <div class="body-block">
-      <div class="awarded">This certifies that</div>
-      <div class="student">{{ student_name }}</div>
-      <div class="for-completing">has successfully completed the course</div>
-      <div class="course">{{ course_title }}</div>
-    </div>
+      <div class="body-block">
+        <div class="title-group">
+          <div class="kicker">Certificate of Completion</div>
+          <h1>Certified</h1>
+        </div>
 
-    <div class="foot">
-      <div class="col">
-        <div class="seal">PEGUMAX<br>VERIFIED<br>★</div>
-      </div>
-      <div class="col">
-        <div class="meta">
-          Issued <b>{{ issue_date|date:"F j, Y" }}</b><br>
-          Certificate ID <b>{{ cert.unique_uuid }}</b><br>
-          Verify hash <b>{{ cert.verify_hash }}</b>
+        <div class="name-group">
+          <div class="awarded">This certifies that</div>
+          <div class="student">{{ student_name }}</div>
+          <div class="rule"></div>
+        </div>
+
+        <div class="course-group">
+          <div class="for-completing">has successfully completed the course</div>
+          <div class="course">{{ course_title }}</div>
         </div>
       </div>
-      <div class="col">
-        <div class="sig">Augustine Jacobs</div>
-        <div class="sigline">Augustine Jacobs, Owner of Pegumax</div>
+
+      <div class="foot">
+        <img class="seal" src="{% static 'img/seal.png' %}" alt="Pegumax verified seal">
+
+        <div class="meta">
+          <div class="line"><span class="k">Issued</span><b>{{ issue_date|date:"F j, Y" }}</b></div>
+          <div class="line"><span class="k">ID</span><b>{{ cert.unique_uuid }}</b></div>
+          <div class="line"><span class="k">Hash</span><b>{{ cert.verify_hash }}</b></div>
+        </div>
+
+        <div class="sig-wrap">
+          <div class="sig">Augustine Jacobs</div>
+          <div class="sigline">Augustine Jacobs · Owner of Pegumax</div>
+        </div>
       </div>
     </div>
   </div>

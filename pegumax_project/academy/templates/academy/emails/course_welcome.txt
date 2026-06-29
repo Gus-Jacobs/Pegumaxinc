@@ -1,0 +1,12 @@
+{% autoescape off %}Welcome to {{ course_title }}!
+
+Your enrollment is confirmed — you now have full access to every module and quiz.
+
+Start learning from your dashboard:
+{{ dashboard_url }}
+
+Work through the modules, pass the quizzes, and finish with a 70%+ average to earn
+your certificate and a 50% reward code.
+
+Happy building,
+The Pegumax Team{% endautoescape %}

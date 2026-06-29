@@ -14,7 +14,20 @@ staticfiles/
 # ---- Secrets / environment ----
 .env
 .env.*
+!.env.example
 *.pem
+*.key
+
+# ---- Archives / build artifacts (don't ship source zips) ----
+*.zip
+*.tar
+*.tar.gz
+
+# ---- User-uploaded media (served from storage, not the repo) ----
+media/
+
+# ---- Logs ----
+*.log
 
 # ---- Virtual environments ----
 venv/
