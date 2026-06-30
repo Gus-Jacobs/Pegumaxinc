@@ -1,0 +1,5 @@
+# Pegumax LLC — security contact (RFC 9116)
+Contact: mailto:pegumaxinc@gmail.com
+Expires: 2027-06-30T00:00:00.000Z
+Preferred-Languages: en
+Canonical: {{ request.scheme }}://{{ request.get_host }}/.well-known/security.txt

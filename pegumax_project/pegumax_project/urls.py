@@ -24,6 +24,9 @@ urlpatterns = [
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain'), name='robots'),
     # Classic /favicon.ico lookup (browsers + Google's favicon crawler hit this first).
     path('favicon.ico', RedirectView.as_view(url='/static/img/favicon.ico', permanent=True)),
+    # security.txt (RFC 9116) — legitimacy/security-contact signal for scanners.
+    path('.well-known/security.txt', TemplateView.as_view(template_name='security.txt', content_type='text/plain')),
+    path('security.txt', RedirectView.as_view(url='/.well-known/security.txt', permanent=True)),
     path('', include('main_site.urls', namespace='main_site')),
     path('academy/', include('academy.urls', namespace='academy')),
     path('accounts/', include('django.contrib.auth.urls')),
