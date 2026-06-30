@@ -18,7 +18,11 @@
 <meta name="twitter:title" content="{% block tw_title %}Pegumax LLC{% endblock %}">
 <meta name="twitter:description" content="Fast, private, mostly-free local-first software.">
 <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/img4.png' %}">
-<link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+<link rel="icon" href="{% static 'img/favicon.ico' %}" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="{% static 'img/favicon-48.png' %}">
+<link rel="icon" type="image/png" sizes="96x96" href="{% static 'img/favicon-96.png' %}">
+<link rel="icon" type="image/png" sizes="192x192" href="{% static 'img/favicon-192.png' %}">
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'img/apple-touch-icon.png' %}">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Pegumax LLC","url":"{{ request.scheme }}://{{ request.get_host }}/","logo":"{{ request.scheme }}://{{ request.get_host }}{% static 'img/favicon.png' %}","description":"A small team building fast, private, mostly-free local-first software.","sameAs":["https://www.facebook.com/profile.php?id=61579165562125","https://www.instagram.com/pegumax_llc/","https://www.linkedin.com/company/pegumax/"]}
 </script>
@@ -74,7 +78,7 @@
 <nav class="nav" id="nav">
   <div class="wrap">
     <div class="bar">
-      <a class="brand" href="{% url 'main_site:home' %}" data-link="home"><img src="{% static 'img/favicon.png' %}" alt="Pegumax"><span class="logo-word">Pegumax</span></a>
+      <a class="brand" href="{% url 'main_site:home' %}" data-link="home"><img src="{% static 'img/favicon-96.png' %}" alt="Pegumax" width="28" height="28"><span class="logo-word">Pegumax</span></a>
       <ul class="nav-links">
         <li><a class="{% if active_section == 'home' %}active{% endif %}" href="{% url 'main_site:home' %}">Home</a></li>
         <li><a class="{% if active_section == 'software' %}active{% endif %}" href="{% url 'main_site:software_center' %}">Software</a></li>
@@ -123,7 +127,7 @@
   <div class="wrap">
     <div class="cols">
       <div>
-        <a class="brand" href="{% url 'main_site:home' %}"><img src="{% static 'img/favicon.png' %}" alt="Pegumax"><span class="logo-word">Pegumax</span></a>
+        <a class="brand" href="{% url 'main_site:home' %}"><img src="{% static 'img/favicon-96.png' %}" alt="Pegumax" width="28" height="28"><span class="logo-word">Pegumax</span></a>
         <p class="about">A small team building local-first software, built to be owned. Fast, private, and mostly free — for everyone.</p>
       </div>
       <div>
