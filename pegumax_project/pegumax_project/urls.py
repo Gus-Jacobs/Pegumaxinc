@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.views.generic import TemplateView
+from django.views.generic.base import RedirectView
 from django.contrib.sitemaps.views import sitemap
 from main_site.sitemaps import StaticViewSitemap
 from . import views # Import your custom views.py
@@ -21,6 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain'), name='robots'),
+    # Classic /favicon.ico lookup (browsers + Google's favicon crawler hit this first).
+    path('favicon.ico', RedirectView.as_view(url='/static/img/favicon.ico', permanent=True)),
     path('', include('main_site.urls', namespace='main_site')),
     path('academy/', include('academy.urls', namespace='academy')),
     path('accounts/', include('django.contrib.auth.urls')),

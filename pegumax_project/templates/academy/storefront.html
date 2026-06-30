@@ -48,6 +48,10 @@
   .promo-banner{background:rgba(54,224,160,.1);border:1px dashed rgba(54,224,160,.5);color:var(--grn);
     border-radius:12px;padding:.8rem 1.1rem;margin-top:1rem;font-size:.92rem;}
   .promo-banner b{font-family:'JetBrains Mono',monospace;}
+  .store-empty{text-align:center;padding:3rem 1rem;color:var(--mut);max-width:440px;margin:1.6rem auto;}
+  .store-empty i{font-size:2.6rem;color:var(--cy);opacity:.55;}
+  .store-empty h3{font-family:'Space Grotesk',sans-serif;color:#fff;margin:.7rem 0 .35rem;}
+  .store-empty p{margin:0;font-size:.95rem;}
 </style>
 {% endblock %}
 
@@ -122,7 +126,11 @@
         {% endfor %}
       </div>
       {% else %}
-      <p class="sum" style="color:var(--mut)">No courses published yet. Run <code>python manage.py seed_courses</code>.</p>
+      <div class="store-empty">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>Nothing to see here yet</h3>
+        <p>Our courses aren't available right now — please check back soon.</p>
+      </div>
       {% endif %}
     </div>
 
@@ -134,12 +142,16 @@
       </div>
       {% else %}
         {% if tag_filter or type_filter %}
-        <p class="sum" style="color:var(--mut)">No merch matches this filter. <a href="{% url 'academy:storefront' %}">Clear filters</a>.</p>
+        <div class="store-empty">
+          <i class="fas fa-shirt"></i>
+          <h3>Nothing here</h3>
+          <p>No merch matches this filter. <a href="{% url 'academy:storefront' %}" style="color:var(--cy);">Clear filters</a>.</p>
+        </div>
         {% else %}
-        <div style="text-align:center;padding:2.5rem 1rem;color:var(--mut);">
-          <i class="fas fa-shirt" style="font-size:2.4rem;color:var(--cy);opacity:.6;"></i>
-          <h3 style="margin:.6rem 0;color:#fff;">No merch available yet</h3>
-          <p>Products sync from Printful. An admin can run <code>python manage.py sync_printful</code> to populate the store.</p>
+        <div class="store-empty">
+          <i class="fas fa-shirt"></i>
+          <h3>Nothing to see here yet</h3>
+          <p>There's no merch to show right now — please check back soon.</p>
         </div>
         {% endif %}
       {% endif %}
