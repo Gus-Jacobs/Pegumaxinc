@@ -4,7 +4,7 @@ gunicorn
 psycopg2-binary
 whitenoise
 djangorestframework
-stripe
+stripe==12.1.0
 python-dotenv
 requests
 
