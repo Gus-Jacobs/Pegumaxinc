@@ -51,8 +51,10 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--dry-run", action="store_true",
                             help="Fetch and report without writing to the database.")
-        parser.add_argument("--deactivate-missing", action="store_true",
-                            help="Mark synced MerchItems not returned this run as inactive.")
+        parser.add_argument("--keep-missing", action="store_true",
+                            help="Do NOT touch items no longer in Printful (default is to deactivate them).")
+        parser.add_argument("--delete-missing", action="store_true",
+                            help="Hard-delete items no longer in Printful instead of deactivating.")
 
     def handle(self, *args, **opts):
         api_key = getattr(settings, "PRINTFUL_API_KEY", "")
@@ -97,7 +99,7 @@ class Command(BaseCommand):
             thumb = prod.get("thumbnail_url") or ""
 
             # Pull per-product detail for variant data (be gentle on rate limits).
-            variants, min_price = [], None
+            variants, min_price, any_available = [], None, False
             try:
                 detail = get(f"/store/products/{sync_id}")
                 time.sleep(0.2)
@@ -124,6 +126,11 @@ class Command(BaseCommand):
                                     if f.get("type") == "preview" and f.get("preview_url")), "")
                     if not preview:
                         preview = (v.get("product") or {}).get("image") or ""
+                    availability = (v.get("availability_status") or "").lower()
+                    # A permanently-discontinued variant is unavailable; anything
+                    # else (incl. temporary out-of-stock or unknown) counts as sellable.
+                    if availability != "discontinued":
+                        any_available = True
                     variants.append({
                         "id": v.get("id"),
                         "variant_id": v.get("variant_id"),
@@ -133,11 +140,17 @@ class Command(BaseCommand):
                         "price": str(price),
                         "currency": v.get("currency") or "USD",
                         "image": preview or thumb,
+                        "availability": availability,
                     })
 
             price = min_price if min_price is not None else Decimal("0")
+            # Out of stock: a product with variants where every variant is
+            # discontinued is hidden from the store (active=False).
+            is_active = (not variants) or any_available
 
-            self.stdout.write(f"  - {name}  ({len(variants)} variants, from ${price})")
+            self.stdout.write(
+                f"  - {name}  ({len(variants)} variants, from ${price})"
+                + ("" if is_active else "  [ALL DISCONTINUED — hiding]"))
             if dry:
                 continue
 
@@ -147,7 +160,7 @@ class Command(BaseCommand):
                 "base_image_url": thumb,
                 "variants": variants,
                 "price": price,
-                "active": True,
+                "active": is_active,
             }
             detected_type = _detect_type(name)
             detected_level = _detect_level(name)
@@ -170,17 +183,32 @@ class Command(BaseCommand):
                 )
                 created += 1
 
-        if opts["deactivate_missing"] and not dry:
-            stale = (MerchItem.objects
-                     .exclude(printful_sync_id="")
-                     .exclude(printful_sync_id__in=seen_ids))
-            n = stale.update(active=False)
-            if n:
-                self.stdout.write(self.style.WARNING(f"  Deactivated {n} missing item(s)."))
+        # Products removed from Printful → remove them from the store. Only
+        # affects Printful-synced items (printful_sync_id set); never touches
+        # manually-created merch. Default = deactivate; opt-outs available.
+        removed = 0
+        stale = (MerchItem.objects
+                 .exclude(printful_sync_id="")
+                 .exclude(printful_sync_id__in=seen_ids))
+        if not dry:
+            if opts["keep_missing"]:
+                pass
+            elif opts["delete_missing"]:
+                removed = stale.count()
+                stale.delete()
+            else:
+                removed = stale.update(active=False)
+        else:
+            removed = stale.count()
+
+        if removed:
+            verb = "would remove" if dry else ("deleted" if opts.get("delete_missing") else "deactivated")
+            self.stdout.write(self.style.WARNING(
+                f"  {verb} {removed} item(s) no longer in Printful."))
 
         if dry:
             self.stdout.write(self.style.SUCCESS(
                 f"\nDry run complete — {len(products)} product(s) inspected, nothing written."))
         else:
             self.stdout.write(self.style.SUCCESS(
-                f"\nDone. {created} created, {updated} updated."))
+                f"\nDone. {created} created, {updated} updated, {removed} removed."))

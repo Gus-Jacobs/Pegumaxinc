@@ -3,8 +3,9 @@
 
 {% block object-tools-items %}
   <li>
-    <a href="{% url 'admin:academy_merchitem_sync_printful' %}" class="addlink" style="background:#0A66C2;">
-      ⟳ Sync from Printful
+    <a href="{% url 'admin:academy_merchitem_sync_printful' %}" class="addlink" style="background:#0A66C2;"
+       onclick="return confirm('Update products from Printful now? This adds new products, refreshes existing ones, and removes any deleted from Printful.');">
+      ⟳ Update products (Printful)
     </a>
   </li>
   {{ block.super }}

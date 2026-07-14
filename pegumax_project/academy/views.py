@@ -78,6 +78,30 @@ def _abs(request, name, *args, **kwargs):
     return request.build_absolute_uri(reverse(name, args=args, kwargs=kwargs))
 
 
+def _as_dict(obj):
+    """Coerce a Stripe object (or anything) to a plain, recursively-plain dict.
+
+    Stripe's resource objects change shape between library versions; our helpers
+    only ever use dict access, so we normalize at the boundary to stay
+    version-proof.
+    """
+    if obj is None:
+        return {}
+    if isinstance(obj, dict):
+        return obj
+    for attr in ("to_dict_recursive", "to_dict"):
+        fn = getattr(obj, attr, None)
+        if callable(fn):
+            try:
+                return fn()
+            except Exception:
+                pass
+    try:
+        return dict(obj)
+    except Exception:
+        return {}
+
+
 # ---------------------------------------------------------------------------
 #  Storefront (public browsing; buying/viewing requires auth)
 # ---------------------------------------------------------------------------
@@ -660,8 +684,9 @@ def _stripe_line_descriptions(session):
     if not stripe:
         return out
     try:
-        data = stripe.checkout.Session.list_line_items(session.get("id"), limit=50)
+        data = _as_dict(stripe.checkout.Session.list_line_items(session.get("id"), limit=50))
         for li in data.get("data", []):
+            li = _as_dict(li)
             out.append({
                 "description": li.get("description"),
                 "quantity": li.get("quantity"),
@@ -764,6 +789,47 @@ def _submit_printful_order(session):
     return False
 
 
+def _process_completed_session(request, session):
+    """Fulfil a paid checkout.session.completed. `session` is a plain dict.
+
+    Every step is individually wrapped so a single failure can't abort the rest
+    or bubble up to a 500.
+    """
+    metadata = session.get("metadata") or {}
+    paid = session.get("payment_status") == "paid"
+
+    # Digital fulfillment (course access, promo redemption, cart clear).
+    try:
+        _fulfill_session(session)
+    except Exception:
+        logger.exception("DB fulfillment error for session %s", session.get("id"))
+
+    # 1) Course purchase welcome email.
+    try:
+        if paid and metadata.get("kind") == "course":
+            course = Course.objects.filter(pk=metadata.get("course_id")).first()
+            if course:
+                academy_emails.send_course_welcome(
+                    _session_email(session),
+                    course.title,
+                    _abs(request, "academy:dashboard"),
+                )
+    except Exception:
+        logger.exception("Course welcome email failed for session %s", session.get("id"))
+
+    # 2) Merch order: email the confirmation on successful payment, and
+    #    (best-effort) submit the Printful order. Email is NOT gated on Printful.
+    try:
+        if paid and metadata.get("kind") in ("cart", "merch"):
+            academy_emails.send_merch_confirmation(
+                _session_email(session),
+                _stripe_line_descriptions(session),
+            )
+            _submit_printful_order(session)
+    except Exception:
+        logger.exception("Merch fulfillment/email crashed for session %s", session.get("id"))
+
+
 @csrf_exempt
 @require_POST
 def stripe_webhook(request):
@@ -775,54 +841,23 @@ def stripe_webhook(request):
     sig = request.META.get("HTTP_STRIPE_SIGNATURE", "")
     secret = getattr(settings, "STRIPE_WEBHOOK_SECRET", "")
 
+    # Verify the signature for security, but read the event from the raw JSON so
+    # we operate on plain dicts regardless of the installed stripe version.
     try:
         if secret:
-            event = stripe.Webhook.construct_event(payload, sig, secret)
-        else:
-            # Dev fallback: trust the body when no signing secret is set.
-            event = json.loads(payload.decode("utf-8"))
-    except Exception as e:  # invalid payload / signature
-        logger.warning("Stripe webhook verification failed: %s", e)
+            stripe.Webhook.construct_event(payload, sig, secret)  # raises if invalid
+        event = json.loads(payload.decode("utf-8"))
+    except Exception as e:  # bad signature / unparseable body
+        logger.warning("Stripe webhook verification/parse failed: %s", e)
         return HttpResponseBadRequest("invalid")
 
-    if event.get("type") == "checkout.session.completed":
-        session = event["data"]["object"]
-        metadata = session.get("metadata") or {}
-        paid = session.get("payment_status") == "paid"
-
-        # Digital fulfillment (course access, promo redemption, cart clear).
-        try:
-            _fulfill_session(session)
-        except Exception:
-            logger.exception("DB fulfillment error for session %s", session.get("id"))
-
-        # 1) Course purchase welcome email.
-        try:
-            if paid and metadata.get("kind") == "course":
-                course = Course.objects.filter(pk=metadata.get("course_id")).first()
-                if course:
-                    academy_emails.send_course_welcome(
-                        _session_email(session),
-                        course.title,
-                        _abs(request, "academy:dashboard"),
-                    )
-        except Exception:
-            logger.exception("Course welcome email failed for session %s", session.get("id"))
-
-        # 2) Merch order: email the customer their confirmation on successful
-        #    payment, and (best-effort) submit the Printful draft. The email is
-        #    NOT gated on Printful — the customer paid, so they always get a
-        #    confirmation even if our internal fulfillment hiccups. Neither step
-        #    may 500 the webhook (Stripe would retry forever).
-        try:
-            if paid and metadata.get("kind") in ("cart", "merch"):
-                academy_emails.send_merch_confirmation(
-                    _session_email(session),
-                    _stripe_line_descriptions(session),
-                )
-                _submit_printful_order(session)
-        except Exception:
-            logger.exception("Merch fulfillment/email crashed for session %s", session.get("id"))
+    # Never let processing raise — a 500 makes Stripe retry the event forever.
+    try:
+        if event.get("type") == "checkout.session.completed":
+            session = (event.get("data") or {}).get("object") or {}
+            _process_completed_session(request, session)
+    except Exception:
+        logger.exception("Webhook processing error")
 
     return HttpResponse(status=200)
 
@@ -843,7 +878,7 @@ def checkout_success(request):
     }
     if session_id and stripe:
         try:
-            session = stripe.checkout.Session.retrieve(session_id)
+            session = _as_dict(stripe.checkout.Session.retrieve(session_id))
             _fulfill_session(session)
             meta = session.get("metadata") or {}
             kind = meta.get("kind")
