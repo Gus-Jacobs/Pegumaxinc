@@ -113,6 +113,31 @@ credentials/accounts and cannot be done from the codebase alone.
 - A Printful API failure is logged and the webhook still returns 200, so Stripe
   never enters a retry loop.
 
+### Failed-order recovery (retry → store credit)
+- Paid orders whose Printful submission fails are queued (Fulfilled orders →
+  `printful_failed`) and the customer gets an honest "we're finalizing your order"
+  email (never a fake receipt). An admin alert email is sent too.
+- **No Render cron needed.** The retry runs via a token-protected web endpoint
+  pinged by a FREE external scheduler:
+  1. Set `TASK_RUNNER_TOKEN` in Render to a long random string
+     (`py -c "import secrets;print(secrets.token_urlsafe(32))"`).
+  2. Create a free job at **cron-job.org** (or UptimeRobot / a GitHub Actions
+     scheduled workflow) that does a GET every ~5 minutes to:
+     `https://pegumax.com/academy/tasks/retry-orders/?token=<TASK_RUNNER_TOKEN>`
+  It retries each failed order (max 25/run) and **stops the instant one succeeds**
+  (no duplicate orders). After the retry window it grants the customer a **store
+  credit** (free item of equal value) and emails them.
+  - The endpoint returns 403 unless the token matches, and 403 entirely if
+    `TASK_RUNNER_TOKEN` is unset (so it's disabled until you turn it on).
+  - You can also still run it manually anytime: `python manage.py retry_failed_orders`.
+- Env vars: `PEGUMAX_SITE_URL=https://pegumax.com` (links in emails/tasks),
+  `TASK_RUNNER_TOKEN=<random>`, and optional `PRINTFUL_RETRY_MAX_ATTEMPTS` (36) /
+  `PRINTFUL_RETRY_WINDOW_HOURS` (3).
+- Customers manage credits at **/academy/credits/** (linked from their Account):
+  claim a free item, or request a refund (auto-issued via Stripe when possible,
+  otherwise flagged to the team).
+- Admin visibility: Django admin → **Fulfilled orders** and **Store credits**.
+
 ### Local testing — physical fulfillment loop
 1. `PRINTFUL_API_KEY` is set in `.env`. Run the Stripe CLI:
    `stripe listen --forward-to localhost:8000/academy/webhook/stripe/`

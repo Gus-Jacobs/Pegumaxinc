@@ -259,6 +259,19 @@ if _pf_confirm_env is not None:
 else:
     PRINTFUL_CONFIRM_ORDERS = not DEBUG
 
+# Failed-order retry policy (used by the `retry_failed_orders` cron command).
+# Retry every few minutes for a few hours; if still failing, grant a store credit.
+PRINTFUL_RETRY_MAX_ATTEMPTS = int(os.environ.get('PRINTFUL_RETRY_MAX_ATTEMPTS', '36'))
+PRINTFUL_RETRY_WINDOW_HOURS = int(os.environ.get('PRINTFUL_RETRY_WINDOW_HOURS', '3'))
+
+# Absolute site base for building links in out-of-request contexts (emails/cron).
+PEGUMAX_SITE_URL = os.environ.get('PEGUMAX_SITE_URL', 'https://pegumax.com')
+
+# Secret that guards the web task-runner endpoint (/academy/tasks/retry-orders/).
+# A free external scheduler pings that URL with ?token=<this>. Leave blank to
+# disable the endpoint entirely (returns 403).
+TASK_RUNNER_TOKEN = os.environ.get('TASK_RUNNER_TOKEN', '')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

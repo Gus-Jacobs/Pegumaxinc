@@ -5,6 +5,9 @@ import json
 import logging
 import secrets
 from datetime import timedelta
+from io import StringIO
+
+from django.core.management import call_command
 
 from django.conf import settings
 from django.contrib import messages
@@ -27,9 +30,11 @@ from .models import (
     Achievement,
     Course,
     CourseModule,
+    FulfilledOrder,
     GeneratedPromoCode,
     IssuedCertificate,
     MerchItem,
+    StoreCredit,
     UserCourseProgress,
     UserProfile,
     DEFAULT_ATTEMPTS,
@@ -697,62 +702,53 @@ def _stripe_line_descriptions(session):
     return out
 
 
-def _submit_printful_order(session):
-    """Create a Printful order from a paid Stripe session.
+def _hash_id(value):
+    import hashlib
+    return hashlib.sha1((value or "").encode()).hexdigest()[:20]
 
-    The order is confirmed (real manufacturing) or left as a draft based on
-    settings.PRINTFUL_CONFIRM_ORDERS (live in production, draft locally by
-    default). Returns True if the order was created. Never raises: any failure is
-    logged and swallowed so the webhook can still return 200 to Stripe (avoiding
-    an infinite retry loop).
+
+def _pf_items_raw(raw):
+    """Normalize stored/metadata pf_items to a plain list of {v, q} dicts."""
+    if isinstance(raw, str):
+        try:
+            return json.loads(raw) or []
+        except (ValueError, TypeError):
+            return []
+    return raw or []
+
+
+def _printful_items(pf_items):
+    """[{v: sync_variant_id, q: qty}] (or its JSON string) -> Printful items."""
+    if isinstance(pf_items, str):
+        try:
+            pf_items = json.loads(pf_items)
+        except (ValueError, TypeError):
+            return []
+    out = []
+    for it in (pf_items or []):
+        v = it.get("v") if isinstance(it, dict) else None
+        if v:
+            out.append({"sync_variant_id": v, "quantity": int(it.get("q", 1) or 1)})
+    return out
+
+
+def _create_printful_order(items, recipient, external_id):
+    """Core Printful order creation, callable from the webhook AND the retry job.
+
+    Returns (order_id, error). order_id is set on success; error is a short string
+    on failure. Never raises.
     """
-    if session.get("payment_status") != "paid":
-        return False  # Only fulfill confirmed-paid orders.
-
-    metadata = session.get("metadata") or {}
-    raw_items = metadata.get("pf_items")
-    if not raw_items:
-        return False  # Not a physical-merch order — nothing to fulfill.
-
     api_key = getattr(settings, "PRINTFUL_API_KEY", "")
     if not api_key:
-        logger.info("Printful fulfillment skipped: PRINTFUL_API_KEY not configured.")
-        return False
-
-    try:
-        parsed = json.loads(raw_items)
-        items = [{"sync_variant_id": it["v"], "quantity": int(it.get("q", 1))}
-                 for it in parsed if it.get("v")]
-    except (ValueError, TypeError, KeyError) as e:
-        logger.error("Printful fulfillment: bad pf_items %r (%s)", raw_items, e)
-        return False
+        return None, "PRINTFUL_API_KEY not configured"
     if not items:
-        logger.error("Printful fulfillment: no valid items in %r", raw_items)
-        return False
-
-    recipient = _extract_recipient(session)
+        return None, "no items"
     if not _recipient_is_complete(recipient):
-        logger.error("Printful fulfillment: incomplete shipping address for session %s: %s",
-                     session.get("id"), recipient)
-        return False
+        return None, "incomplete shipping address"
 
-    # Printful's external_id is length-limited and rejects the full 64-char
-    # Stripe session id ("Invalid External ID specified"). Use the payment_intent
-    # id (short, unique per order) and fall back to a short hash of the session.
-    ext = session.get("payment_intent")
-    if not isinstance(ext, str) or not ext:
-        import hashlib
-        ext = "peg-" + hashlib.sha1((session.get("id") or "").encode()).hexdigest()[:20]
-    # confirm=True submits the order for real manufacturing (charges the owner's
-    # Printful balance/card). Driven by settings.PRINTFUL_CONFIRM_ORDERS, which
-    # defaults to live in production (DEBUG=False) and draft locally.
     confirm = bool(getattr(settings, "PRINTFUL_CONFIRM_ORDERS", False))
-    payload = {
-        "external_id": ext[:40],  # idempotency / traceability
-        "recipient": recipient,
-        "items": items,
-        "confirm": confirm,
-    }
+    payload = {"external_id": (external_id or "")[:40], "recipient": recipient,
+               "items": items, "confirm": confirm}
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     store_id = getattr(settings, "PRINTFUL_STORE_ID", "")
     if store_id:
@@ -760,74 +756,128 @@ def _submit_printful_order(session):
 
     try:
         import requests
-        # Order creation lives at /orders (the /store/ prefix is only for product
-        # sync endpoints) — posting to /store/orders returns 404.
         resp = requests.post(f"{PRINTFUL_API_BASE}/orders",
                              json=payload, headers=headers, timeout=20)
-        # Safety net: if the external_id is rejected, retry once without it.
         if resp.status_code == 400 and "external" in (resp.text or "").lower():
-            logger.warning("Printful rejected external_id; retrying without it for session %s",
-                           session.get("id"))
             payload.pop("external_id", None)
             resp = requests.post(f"{PRINTFUL_API_BASE}/orders",
                                  json=payload, headers=headers, timeout=20)
     except Exception as e:
-        logger.error("Printful request failed for session %s: %s", session.get("id"), e)
-        return False
+        return None, f"request failed: {e}"
 
     if resp.status_code in (200, 201):
         try:
             order_id = (resp.json().get("result") or {}).get("id")
         except ValueError:
-            order_id = "?"
-        logger.info("Printful %s order created (id=%s) for session %s",
-                    "CONFIRMED" if confirm else "DRAFT", order_id, session.get("id"))
-        return True
+            order_id = None
+        logger.info("Printful %s order created (id=%s)",
+                    "CONFIRMED" if confirm else "DRAFT", order_id)
+        return (order_id or "created"), ""
 
-    logger.error("Printful rejected order for session %s: HTTP %s — %s",
-                 session.get("id"), resp.status_code, (resp.text or "")[:500])
-    return False
+    err = f"HTTP {resp.status_code} — {(resp.text or '')[:300]}"
+    logger.error("Printful rejected order: %s", err)
+    return None, err
 
 
 def _process_completed_session(request, session):
-    """Fulfil a paid checkout.session.completed. `session` is a plain dict.
+    """Fulfil a paid checkout.session.completed exactly once. `session` is a dict.
 
-    Every step is individually wrapped so a single failure can't abort the rest
-    or bubble up to a 500.
+    Idempotent: a FulfilledOrder row (unique per session) guards against Stripe
+    retries / manual resends creating duplicate Printful orders or emails. Every
+    step is individually wrapped so nothing can bubble up to a 500.
     """
+    session_id = session.get("id")
     metadata = session.get("metadata") or {}
-    paid = session.get("payment_status") == "paid"
+    if session.get("payment_status") != "paid" or not session_id:
+        return  # only fulfil confirmed-paid sessions
+
+    kind = metadata.get("kind")
+    email = _session_email(session) or ""
+    user = None
+    uid = metadata.get("user_id")
+    if uid:
+        user = User.objects.filter(pk=uid).first()
+    pf_items = _pf_items_raw(metadata.get("pf_items"))   # stored raw [{v,q}] for retries
+    recipient = _extract_recipient(session)
+    payment_intent = session.get("payment_intent") if isinstance(session.get("payment_intent"), str) else ""
+
+    # --- Idempotency gate: claim this session; bail if already fulfilled. ---
+    try:
+        record, created = FulfilledOrder.objects.get_or_create(
+            session_id=session_id,
+            defaults={
+                "kind": kind or "",
+                "user": user,
+                "email": email,
+                "amount_total": round((session.get("amount_total") or 0) / 100, 2),
+                "pf_items": pf_items,
+                "recipient": recipient,
+                "payment_intent": payment_intent,
+            },
+        )
+    except Exception:
+        logger.exception("FulfilledOrder gate error for %s", session_id)
+        return
+    if not created:
+        logger.info("Duplicate webhook for %s ignored (already fulfilled).", session_id)
+        return
 
     # Digital fulfillment (course access, promo redemption, cart clear).
     try:
         _fulfill_session(session)
     except Exception:
-        logger.exception("DB fulfillment error for session %s", session.get("id"))
+        logger.exception("DB fulfillment error for session %s", session_id)
 
     # 1) Course purchase welcome email.
-    try:
-        if paid and metadata.get("kind") == "course":
+    if kind == "course":
+        try:
             course = Course.objects.filter(pk=metadata.get("course_id")).first()
             if course:
                 academy_emails.send_course_welcome(
-                    _session_email(session),
-                    course.title,
-                    _abs(request, "academy:dashboard"),
-                )
-    except Exception:
-        logger.exception("Course welcome email failed for session %s", session.get("id"))
+                    email, course.title, _abs(request, "academy:dashboard"))
+        except Exception:
+            logger.exception("Course welcome email failed for session %s", session_id)
 
-    # 2) Merch order: email the confirmation on successful payment, and
-    #    (best-effort) submit the Printful order. Email is NOT gated on Printful.
-    try:
-        if paid and metadata.get("kind") in ("cart", "merch"):
-            academy_emails.send_merch_confirmation(
-                _session_email(session),
-                _stripe_line_descriptions(session),
-            )
-            _submit_printful_order(session)
-    except Exception:
-        logger.exception("Merch fulfillment/email crashed for session %s", session.get("id"))
+    # 2) Merch order: confirmation email + first Printful attempt. On failure the
+    #    order stays queued (STATUS_PRINTFUL_FAILED) for the retry job, and an
+    #    admin is alerted. The retry job stops the moment it succeeds.
+    if kind in ("cart", "merch"):
+        lines = _stripe_line_descriptions(session)
+        order_id = None
+        if pf_items:
+            ext = payment_intent or ("peg-" + _hash_id(session_id))
+            err = ""
+            try:
+                order_id, err = _create_printful_order(_printful_items(pf_items), recipient, ext)
+            except Exception as e:
+                err = str(e)
+                logger.exception("Printful submission crashed for session %s", session_id)
+            record.attempts = 1
+            record.last_attempt_at = timezone.now()
+            if order_id:
+                record.printful_order_id = str(order_id)
+                record.status = FulfilledOrder.STATUS_PROCESSED
+            else:
+                record.status = FulfilledOrder.STATUS_PRINTFUL_FAILED
+                record.note = (err or "Printful order not created")[:255]
+            try:
+                record.save(update_fields=["printful_order_id", "status", "note",
+                                           "attempts", "last_attempt_at", "updated_at"])
+            except Exception:
+                logger.exception("FulfilledOrder save failed for session %s", session_id)
+
+        # Customer gets the normal confirmation on success, or an honest "we're on
+        # it" note on failure (never a misleading receipt). Admin alerted on fail.
+        try:
+            if pf_items and not order_id:
+                academy_emails.send_merch_issue(email, lines)
+                academy_emails.send_admin_fulfillment_alert(
+                    session_id, email, record.amount_total,
+                    _abs(request, "admin:academy_fulfilledorder_changelist"))
+            else:
+                academy_emails.send_merch_confirmation(email, lines)
+        except Exception:
+            logger.exception("Merch email failed for session %s", session_id)
 
 
 @csrf_exempt
@@ -873,17 +923,25 @@ def checkout_success(request):
     session_id = request.GET.get("session_id")
     stripe = _stripe()
     ctx = {
-        "active_section": "store", "lines": [], "total": 0,
-        "kind": None, "course": None, "email": None, "order_ref": None, "is_merch": False,
+        "active_section": "store", "lines": [], "total": 0, "kind": None,
+        "course": None, "email": None, "order_ref": None, "is_merch": False,
+        "order_status": None,
     }
     if session_id and stripe:
         try:
             session = _as_dict(stripe.checkout.Session.retrieve(session_id))
-            _fulfill_session(session)
+            # Fulfil now if the webhook hasn't fired yet. Idempotent (FulfilledOrder
+            # gate) so this never duplicates orders or emails.
+            try:
+                _process_completed_session(request, session)
+            except Exception:
+                logger.exception("success-path fulfillment error for %s", session_id)
+
             meta = session.get("metadata") or {}
             kind = meta.get("kind")
             if kind in ("cart", "merch"):
                 cart_utils.clear_cart(request.session)
+            record = FulfilledOrder.objects.filter(session_id=session_id).first()
             ctx.update({
                 "kind": kind,
                 "is_merch": kind in ("cart", "merch"),
@@ -892,6 +950,7 @@ def checkout_success(request):
                 "total": round((session.get("amount_total") or 0) / 100, 2),
                 "currency": (session.get("currency") or "usd").upper(),
                 "order_ref": (session_id or "")[-12:],
+                "order_status": record.status if record else "pending",
             })
             if kind == "course":
                 ctx["course"] = Course.objects.filter(pk=meta.get("course_id")).first()
@@ -904,6 +963,155 @@ def checkout_success(request):
 def checkout_cancel(request):
     messages.info(request, "Checkout cancelled — no charge was made.")
     return redirect("academy:storefront")
+
+
+# ---------------------------------------------------------------------------
+#  Token-protected task runner (a "poor-man's cron" for hosts without cron).
+#  Point a free scheduler (cron-job.org, UptimeRobot, GitHub Actions) at:
+#      https://<domain>/academy/tasks/retry-orders/?token=<TASK_RUNNER_TOKEN>
+# ---------------------------------------------------------------------------
+@csrf_exempt
+def run_retry_orders(request):
+    expected = getattr(settings, "TASK_RUNNER_TOKEN", "")
+    token = request.GET.get("token") or request.META.get("HTTP_X_TASK_TOKEN", "")
+    if not expected or not secrets.compare_digest(str(token), str(expected)):
+        return HttpResponse(status=403)
+    out = StringIO()
+    try:
+        # Small per-ping cap so a slow-Printful run can't exceed the request
+        # timeout; the scheduler pings again in a few minutes to work the backlog.
+        call_command("retry_failed_orders", limit=8, stdout=out, stderr=out)
+    except Exception as e:
+        logger.exception("Scheduled retry_failed_orders failed")
+        return JsonResponse({"ok": False, "error": str(e)}, status=500)
+    return JsonResponse({"ok": True, "output": out.getvalue()[-2000:]})
+
+
+# ---------------------------------------------------------------------------
+#  Store credits ("free items") — the worst-case remediation
+# ---------------------------------------------------------------------------
+def _available_credits(user):
+    if not user or not user.is_authenticated:
+        return StoreCredit.objects.none()
+    return StoreCredit.objects.filter(user=user, status=StoreCredit.STATUS_AVAILABLE)
+
+
+@login_required
+def credits_view(request):
+    credits = list(_available_credits(request.user))
+    max_value = max((c.amount for c in credits), default=0)
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    # Items you can claim: active, within your credit value, and unlocked for your level.
+    eligible = [
+        m for m in MerchItem.objects.filter(active=True)
+        if m.price <= max_value and profile.current_level >= m.unlock_level
+    ]
+    return render(request, "academy/credits.html", {
+        "credits": credits,
+        "credit_count": len(credits),
+        "max_value": max_value,
+        "eligible": eligible,
+        "active_section": "store",
+    })
+
+
+@login_required
+def claim_free_view(request, slug):
+    item = get_object_or_404(MerchItem, slug=slug, active=True)
+    credit = _available_credits(request.user).filter(amount__gte=item.price).order_by("amount").first()
+    if not credit:
+        messages.error(request, "You don't have a credit that covers this item.")
+        return redirect("academy:credits")
+
+    colors, sizes, variants = _structure_variants(item)
+    # Pre-fill shipping from the address on the original (failed) order, if any.
+    prefill = (credit.source_order.recipient if credit.source_order else {}) or {}
+
+    if request.method == "POST":
+        recipient = {
+            "name": (request.POST.get("name") or "").strip(),
+            "address1": (request.POST.get("address1") or "").strip(),
+            "address2": (request.POST.get("address2") or "").strip(),
+            "city": (request.POST.get("city") or "").strip(),
+            "state_code": (request.POST.get("state_code") or "").strip(),
+            "country_code": (request.POST.get("country_code") or "").strip().upper(),
+            "zip": (request.POST.get("zip") or "").strip(),
+            "email": (request.POST.get("email") or credit.user.email or "").strip(),
+        }
+        phone = (request.POST.get("phone") or "").strip()
+        if phone:
+            recipient["phone"] = phone
+        variant = _variant_from_item(item, (request.POST.get("variant_id") or "").strip())
+
+        if item.variants and not variant:
+            messages.error(request, "Please choose your options.")
+        elif not _recipient_is_complete(recipient):
+            messages.error(request, "Please fill in your full shipping address.")
+        else:
+            sync_vid = variant.get("id") if variant else None
+            items = [{"sync_variant_id": sync_vid, "quantity": 1}] if sync_vid else []
+            order_id, err = _create_printful_order(items, recipient, f"credit-{credit.id}")
+            if order_id:
+                credit.status = StoreCredit.STATUS_USED
+                credit.used_at = timezone.now()
+                credit.note = f"Claimed {item.name} — Printful order {order_id}"
+                credit.save(update_fields=["status", "used_at", "note"])
+                messages.success(request, "Your free item is on its way! We'll email tracking when it ships.")
+                return redirect("main_site:account")
+            else:
+                logger.error("Free claim failed for credit %s: %s", credit.id, err)
+                try:
+                    academy_emails.send_admin_fulfillment_alert(
+                        f"credit-{credit.id}", credit.user.email, credit.amount,
+                        _abs(request, "admin:academy_storecredit_changelist"))
+                except Exception:
+                    pass
+                messages.error(request, "We couldn't place that order — your credit is safe. "
+                                        "Please try again or request a refund.")
+
+    return render(request, "academy/claim_free.html", {
+        "item": item, "credit": credit, "colors": colors, "sizes": sizes,
+        "variants_json": variants, "prefill": prefill, "active_section": "store",
+    })
+
+
+@login_required
+@require_POST
+def request_refund_view(request, credit_id):
+    credit = get_object_or_404(StoreCredit, pk=credit_id, user=request.user)
+    if credit.status not in (StoreCredit.STATUS_AVAILABLE,):
+        messages.info(request, "That credit can't be refunded.")
+        return redirect("main_site:account")
+
+    credit.status = StoreCredit.STATUS_REFUND_REQUESTED
+    credit.save(update_fields=["status"])
+
+    # Best-effort automatic Stripe refund of the original charge.
+    refunded = False
+    stripe = _stripe()
+    if stripe and credit.payment_intent:
+        try:
+            stripe.Refund.create(payment_intent=credit.payment_intent)
+            credit.status = StoreCredit.STATUS_REFUNDED
+            credit.save(update_fields=["status"])
+            refunded = True
+        except Exception as e:
+            logger.error("Auto-refund failed for credit %s: %s", credit.id, e)
+
+    # Always let the team know (auto or manual).
+    try:
+        academy_emails.send_admin_refund_request(
+            credit.id, credit.user.email, credit.amount, credit.payment_intent, refunded,
+            _abs(request, "admin:academy_storecredit_changelist"))
+    except Exception:
+        logger.exception("Refund-request admin email failed for credit %s", credit.id)
+
+    if refunded:
+        messages.success(request, "Refund issued to your original payment method. "
+                                  "It may take a few business days to appear.")
+    else:
+        messages.success(request, "Refund requested — our team will process it shortly.")
+    return redirect("main_site:account")
 
 
 # ---------------------------------------------------------------------------

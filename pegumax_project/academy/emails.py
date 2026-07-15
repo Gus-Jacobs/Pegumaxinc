@@ -51,6 +51,76 @@ def send_merch_confirmation(to_email, items):
     )
 
 
+def send_admin_fulfillment_alert(session_id, customer_email, amount, admin_url):
+    """Alert the team that a PAID order failed to reach Printful and needs a
+    manual fix. Sent to CONTACT_RECIPIENT_EMAIL. Best-effort / fail-silent."""
+    to = getattr(settings, "CONTACT_RECIPIENT_EMAIL", None) \
+        or getattr(settings, "DEFAULT_FROM_EMAIL", None)
+    if not to:
+        return
+    subject = "⚠️ Pegumax order needs manual fulfillment"
+    body = (
+        "A customer paid but the Printful order was NOT created automatically.\n\n"
+        f"Stripe session: {session_id}\n"
+        f"Customer email: {customer_email or 'unknown'}\n"
+        f"Amount: ${amount}\n\n"
+        "The payment succeeded, so please create the order in Printful manually "
+        "(or refund/credit the customer).\n"
+        f"Details: {admin_url}\n"
+    )
+    try:
+        send_mail(subject, body, getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                  [to], fail_silently=True)
+        logger.info("Sent admin fulfillment alert for %s", session_id)
+    except Exception as e:
+        logger.error("Admin fulfillment alert failed for %s: %s", session_id, e)
+
+
+def send_merch_issue(to_email, items):
+    """Honest 'we hit a snag but we're on it' email — sent instead of the normal
+    confirmation when the Printful order fails on first attempt."""
+    _send(
+        "We're finalizing your Pegumax order",
+        "merch_issue",
+        {"items": items},
+        to_email,
+    )
+
+
+def send_free_item_granted(to_email, amount, account_url):
+    """Told the customer we couldn't fulfil and credited them a free item."""
+    _send(
+        "About your Pegumax order — we've made it right",
+        "free_item_granted",
+        {"amount": amount, "account_url": account_url},
+        to_email,
+    )
+
+
+def send_admin_refund_request(credit_id, customer_email, amount, payment_intent,
+                              auto_refunded, admin_url):
+    """Tell the team a customer requested a refund of a store credit."""
+    to = getattr(settings, "CONTACT_RECIPIENT_EMAIL", None) \
+        or getattr(settings, "DEFAULT_FROM_EMAIL", None)
+    if not to:
+        return
+    subject = ("✅ Refund auto-issued" if auto_refunded else "⚠️ Refund requested — action needed")
+    body = (
+        f"Store credit #{credit_id} refund {'was auto-issued via Stripe' if auto_refunded else 'was REQUESTED'}.\n\n"
+        f"Customer: {customer_email or 'unknown'}\n"
+        f"Amount: ${amount}\n"
+        f"Stripe payment_intent: {payment_intent or 'unknown'}\n\n"
+        + ("No action needed.\n" if auto_refunded else
+           "Please issue the refund in Stripe (search the payment_intent above).\n")
+        + f"Details: {admin_url}\n"
+    )
+    try:
+        send_mail(subject, body, getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                  [to], fail_silently=True)
+    except Exception as e:
+        logger.error("Refund-request admin email failed for credit %s: %s", credit_id, e)
+
+
 def send_course_completion(to_email, course_title, score, certificate_url,
                            promo_code, discount, store_url):
     _send(
