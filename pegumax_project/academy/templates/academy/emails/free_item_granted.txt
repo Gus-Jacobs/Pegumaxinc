@@ -1,0 +1,15 @@
+{% autoescape off %}We couldn't complete your order — so we've made it right.
+
+We're sorry: after several automatic attempts, we still couldn't send your recent
+order to our print partner. The transaction data appears to have been corrupted.
+
+We've credited your Pegumax account with a FREE item worth ${{ amount }}. You can:
+
+  1. Claim a free item of equal value (no payment needed):
+     {{ account_url }}
+
+  2. Or request a refund instead from the same page.
+
+Again, we apologize for the inconvenience — thank you for your patience.
+
+The Pegumax Team{% endautoescape %}

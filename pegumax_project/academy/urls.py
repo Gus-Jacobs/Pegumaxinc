@@ -35,6 +35,14 @@ urlpatterns = [
     path("cart/apply-code/", views.cart_apply_code, name="cart_apply_code"),
     path("cart/checkout/", views.cart_checkout, name="cart_checkout"),
 
+    # Token-protected task runner (external free scheduler pings this)
+    path("tasks/retry-orders/", views.run_retry_orders, name="run_retry_orders"),
+
+    # Store credits ("free items") — worst-case remediation
+    path("credits/", views.credits_view, name="credits"),
+    path("credits/claim/<slug:slug>/", views.claim_free_view, name="claim_free"),
+    path("credits/refund/<int:credit_id>/", views.request_refund_view, name="request_refund"),
+
     # Certificate + verification + dashboard
     path("certificate/<uuid:cert_uuid>/", views.certificate, name="certificate"),
     # Public verification path (used by the LinkedIn "Add to Profile" certUrl).

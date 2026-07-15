@@ -1,0 +1,16 @@
+{% autoescape off %}Thanks for your order — we're finalizing it.
+
+Your payment went through, but we hit a temporary technical snag while sending your
+order to our print partner. No action is needed from you:
+
+- Our team has been notified.
+- We're automatically retrying for the next few hours.
+
+If we still can't complete it, we'll make it right — either a refund or a free
+replacement of equal value, credited to your account. You'll hear from us either way.
+
+{% if items %}Your order:
+{% for item in items %}- {{ item.quantity }}x {{ item.description }}
+{% endfor %}{% endif %}
+Sorry for the hiccup — thanks for your patience,
+The Pegumax Team{% endautoescape %}

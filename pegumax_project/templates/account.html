@@ -97,6 +97,19 @@
         </div>
       </div>
 
+      {% if free_items_count %}
+      <!-- Free items (only shown when the user has store credit) -->
+      <div class="acct-card reveal-s" style="border-color:rgba(54,224,160,.45);">
+        <h3><i class="fas fa-gift" style="color:var(--grn)"></i> Free Items
+          <span style="background:var(--grn);color:#06120c;border-radius:999px;padding:.05rem .5rem;font-size:.8rem;margin-left:.3rem;">{{ free_items_count }}</span></h3>
+        <p style="color:var(--mut);font-size:.92rem;">An order couldn't be completed, so we've credited your account.
+          Claim a free item of equal value, or request a refund.</p>
+        <div class="acct-actions">
+          <a href="{% url 'academy:credits' %}" class="btn btn-cy">Claim / manage</a>
+        </div>
+      </div>
+      {% endif %}
+
       <!-- Security & Activity -->
       <div class="acct-card reveal-s">
         <h3><i class="fas fa-shield-alt"></i> Security &amp; Activity</h3>

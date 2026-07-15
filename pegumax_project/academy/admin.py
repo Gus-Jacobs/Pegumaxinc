@@ -8,12 +8,26 @@ from .models import (
     Achievement,
     Course,
     CourseModule,
+    FulfilledOrder,
     GeneratedPromoCode,
     IssuedCertificate,
     MerchItem,
+    StoreCredit,
     UserCourseProgress,
     UserProfile,
 )
+
+
+def _run_printful_sync(model_admin, request):
+    """Shared runner for the admin 'update products' button + action."""
+    out = StringIO()
+    try:
+        call_command("sync_printful", stdout=out, stderr=out)
+        lines = out.getvalue().strip().splitlines()
+        summary = lines[-1] if lines else "Done."
+        model_admin.message_user(request, f"Printful sync complete. {summary}", messages.SUCCESS)
+    except Exception as e:
+        model_admin.message_user(request, f"Printful sync failed: {e}", messages.ERROR)
 
 
 class CourseModuleInline(admin.TabularInline):
@@ -45,6 +59,7 @@ class MerchItemAdmin(admin.ModelAdmin):
     list_filter = ("active", "product_type", "required_level")
     search_fields = ("name", "tags", "printful_sync_id")
     change_list_template = "admin/academy/merchitem/change_list.html"
+    actions = ["action_sync_printful"]
 
     def get_urls(self):
         urls = super().get_urls()
@@ -53,15 +68,15 @@ class MerchItemAdmin(admin.ModelAdmin):
         return custom + urls
 
     def sync_printful_view(self, request):
-        """Run the sync_printful management command from the admin."""
-        out = StringIO()
-        try:
-            call_command("sync_printful", stdout=out, stderr=out)
-            summary = out.getvalue().strip().splitlines()[-1] if out.getvalue().strip() else "Done."
-            self.message_user(request, f"Printful sync complete. {summary}", messages.SUCCESS)
-        except Exception as e:
-            self.message_user(request, f"Printful sync failed: {e}", messages.ERROR)
+        """Run sync_printful from the top-of-page admin button."""
+        _run_printful_sync(self, request)
         return redirect("admin:academy_merchitem_changelist")
+
+    @admin.action(description="⟳ Update products from Printful (selection ignored)")
+    def action_sync_printful(self, request, queryset):
+        """Reliable fallback: runs the global sync from the Actions dropdown,
+        regardless of which rows are selected."""
+        _run_printful_sync(self, request)
 
 
 @admin.register(UserCourseProgress)
@@ -96,3 +111,18 @@ class UserProfileAdmin(admin.ModelAdmin):
 class AchievementAdmin(admin.ModelAdmin):
     list_display = ("name", "user", "date_earned")
     search_fields = ("user__username", "name")
+
+
+@admin.register(FulfilledOrder)
+class FulfilledOrderAdmin(admin.ModelAdmin):
+    list_display = ("session_id", "kind", "status", "email", "amount_total",
+                    "attempts", "printful_order_id", "created_at")
+    list_filter = ("status", "kind")
+    search_fields = ("session_id", "email", "printful_order_id")
+
+
+@admin.register(StoreCredit)
+class StoreCreditAdmin(admin.ModelAdmin):
+    list_display = ("user", "amount", "status", "payment_intent", "created_at", "used_at")
+    list_filter = ("status",)
+    search_fields = ("user__username", "payment_intent", "note")

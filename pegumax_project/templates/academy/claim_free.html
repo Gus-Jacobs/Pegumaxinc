@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Claim {{ item.name }} | Pegumax{% endblock %}
+
+{% block extra_head %}
+<style>
+  .claim-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;}
+  @media(max-width:760px){.claim-grid{grid-template-columns:1fr;}}
+  .cl-img{border-radius:16px;overflow:hidden;background:#0f0f18;border:1px solid var(--line,rgba(255,255,255,.08));display:grid;place-items:center;min-height:300px;}
+  .cl-img img{width:100%;height:100%;object-fit:cover;transition:opacity .25s;}
+  .opt-label{font-family:'Space Grotesk',sans-serif;font-weight:600;margin:1rem 0 .4rem;font-size:.92rem;}
+  .swatches{display:flex;flex-wrap:wrap;gap:.5rem;}
+  .swatch{width:2.8rem;height:2.8rem;border-radius:9px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#0f0f18;padding:0;}
+  .swatch img{width:100%;height:100%;object-fit:cover;}
+  .swatch.active{border-color:var(--cy,#22d3ee);}
+  .sizes{display:flex;flex-wrap:wrap;gap:.4rem;}
+  .size-opt{min-width:2.8rem;padding:.5rem .7rem;border-radius:8px;border:1px solid var(--line,rgba(255,255,255,.15));background:transparent;color:#fff;font-weight:600;cursor:pointer;}
+  .size-opt.active{border-color:var(--cy);background:rgba(34,211,238,.12);color:var(--cy);}
+  .size-opt:disabled{opacity:.3;cursor:not-allowed;text-decoration:line-through;}
+  .addr-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.4rem;}
+  .addr-grid .full{grid-column:1/-1;}
+  .addr-grid label{font-size:.78rem;color:var(--mut);display:block;margin-bottom:.2rem;}
+  .free-badge{display:inline-block;background:rgba(54,224,160,.15);border:1px solid rgba(54,224,160,.4);color:#36e0a0;
+    padding:.25rem .7rem;border-radius:999px;font-weight:700;font-size:.85rem;}
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="phead" style="min-height:auto;">
+  <div class="pbg" style="background-image:url('{% static 'img/img10.webp' %}')"></div>
+  <div class="wrap">
+    <span class="breadcrumb"><b>Pegumax</b> / <a href="{% url 'academy:credits' %}">Free items</a> / Claim</span>
+    <h1 class="g">Claim your free item</h1>
+  </div>
+</header>
+
+<section class="sec" style="padding-top:1rem;">
+  <div class="wrap">
+    {% if messages %}
+    <ul class="msg-list" style="max-width:none;margin-bottom:1rem;">
+      {% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="post" id="claimForm">
+      {% csrf_token %}
+      <input type="hidden" name="variant_id" id="variantId" value="">
+      <div class="claim-grid">
+        <div class="cl-img">
+          {% if item.base_image_url %}<img id="mainImage" src="{{ item.base_image_url }}" alt="{{ item.name }}">{% else %}<i class="fas fa-shirt" style="font-size:4rem;color:var(--cy)"></i>{% endif %}
+        </div>
+        <div>
+          <span class="free-badge"><i class="fas fa-gift"></i> Free — covered by your ${{ credit.amount|floatformat:2 }} credit</span>
+          <h2 style="font-family:'Space Grotesk',sans-serif;margin:.6rem 0;">{{ item.name }}</h2>
+
+          {% if colors %}
+          <div class="opt-label">Color: <span id="selColor" style="color:var(--cy)">—</span></div>
+          <div class="swatches" id="swatches">
+            {% for c in colors %}<button type="button" class="swatch" data-color="{{ c.name }}" data-image="{{ c.image }}" title="{{ c.name }}">{% if c.image %}<img src="{{ c.image }}" alt="{{ c.name }}">{% endif %}</button>{% endfor %}
+          </div>
+          {% endif %}
+          {% if sizes %}
+          <div class="opt-label">Size: <span id="selSize" style="color:var(--cy)">—</span></div>
+          <div class="sizes" id="sizes">
+            {% for s in sizes %}<button type="button" class="size-opt" data-size="{{ s }}">{{ s }}</button>{% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="opt-label" style="margin-top:1.2rem;">Ship to</div>
+          <div class="addr-grid">
+            <div class="full"><label>Full name</label><input class="field" name="name" value="{{ prefill.name|default:'' }}" required></div>
+            <div class="full"><label>Address</label><input class="field" name="address1" value="{{ prefill.address1|default:'' }}" required></div>
+            <div class="full"><label>Address line 2 (optional)</label><input class="field" name="address2" value="{{ prefill.address2|default:'' }}"></div>
+            <div><label>City</label><input class="field" name="city" value="{{ prefill.city|default:'' }}" required></div>
+            <div><label>State / region</label><input class="field" name="state_code" value="{{ prefill.state_code|default:'' }}"></div>
+            <div><label>ZIP / postal</label><input class="field" name="zip" value="{{ prefill.zip|default:'' }}" required></div>
+            <div><label>Country code (US, CA…)</label><input class="field" name="country_code" value="{{ prefill.country_code|default:'US' }}" required></div>
+            <div class="full"><label>Email</label><input class="field" type="email" name="email" value="{{ prefill.email|default:credit.user.email }}" required></div>
+            <div class="full"><label>Phone (optional)</label><input class="field" name="phone" value="{{ prefill.phone|default:'' }}"></div>
+          </div>
+
+          <button class="btn btn-acc btn-lg" type="submit" id="claimBtn" style="width:100%;margin-top:1rem;" {% if variants_json %}disabled{% endif %}>
+            <i class="fas fa-gift"></i> Claim this item for free</button>
+          <a class="btn btn-ghost" href="{% url 'academy:credits' %}" style="margin-top:.5rem;">&larr; Back</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+{{ variants_json|json_script:"variant-data" }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  var variants = JSON.parse(document.getElementById('variant-data').textContent || "[]");
+  var hasVariants = variants.length > 0;
+  var vidInput = document.getElementById('variantId');
+  var claimBtn = document.getElementById('claimBtn');
+  var mainImg = document.getElementById('mainImage');
+  var selColorEl = document.getElementById('selColor'), selSizeEl = document.getElementById('selSize');
+  var swatches = [].slice.call(document.querySelectorAll('.swatch'));
+  var sizeBtns = [].slice.call(document.querySelectorAll('.size-opt'));
+  var selColor = null, selSize = null;
+  function find(){ return variants.find(function(v){ return v.color===selColor && v.size===selSize; }); }
+  function refresh(){
+    sizeBtns.forEach(function(b){
+      var ok = !selColor || variants.some(function(v){ return v.color===selColor && v.size===b.dataset.size; });
+      b.disabled = !ok; if(!ok && b.dataset.size===selSize){ selSize=null; b.classList.remove('active'); if(selSizeEl) selSizeEl.textContent='—'; }
+    });
+    var v = find();
+    if(claimBtn) claimBtn.disabled = hasVariants && !v;
+    vidInput.value = v ? (v.variant_id || v.id || '') : '';
+  }
+  swatches.forEach(function(sw){ sw.addEventListener('click', function(){
+    selColor = sw.dataset.color; swatches.forEach(function(s){ s.classList.remove('active'); }); sw.classList.add('active');
+    if(selColorEl) selColorEl.textContent = selColor;
+    if(mainImg && sw.dataset.image){ mainImg.style.opacity=0; setTimeout(function(){ mainImg.src=sw.dataset.image; mainImg.style.opacity=1; },120); }
+    refresh();
+  }); });
+  sizeBtns.forEach(function(b){ b.addEventListener('click', function(){ if(b.disabled) return;
+    selSize=b.dataset.size; sizeBtns.forEach(function(s){ s.classList.remove('active'); }); b.classList.add('active');
+    if(selSizeEl) selSizeEl.textContent=selSize; refresh(); }); });
+  if(swatches.length){ swatches[0].click(); }
+  refresh();
+})();
+</script>
+{% endblock %}

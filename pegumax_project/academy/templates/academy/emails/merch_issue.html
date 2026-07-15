@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;background:#0a0a12;font-family:'Segoe UI',Arial,sans-serif;color:#e8e9f3;">
+  <div style="max-width:560px;margin:0 auto;padding:32px 20px;">
+    <div style="background:#11111b;border:1px solid rgba(247,183,49,.4);border-radius:16px;padding:32px;">
+      <div style="font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#f7b731;">Pegumax Store</div>
+      <h1 style="font-size:23px;margin:10px 0 6px;color:#fff;">Thanks — we're finalizing your order</h1>
+      <p style="color:#b8bbd4;line-height:1.6;">Your payment went through, but we hit a temporary technical snag sending your order to our print partner. <strong style="color:#fff;">No action is needed from you.</strong></p>
+      <ul style="color:#b8bbd4;line-height:1.8;">
+        <li>Our team has been notified.</li>
+        <li>We're automatically retrying for the next few hours.</li>
+      </ul>
+      <div style="background:rgba(54,224,160,.1);border:1px solid rgba(54,224,160,.35);border-radius:10px;padding:14px 16px;color:#36e0a0;font-size:14px;">
+        If we still can't complete it, we'll make it right — a refund or a free replacement of equal value credited to your account. You'll hear from us either way.
+      </div>
+      {% if items %}
+      <table style="width:100%;border-collapse:collapse;margin:18px 0;">
+        {% for item in items %}
+        <tr><td style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08);color:#e8e9f3;"><strong style="color:#fff;">{{ item.quantity }}×</strong> {{ item.description }}</td></tr>
+        {% endfor %}
+      </table>
+      {% endif %}
+      <p style="color:#777a96;font-size:13px;margin-top:24px;">Sorry for the hiccup — thanks for your patience,<br>The Pegumax Team</p>
+    </div>
+    <p style="text-align:center;color:#55586f;font-size:12px;margin-top:16px;">© Pegumax LLC</p>
+  </div>
+</body>
+</html>

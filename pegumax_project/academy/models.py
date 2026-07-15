@@ -409,3 +409,72 @@ class Achievement(models.Model):
 
     def __str__(self):
         return f"{self.name} · {self.user.username}"
+
+
+class FulfilledOrder(models.Model):
+    """One row per Stripe Checkout Session we've fulfilled.
+
+    Guarantees the webhook fulfils each session exactly once (idempotency) and
+    carries the data a background job needs to retry a failed Printful order
+    without the original web request.
+    """
+    STATUS_PROCESSED = "processed"            # done (digital, or Printful order placed)
+    STATUS_PRINTFUL_FAILED = "printful_failed"  # paid but Printful rejected — retry queue
+    STATUS_CREDITED = "credited"              # retries exhausted → store credit granted
+
+    session_id = models.CharField(max_length=255, unique=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                             null=True, blank=True, related_name="fulfilled_orders")
+    kind = models.CharField(max_length=20, blank=True)          # course | cart | merch
+    printful_order_id = models.CharField(max_length=64, blank=True)
+    status = models.CharField(max_length=30, default=STATUS_PROCESSED)
+    email = models.EmailField(blank=True)
+    amount_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Data needed to retry a physical order out-of-band (no web request).
+    pf_items = models.JSONField(default=list, blank=True)       # [{"v": sync_variant_id, "q": qty}]
+    recipient = models.JSONField(default=dict, blank=True)      # Printful recipient block
+    payment_intent = models.CharField(max_length=120, blank=True)  # for refunds / external_id
+    attempts = models.PositiveIntegerField(default=0)           # Printful submission attempts
+    last_attempt_at = models.DateTimeField(null=True, blank=True)
+    note = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.session_id} · {self.status}"
+
+
+class StoreCredit(models.Model):
+    """A 'free item' credit granted when an order can't be fulfilled after retries.
+
+    Worth what the customer paid; redeemable for any item at or below that value
+    (all items in a category share a price, so this maps cleanly to 'a free tee').
+    """
+    STATUS_AVAILABLE = "available"
+    STATUS_USED = "used"
+    STATUS_REFUND_REQUESTED = "refund_requested"
+    STATUS_REFUNDED = "refunded"
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name="store_credits")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    status = models.CharField(max_length=20, default=STATUS_AVAILABLE)
+    source_order = models.ForeignKey(FulfilledOrder, on_delete=models.SET_NULL,
+                                     null=True, blank=True, related_name="credits")
+    payment_intent = models.CharField(max_length=120, blank=True)  # to refund the original charge
+    note = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    used_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"${self.amount} credit · {self.user} · {self.status}"
+
+    @property
+    def is_available(self):
+        return self.status == self.STATUS_AVAILABLE

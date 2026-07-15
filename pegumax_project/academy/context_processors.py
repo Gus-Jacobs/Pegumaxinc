@@ -5,7 +5,7 @@ Exposes the logged-in user's academy profile and a one-shot ``level_up`` flag
 modal + confetti on whatever page the user happens to be viewing.
 """
 from . import cart as cart_utils
-from .models import UserProfile
+from .models import StoreCredit, UserProfile
 
 LEVEL_UP_SESSION_KEY = "academy_level_up"
 
@@ -13,6 +13,7 @@ LEVEL_UP_SESSION_KEY = "academy_level_up"
 def gamification(request):
     profile = None
     level_up = None
+    free_items = 0
     user = getattr(request, "user", None)
     if user is not None and user.is_authenticated:
         profile = UserProfile.objects.filter(user=user).first()
@@ -20,6 +21,9 @@ def gamification(request):
         level_up = request.session.pop(LEVEL_UP_SESSION_KEY, None)
         if level_up is not None:
             request.session.modified = True
+        # "Free items" indicator — only meaningful when > 0.
+        free_items = StoreCredit.objects.filter(
+            user=user, status=StoreCredit.STATUS_AVAILABLE).count()
 
     cart = cart_utils.get_cart(request.session)
     return {
@@ -27,4 +31,5 @@ def gamification(request):
         "academy_level_up": level_up,
         "cart_count": cart_utils.cart_count(cart),
         "cart_total": cart_utils.cart_total(cart),
+        "free_items_count": free_items,
     }
