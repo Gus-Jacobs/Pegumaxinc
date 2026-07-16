@@ -36,11 +36,25 @@ won't retry or escalate — so this matters.
 
 ## Quick manual test first (do this before scheduling)
 
-From a terminal (replace `YOUR_TOKEN`):
+Replace `YOUR_TOKEN` with the `TASK_RUNNER_TOKEN` value from Render.
+
+**macOS / Linux / Git Bash:**
 ```
 curl -i -H "X-Task-Token: YOUR_TOKEN" https://pegumax.com/academy/tasks/retry-orders/
 ```
-- Expect: `HTTP/1.1 200 OK` and a JSON body starting `{"ok": true`.
+
+**Windows PowerShell** — do NOT use plain `curl` here; in PowerShell `curl` is an
+alias for `Invoke-WebRequest` and it will error with *"Missing an argument for
+parameter 'InFile'"*. Use one of these instead:
+```powershell
+# Real curl (bundled with Windows 10/11):
+curl.exe -i -H "X-Task-Token: YOUR_TOKEN" https://pegumax.com/academy/tasks/retry-orders/
+
+# …or the native cmdlet:
+Invoke-WebRequest -Uri "https://pegumax.com/academy/tasks/retry-orders/" -Headers @{ "X-Task-Token" = "YOUR_TOKEN" } | Select-Object StatusCode, Content
+```
+
+- Expect: HTTP `200` and a JSON body starting `{"ok": true`.
 - If you get `403`: the token doesn't match what's in Render (or Render's
   `TASK_RUNNER_TOKEN` is blank). Fix that before continuing.
 

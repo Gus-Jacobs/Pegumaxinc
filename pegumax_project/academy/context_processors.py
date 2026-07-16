@@ -11,21 +11,33 @@ LEVEL_UP_SESSION_KEY = "academy_level_up"
 
 
 def gamification(request):
+    """Runs on every page — must NEVER raise, or it takes the whole page (and the
+    error page) down with it. All DB/session access is guarded."""
     profile = None
     level_up = None
     free_items = 0
+    cart = {}
+    session = getattr(request, "session", None)
     user = getattr(request, "user", None)
-    if user is not None and user.is_authenticated:
-        profile = UserProfile.objects.filter(user=user).first()
-        # Pop so the celebration fires exactly once.
-        level_up = request.session.pop(LEVEL_UP_SESSION_KEY, None)
-        if level_up is not None:
-            request.session.modified = True
-        # "Free items" indicator — only meaningful when > 0.
-        free_items = StoreCredit.objects.filter(
-            user=user, status=StoreCredit.STATUS_AVAILABLE).count()
 
-    cart = cart_utils.get_cart(request.session)
+    try:
+        if user is not None and user.is_authenticated:
+            profile = UserProfile.objects.filter(user=user).first()
+            if session is not None:
+                level_up = session.pop(LEVEL_UP_SESSION_KEY, None)  # fire once
+                if level_up is not None:
+                    session.modified = True
+            free_items = StoreCredit.objects.filter(
+                user=user, status=StoreCredit.STATUS_AVAILABLE).count()
+    except Exception:
+        pass  # never break the page over the gamification badge
+
+    try:
+        if session is not None:
+            cart = cart_utils.get_cart(session)
+    except Exception:
+        cart = {}
+
     return {
         "academy_profile": profile,
         "academy_level_up": level_up,

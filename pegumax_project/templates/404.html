@@ -1,13 +1,30 @@
-{% extends "base.html" %}
-{% block title %}Page not found — Pegumax LLC{% endblock %}
-{% block content %}
-<div class="notice">
-  <div class="card reveal-s">
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found — Pegumax LLC</title>
+<link rel="icon" href="{% static 'img/favicon.ico' %}" sizes="any">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;
+    background:#07070d;color:#e8e9f3;font-family:'Segoe UI',system-ui,Arial,sans-serif;text-align:center;}
+  .card{max-width:480px;background:#11111b;border:1px solid rgba(34,211,238,.35);border-radius:18px;padding:2.5rem 2rem;}
+  .code{font-family:'JetBrains Mono',monospace;letter-spacing:.2em;color:#22d3ee;font-size:.85rem;font-weight:700;}
+  .ic{font-size:3rem;margin:.6rem 0;}
+  h1{font-size:1.6rem;margin:.4rem 0 .6rem;color:#fff;}
+  p{color:#b8bbd4;line-height:1.6;margin-bottom:1.4rem;}
+  a.btn{display:inline-block;background:linear-gradient(120deg,#7c5cff,#22d3ee);color:#0a0a12;
+    text-decoration:none;font-weight:700;padding:.8rem 1.6rem;border-radius:10px;}
+</style>
+</head>
+<body>
+  <div class="card">
     <div class="code">ERROR 404</div>
-    <div class="ic">&#128640;</div>
+    <div class="ic">🚀</div>
     <h1>Lost in space</h1>
     <p>We couldn't find that page. It may have moved, or never existed. Let's get you back on track.</p>
-    <a class="btn btn-acc btn-lg" href="{% url 'main_site:home' %}">Back to home</a>
+    <a class="btn" href="/">Back to home</a>
   </div>
-</div>
-{% endblock %}
+</body>
+</html>

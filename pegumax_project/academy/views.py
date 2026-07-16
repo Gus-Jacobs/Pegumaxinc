@@ -965,6 +965,26 @@ def checkout_cancel(request):
     return redirect("academy:storefront")
 
 
+@login_required
+@require_POST
+def admin_sync_printful(request):
+    """Run the Printful product sync from the site's own admin/account screen
+    (staff only) — so you don't have to open Django admin."""
+    if not request.user.is_staff:
+        messages.error(request, "That action is staff-only.")
+        return redirect("main_site:account")
+    out = StringIO()
+    try:
+        call_command("sync_printful", stdout=out, stderr=out)
+        lines = out.getvalue().strip().splitlines()
+        summary = lines[-1] if lines else "Done."
+        messages.success(request, f"Products refreshed from Printful. {summary}")
+    except Exception as e:
+        logger.exception("Admin product refresh failed")
+        messages.error(request, f"Product refresh failed: {e}")
+    return redirect(request.META.get("HTTP_REFERER") or "main_site:account")
+
+
 # ---------------------------------------------------------------------------
 #  Token-protected task runner (a "poor-man's cron" for hosts without cron).
 #  Point a free scheduler (cron-job.org, UptimeRobot, GitHub Actions) at:

@@ -1,25 +1,26 @@
 # pegumax_project/views.py
 from django.conf import settings
-from django.http import Http404, FileResponse
+from django.http import Http404, FileResponse, HttpResponse
 from django.shortcuts import get_object_or_404, render # Import render
+from django.template.loader import render_to_string
 import os
 from django.views.static import serve as django_serve_static
 
-# --- NEW: Custom 404 and 500 views ---
+# --- Custom 404 and 500 views ---
+# Rendered WITHOUT a request/context-processors so they can't fail — a 500 caused
+# by (say) a database hiccup must never make the error page itself 500. The
+# templates are self-contained (no base.html, no DB access).
 def custom_404_view(request, exception):
-    """
-    Custom 404 handler.
-    Django passes the 'exception' argument, so it must be accepted here.
-    """
-    return render(request, '404.html', status=404)
+    return HttpResponse(render_to_string('404.html'), status=404)
 
 def custom_500_view(request):
-    """
-    Custom 500 handler.
-    Django does NOT pass an 'exception' argument to the 500 handler.
-    """
-    return render(request, '500.html', status=500)
-# --- END NEW ---
+    try:
+        return HttpResponse(render_to_string('500.html'), status=500)
+    except Exception:
+        # Absolute last resort — plain text, no templates.
+        return HttpResponse("Something went wrong on our end. Please try again.",
+                            status=500, content_type="text/plain")
+# --- END ---
 
 
 def serve_flutter_asset(request, path):
