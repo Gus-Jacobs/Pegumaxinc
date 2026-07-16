@@ -123,9 +123,15 @@
       <!-- Admin tools -->
       <div class="acct-card admin-tools-card reveal-s">
         <h3><i class="fas fa-user-shield"></i> Admin Tools</h3>
+        <form method="post" action="{% url 'academy:admin_sync_printful' %}" style="margin:0 0 .8rem;"
+              onsubmit="this.querySelector('button').disabled=true;this.querySelector('button').innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> Refreshing…';">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-cy" style="width:100%;"><i class="fas fa-arrows-rotate"></i> Refresh Products (Printful)</button>
+        </form>
+        <p style="color:var(--mut);font-size:.8rem;margin:-.3rem 0 .8rem;">Pulls new products, updates existing, and removes any deleted from Printful. Takes a few seconds.</p>
         <div class="acct-actions">
-          <a href="{% url 'admin:index' %}" class="btn btn-cy" target="_blank" rel="noopener noreferrer">Django Admin Panel</a>
-          <a href="{% url 'main_site:admin_dashboard' %}" class="btn btn-acc">Site Admin Dashboard</a>
+          <a href="{% url 'admin:index' %}" class="btn btn-ghost" target="_blank" rel="noopener noreferrer">Django Admin Panel</a>
+          <a href="{% url 'main_site:admin_dashboard' %}" class="btn btn-ghost">Site Admin Dashboard</a>
         </div>
       </div>
       {% endif %}

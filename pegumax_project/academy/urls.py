@@ -35,6 +35,9 @@ urlpatterns = [
     path("cart/apply-code/", views.cart_apply_code, name="cart_apply_code"),
     path("cart/checkout/", views.cart_checkout, name="cart_checkout"),
 
+    # Staff: refresh Printful products from the site's own admin/account screen
+    path("admin/sync-printful/", views.admin_sync_printful, name="admin_sync_printful"),
+
     # Token-protected task runner (external free scheduler pings this)
     path("tasks/retry-orders/", views.run_retry_orders, name="run_retry_orders"),
 

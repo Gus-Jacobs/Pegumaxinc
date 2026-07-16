@@ -147,6 +147,10 @@ if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=os.environ.get('DJANGO_DB_SSL_REQUIRE', 'False') == 'True')
     }
+    # Neon (serverless Postgres) drops idle connections; without a health check
+    # Django reuses a dead connection and 500s. This pings/reconnects as needed,
+    # which fixes the intermittent 500s across the site.
+    DATABASES['default']['CONN_HEALTH_CHECKS'] = True
 else:
     DATABASES = {
         'default': {
