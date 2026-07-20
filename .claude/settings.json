@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(py -c \"import psycopg2; print\\('psycopg2', psycopg2.__version__\\)\")",
+      "Bash(py -c \"import qstash; print\\('qstash version:', getattr\\(qstash,'__version__','?'\\)\\); from qstash import Receiver, QStash; import inspect; print\\('Receiver params:', list\\(inspect.signature\\(Receiver.__init__\\).parameters\\)\\); print\\('verify params:', list\\(inspect.signature\\(Receiver.verify\\).parameters\\)\\)\")"
+    ]
+  }
+}

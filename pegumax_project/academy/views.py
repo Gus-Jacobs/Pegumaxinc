@@ -49,6 +49,11 @@ logger = logging.getLogger("academy")
 User = get_user_model()
 
 PRINTFUL_API_BASE = "https://api.printful.com"
+QSTASH_PUBLISH_BASE = "https://qstash.upstash.io/v2/publish"
+# Backoff schedule (minutes) for the QStash-driven retry chain: 5m, 15m, 45m,
+# 2h15m. The cumulative delay (~3h20m) intentionally overruns the 3h retry
+# window so the final step lands after the cutoff and escalates to a credit.
+RETRY_BACKOFF_MINUTES = [5, 15, 45, 135]
 # Countries Stripe will collect a shipping address for on merch checkouts.
 MERCH_SHIP_COUNTRIES = ["US", "CA", "GB", "AU", "IT", "DE", "FR", "ES", "NL", "IE", "NZ"]
 
@@ -779,6 +784,171 @@ def _create_printful_order(items, recipient, external_id):
     return None, err
 
 
+# ---------------------------------------------------------------------------
+#  Event-driven retry chain (shared by the QStash callback AND the daily sweep)
+# ---------------------------------------------------------------------------
+def _account_url():
+    """Absolute account URL for links built outside a request (emails/cron)."""
+    site = getattr(settings, "PEGUMAX_SITE_URL", "https://pegumax.com").rstrip("/")
+    try:
+        return site + reverse("main_site:account")
+    except Exception:
+        return site
+
+
+def _retry_endpoint_url():
+    """Absolute URL QStash posts back to (and we sign/verify against)."""
+    site = getattr(settings, "PEGUMAX_SITE_URL", "https://pegumax.com").rstrip("/")
+    return site + reverse("academy:run_retry_orders")
+
+
+def _backoff_minutes_for(attempts):
+    """Delay (minutes) to wait before the NEXT retry, given attempts made so far.
+    Returns None once the schedule is exhausted."""
+    idx = (attempts or 1) - 1
+    if 0 <= idx < len(RETRY_BACKOFF_MINUTES):
+        return RETRY_BACKOFF_MINUTES[idx]
+    return None
+
+
+def _credit_order(order):
+    """Escalate an unfulfillable order to a store credit (once) + notify the buyer."""
+    order.status = FulfilledOrder.STATUS_CREDITED
+    order.save(update_fields=["status", "attempts", "last_attempt_at", "note", "updated_at"])
+    if order.user and not StoreCredit.objects.filter(source_order=order).exists():
+        StoreCredit.objects.create(
+            user=order.user, amount=order.amount_total, source_order=order,
+            payment_intent=order.payment_intent,
+            note=f"Auto-credit: order {order.session_id} could not be fulfilled.")
+        try:
+            academy_emails.send_free_item_granted(order.email, order.amount_total, _account_url())
+        except Exception:
+            logger.exception("Credit email failed for %s", order.session_id)
+
+
+def _retry_single_order(order):
+    """One Printful attempt for a failed order. Never raises.
+
+    Returns: 'succeeded' | 'credited' | 'failed' | 'skipped' | 'done'.
+    Shared by the QStash chain and the daily safety-net sweep so the fulfillment,
+    exhaustion and crediting rules live in exactly one place.
+    """
+    if order.status != FulfilledOrder.STATUS_PRINTFUL_FAILED:
+        return "done"  # already processed/credited by another path
+
+    # Guard against two workers (a QStash callback and the sweep) racing the same
+    # order into two Printful drafts — skip if it was just attempted.
+    if order.last_attempt_at and (timezone.now() - order.last_attempt_at) < timedelta(minutes=2):
+        return "skipped"
+
+    items = _printful_items(order.pf_items)
+    ext = order.payment_intent or f"peg-{order.pk}"
+    order_id, err = (None, "missing items or shipping address")
+    if items and order.recipient:
+        order_id, err = _create_printful_order(items, order.recipient, ext)
+
+    order.attempts = (order.attempts or 0) + 1
+    order.last_attempt_at = timezone.now()
+
+    if order_id:
+        order.printful_order_id = str(order_id)
+        order.status = FulfilledOrder.STATUS_PROCESSED
+        order.note = ""
+        order.save(update_fields=["printful_order_id", "status", "note",
+                                  "attempts", "last_attempt_at", "updated_at"])
+        return "succeeded"
+
+    order.note = (err or "retry failed")[:255]
+    max_attempts = int(getattr(settings, "PRINTFUL_RETRY_MAX_ATTEMPTS", 36))
+    window_hours = int(getattr(settings, "PRINTFUL_RETRY_WINDOW_HOURS", 3))
+    exhausted = (order.attempts >= max_attempts
+                 or order.created_at <= timezone.now() - timedelta(hours=window_hours))
+    if exhausted:
+        _credit_order(order)
+        return "credited"
+
+    order.save(update_fields=["status", "note", "attempts", "last_attempt_at", "updated_at"])
+    return "failed"
+
+
+def _qstash_enqueue_retry(session_id, delay_minutes):
+    """Schedule a delayed POST to our retry endpoint via QStash. Best-effort:
+    if QStash isn't configured or the publish fails, the daily sweep is the net."""
+    if delay_minutes is None or not session_id:
+        return False
+    token = getattr(settings, "QSTASH_TOKEN", "")
+    if not token:
+        logger.warning("QSTASH_TOKEN unset — retry for %s not scheduled "
+                       "(daily safety-net sweep will still catch it).", session_id)
+        return False
+    dest = _retry_endpoint_url()
+    try:
+        import requests
+        resp = requests.post(
+            f"{QSTASH_PUBLISH_BASE}/{dest}",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "Upstash-Delay": f"{int(delay_minutes)}m",
+                # QStash's own delivery retries; our backoff chain owns real retries.
+                "Upstash-Retries": "2",
+            },
+            json={"session_id": session_id},
+            timeout=15,
+        )
+        if resp.status_code in (200, 201):
+            logger.info("Scheduled QStash retry for %s in %dm.", session_id, int(delay_minutes))
+            return True
+        logger.error("QStash publish failed for %s: HTTP %s — %s",
+                     session_id, resp.status_code, (resp.text or "")[:200])
+    except Exception:
+        logger.exception("QStash publish crashed for %s", session_id)
+    return False
+
+
+def _qstash_receiver():
+    """Build a QStash signature verifier, or None if unavailable/unconfigured."""
+    cur = getattr(settings, "QSTASH_CURRENT_SIGNING_KEY", "")
+    nxt = getattr(settings, "QSTASH_NEXT_SIGNING_KEY", "")
+    if not cur:
+        return None
+    try:
+        from qstash import Receiver
+    except ImportError:
+        try:
+            from upstash_qstash import Receiver  # older package name
+        except ImportError:
+            logger.error("qstash package not installed — cannot verify QStash callbacks.")
+            return None
+    try:
+        return Receiver(current_signing_key=cur, next_signing_key=nxt or cur)
+    except Exception:
+        logger.exception("Could not construct QStash Receiver")
+        return None
+
+
+def _qstash_retry_one(session_id):
+    """Run one retry for a specific order and re-arm the backoff chain if it's
+    still failing (or credit it once the schedule/window is exhausted)."""
+    order = FulfilledOrder.objects.filter(session_id=session_id).first()
+    if not order or order.status != FulfilledOrder.STATUS_PRINTFUL_FAILED:
+        return "done"  # already resolved, or unknown session — nothing to do
+
+    result = _retry_single_order(order)
+    if result == "skipped":
+        # A concurrent worker just tried it; hop forward so the chain survives.
+        _qstash_enqueue_retry(session_id, 5)
+    elif result == "failed":
+        nxt = _backoff_minutes_for(order.attempts)
+        if nxt is not None:
+            _qstash_enqueue_retry(session_id, nxt)
+        else:
+            # Schedule exhausted but window not yet hit — credit now, don't orphan.
+            _credit_order(order)
+            result = "credited"
+    return result
+
+
 def _process_completed_session(request, session):
     """Fulfil a paid checkout.session.completed exactly once. `session` is a dict.
 
@@ -865,6 +1035,14 @@ def _process_completed_session(request, session):
                                            "attempts", "last_attempt_at", "updated_at"])
             except Exception:
                 logger.exception("FulfilledOrder save failed for session %s", session_id)
+
+            # First attempt failed → arm the event-driven backoff chain. The DB
+            # only wakes for retries when an order actually fails; no polling.
+            if not order_id:
+                try:
+                    _qstash_enqueue_retry(session_id, _backoff_minutes_for(record.attempts))
+                except Exception:
+                    logger.exception("Could not schedule QStash retry for %s", session_id)
 
         # Customer gets the normal confirmation on success, or an honest "we're on
         # it" note on failure (never a misleading receipt). Admin alerted on fail.
@@ -986,21 +1164,57 @@ def admin_sync_printful(request):
 
 
 # ---------------------------------------------------------------------------
-#  Token-protected task runner (a "poor-man's cron" for hosts without cron).
-#  Point a free scheduler (cron-job.org, UptimeRobot, GitHub Actions) at:
-#      https://<domain>/academy/tasks/retry-orders/?token=<TASK_RUNNER_TOKEN>
+#  Retry endpoint — two callers hit the same URL:
+#
+#  1) QStash (event-driven): on a Printful failure the webhook enqueues a delayed
+#     POST here carrying {"session_id": ...}, signed with Upstash-Signature. We
+#     verify the signature, retry that one order, and re-arm the backoff chain.
+#     This is the primary path and keeps the DB asleep until an order fails.
+#
+#  2) A free external scheduler (cron-job.org / UptimeRobot) hits it once a day
+#     with ?token=<TASK_RUNNER_TOKEN> as a safety-net sweep for anything the
+#     QStash chain missed (e.g. a failure logged while QStash was down).
+#
+#  Public URL: https://<domain>/academy/tasks/retry-orders/
 # ---------------------------------------------------------------------------
 @csrf_exempt
 def run_retry_orders(request):
+    # --- QStash-signed targeted retry (fail closed on a bad/absent signature) ---
+    signature = request.META.get("HTTP_UPSTASH_SIGNATURE")
+    if signature:
+        receiver = _qstash_receiver()
+        if receiver is None:
+            logger.error("QStash callback received but verifier is unavailable/unconfigured.")
+            return HttpResponse(status=401)
+        # The verifier hashes body.encode(), so it must be a str, not bytes.
+        raw_body = request.body.decode("utf-8")
+        try:
+            receiver.verify(body=raw_body, signature=signature, url=_retry_endpoint_url())
+        except Exception as e:
+            logger.warning("QStash signature verification failed: %s", e)
+            return HttpResponse(status=401)
+        try:
+            session_id = (json.loads(raw_body or "{}") or {}).get("session_id")
+        except Exception:
+            session_id = None
+        if not session_id:
+            return JsonResponse({"ok": True, "result": "no session_id"})
+        try:
+            result = _qstash_retry_one(session_id)
+        except Exception:
+            logger.exception("QStash retry crashed for %s", session_id)
+            # Return 200 so QStash doesn't hammer delivery; our own chain owns retries.
+            return JsonResponse({"ok": False, "result": "error"})
+        return JsonResponse({"ok": True, "result": result})
+
+    # --- Token-guarded daily safety-net sweep ---
     expected = getattr(settings, "TASK_RUNNER_TOKEN", "")
     token = request.GET.get("token") or request.META.get("HTTP_X_TASK_TOKEN", "")
     if not expected or not secrets.compare_digest(str(token), str(expected)):
         return HttpResponse(status=403)
     out = StringIO()
     try:
-        # Small per-ping cap so a slow-Printful run can't exceed the request
-        # timeout; the scheduler pings again in a few minutes to work the backlog.
-        call_command("retry_failed_orders", limit=8, stdout=out, stderr=out)
+        call_command("retry_failed_orders", stdout=out, stderr=out)
     except Exception as e:
         logger.exception("Scheduled retry_failed_orders failed")
         return JsonResponse({"ok": False, "error": str(e)}, status=500)

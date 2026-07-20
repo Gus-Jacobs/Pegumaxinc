@@ -36,7 +36,7 @@
     </div>
     <p class="small-note">*Windows 64-bit (v1.0.0) available now. Other platforms coming soon.</p>
     <p class="small-note">Prefer the original? Grab the
-      <a href="https://github.com/Gus-Jacobs/Movie-Word-Scanner/releases/download/v1.0.0/MovieWordScanner.exe" target="_blank" rel="noopener noreferrer" style="color:var(--cy);text-decoration:underline;font-weight:600;"><i class="fas fa-download"></i> legacy Movie Word Scanner build (v1.0.0)</a>
+      <a id="mws-legacy-link" href="https://github.com/Gus-Jacobs/Movie-Word-Scanner/releases/download/v1.0.0/MovieWordScanner.exe" target="_blank" rel="noopener noreferrer" style="color:var(--cy);text-decoration:underline;font-weight:600;"><i class="fas fa-download"></i> legacy Movie Word Scanner build (v1.0.0)</a>
       — LucidCut is its successor.</p>
     <div class="unsigned-note reveal">
       <i class="fas fa-shield-halved"></i>
@@ -44,4 +44,76 @@
     </div>
   </div>
 </section>
+
+{# Legacy Movie Word Scanner deprecation notice — shown before the old build downloads #}
+<div id="mws-modal" role="dialog" aria-modal="true" aria-labelledby="mws-modal-title" hidden
+     style="position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:1.25rem;background:rgba(6,8,18,.72);backdrop-filter:blur(4px);">
+  <div style="max-width:480px;width:100%;background:#12162a;border:1px solid rgba(255,255,255,.12);border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.55);padding:1.75rem;color:#e9ecf5;">
+    <h3 id="mws-modal-title" style="margin:0 0 .6rem;font-size:1.25rem;">
+      <i class="fas fa-triangle-exclamation" style="color:#f7b731;"></i>&nbsp; Heads up — this build is deprecated
+    </h3>
+    <p style="margin:0 0 1rem;line-height:1.5;color:#c3c8da;">
+      Movie Word Scanner has been retired, and the server and database it relied on
+      no longer exist. You can still download and run it, but if it asks for a
+      product code, use the one below.
+    </p>
+    <label style="display:block;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:#8b90a8;margin-bottom:.35rem;">Product code</label>
+    <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;">
+      <input id="mws-code" type="text" value="1024" readonly
+             style="flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:1.35rem;letter-spacing:.2em;text-align:center;padding:.6rem .75rem;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:#0b0e1c;color:#fff;">
+      <button type="button" id="mws-copy"
+              style="flex:0 0 auto;padding:.6rem 1rem;border-radius:10px;border:0;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#f7b731,#fa8231);color:#1a1200;">
+        <i class="fas fa-copy"></i> Copy
+      </button>
+    </div>
+    <div style="display:flex;gap:.65rem;justify-content:flex-end;flex-wrap:wrap;">
+      <button type="button" id="mws-cancel"
+              style="padding:.6rem 1.1rem;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#e9ecf5;font-weight:600;cursor:pointer;">Cancel</button>
+      <a id="mws-proceed" href="#" target="_blank" rel="noopener noreferrer"
+         style="padding:.6rem 1.1rem;border-radius:10px;border:0;background:#2b3255;color:#fff;font-weight:600;text-decoration:none;cursor:pointer;">
+        <i class="fas fa-download"></i> Download anyway
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var link   = document.getElementById('mws-legacy-link');
+  var modal  = document.getElementById('mws-modal');
+  if (!link || !modal) return;
+  var proceed = document.getElementById('mws-proceed');
+  var codeEl  = document.getElementById('mws-code');
+  var copyBtn = document.getElementById('mws-copy');
+
+  function open(e) {
+    e.preventDefault();
+    proceed.href = link.href;          // download uses the real legacy URL
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    modal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  link.addEventListener('click', open);
+  document.getElementById('mws-cancel').addEventListener('click', close);
+  proceed.addEventListener('click', close);   // let the download proceed, then hide
+  modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) close(); });
+
+  copyBtn.addEventListener('click', function () {
+    var done = function () {
+      copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied';
+      setTimeout(function () { copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(codeEl.value).then(done, function () { codeEl.select(); document.execCommand('copy'); done(); });
+    } else {
+      codeEl.select(); document.execCommand('copy'); done();
+    }
+  });
+})();
+</script>
 {% endblock %}
