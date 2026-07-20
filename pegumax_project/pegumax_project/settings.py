@@ -144,13 +144,28 @@ WSGI_APPLICATION = 'pegumax_project.wsgi.application'
 # Default to SQLite for local development if DATABASE_URL is not set
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
+    # CONN_MAX_AGE is Django's connection-idle-timeout (in SECONDS) — the
+    # equivalent of a node pool's idleTimeoutMillis.
+    #   0   -> close the DB connection at the END of every request (default).
+    #          Lets Neon's serverless compute auto-suspend during real inactivity,
+    #          and (bonus) removes stale-connection reuse, so no more 500s.
+    #   >0  -> keep connections open that long (persistent). Faster, but keeps
+    #          Neon awake if anything hits the DB within the window.
+    # Default 0 so Neon can actually sleep. Override via DJANGO_CONN_MAX_AGE.
+    _conn_max_age = int(os.environ.get('DJANGO_CONN_MAX_AGE', '0'))
     DATABASES = {
-        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600, ssl_require=os.environ.get('DJANGO_DB_SSL_REQUIRE', 'False') == 'True')
+        'default': dj_database_url.config(
+            default=DATABASE_URL, conn_max_age=_conn_max_age,
+            ssl_require=os.environ.get('DJANGO_DB_SSL_REQUIRE', 'False') == 'True')
     }
-    # Neon (serverless Postgres) drops idle connections; without a health check
-    # Django reuses a dead connection and 500s. This pings/reconnects as needed,
-    # which fixes the intermittent 500s across the site.
-    DATABASES['default']['CONN_HEALTH_CHECKS'] = True
+    # Health checks only matter for persistent connections (conn_max_age > 0).
+    DATABASES['default']['CONN_HEALTH_CHECKS'] = _conn_max_age > 0
+    # If you point DATABASE_URL at Neon's POOLED endpoint (PgBouncer, transaction
+    # mode — the psycopg equivalent of Prisma's ?pgbouncer=true), set
+    # DJANGO_DISABLE_SERVER_SIDE_CURSORS=True so Django doesn't use named cursors
+    # that a transaction-pooler can't hold across statements.
+    if os.environ.get('DJANGO_DISABLE_SERVER_SIDE_CURSORS', 'False') == 'True':
+        DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
 else:
     DATABASES = {
         'default': {
@@ -272,9 +287,22 @@ PRINTFUL_RETRY_WINDOW_HOURS = int(os.environ.get('PRINTFUL_RETRY_WINDOW_HOURS', 
 PEGUMAX_SITE_URL = os.environ.get('PEGUMAX_SITE_URL', 'https://pegumax.com')
 
 # Secret that guards the web task-runner endpoint (/academy/tasks/retry-orders/).
-# A free external scheduler pings that URL with ?token=<this>. Leave blank to
-# disable the endpoint entirely (returns 403).
+# A free external scheduler pings that URL with ?token=<this> for the once-daily
+# safety-net sweep. Leave blank to disable the token path (returns 403).
 TASK_RUNNER_TOKEN = os.environ.get('TASK_RUNNER_TOKEN', '')
+
+# Upstash QStash — serverless queue that drives the event-driven retry chain.
+# On a Printful failure the webhook enqueues a delayed POST back to the retry
+# endpoint; each failed attempt re-enqueues itself with backoff until it either
+# succeeds or the retry window closes (then a store credit is granted). QStash
+# signs its callbacks; we verify with the two signing keys and fail closed.
+#   QSTASH_TOKEN               -> publish delayed retries
+#   QSTASH_CURRENT_SIGNING_KEY -> verify incoming callbacks (current)
+#   QSTASH_NEXT_SIGNING_KEY    -> verify incoming callbacks (rotated)
+# All blank -> no retries are scheduled and the daily token sweep is the only net.
+QSTASH_TOKEN = os.environ.get('QSTASH_TOKEN', '')
+QSTASH_CURRENT_SIGNING_KEY = os.environ.get('QSTASH_CURRENT_SIGNING_KEY', '')
+QSTASH_NEXT_SIGNING_KEY = os.environ.get('QSTASH_NEXT_SIGNING_KEY', '')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

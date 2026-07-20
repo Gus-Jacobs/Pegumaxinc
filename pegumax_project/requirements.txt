@@ -7,4 +7,5 @@ djangorestframework
 stripe==12.1.0
 python-dotenv
 requests
+qstash>=2,<4
 
