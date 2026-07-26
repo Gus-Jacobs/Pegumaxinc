@@ -47,7 +47,7 @@
 
 {# Legacy Movie Word Scanner deprecation notice — shown before the old build downloads #}
 <div id="mws-modal" role="dialog" aria-modal="true" aria-labelledby="mws-modal-title" hidden
-     style="position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:1.25rem;background:rgba(6,8,18,.72);backdrop-filter:blur(4px);">
+     style="position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:1.25rem;background:rgba(6,8,18,.72);backdrop-filter:blur(4px);">
   <div style="max-width:480px;width:100%;background:#12162a;border:1px solid rgba(255,255,255,.12);border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.55);padding:1.75rem;color:#e9ecf5;">
     <h3 id="mws-modal-title" style="margin:0 0 .6rem;font-size:1.25rem;">
       <i class="fas fa-triangle-exclamation" style="color:#f7b731;"></i>&nbsp; Heads up — this build is deprecated
@@ -90,10 +90,12 @@
     e.preventDefault();
     proceed.href = link.href;          // download uses the real legacy URL
     modal.hidden = false;
+    modal.style.display = 'flex';      // set here so it's hidden until opened
     document.body.style.overflow = 'hidden';
   }
   function close() {
     modal.hidden = true;
+    modal.style.display = 'none';
     document.body.style.overflow = '';
   }
 
