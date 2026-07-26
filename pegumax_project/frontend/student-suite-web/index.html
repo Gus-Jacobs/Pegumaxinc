@@ -14,6 +14,11 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
+  <!-- Served from Django's static dir; assets resolve under this path.
+       Keep this in sync with STATIC_URL + the collectstatic subdir.
+       NOTE: a fresh `flutter build web` resets this to "/", which breaks the
+       app — rebuild with `flutter build web --base-href /static/frontend/student-suite-web/`
+       or re-apply this line after building. -->
   <base href="/static/frontend/student-suite-web/">
 
   <meta charset="UTF-8">
