@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Apex Studio — Media Downloader &amp; Converter | Pegumax LLC{% endblock %}
-{% block description %}Download high-quality videos and convert local media with Apex Studio — a secure, local-first media suite.{% endblock %}
+{% block description %}Download videos from YouTube and 1,000+ other sites and convert local media with Apex Studio — a secure, local-first media suite powered by yt-dlp &amp; FFmpeg.{% endblock %}
 
 {% block content %}
 <header class="app-hero">
@@ -10,7 +10,7 @@
     <div class="app-ic" style="background:linear-gradient(135deg,#7c5cff,#22d3ee)"><i class="fas fa-film"></i></div>
     <span class="breadcrumb reveal"><b>Pegumax</b> / Software / Apex Studio</span>
     <h1 class="reveal" style="--d:.05s">Apex <span class="g">Studio</span></h1>
-    <p class="lead reveal" style="--d:.1s">The ultimate local-first media suite. Download high-quality videos, extract crystal-clear audio, and convert local media seamlessly — powered by an intelligent Playwright &amp; FFmpeg engine with zero limits or cloud tracking.</p>
+    <p class="lead reveal" style="--d:.1s">The ultimate local-first media suite. Now with full <b>yt-dlp</b> integration, download high-quality videos from YouTube and 1,000+ other platforms, extract crystal-clear audio, and convert local media seamlessly — powered by a yt-dlp &amp; FFmpeg engine with zero limits or cloud tracking.</p>
     <div class="app-badges reveal" style="--d:.15s"><span class="live">● Live</span><span class="free">Free</span><span>{% include 'partials/icon.html' with name='windows' %} Windows 64-bit</span></div>
   </div>
 </header>
@@ -19,10 +19,10 @@
   <div class="wrap">
     <h2 class="section-title reveal">Key <span class="g">features</span></h2>
     <ul class="feature-grid">
-      <li class="reveal">Direct YouTube downloading with automatic metadata &amp; thumbnail tagging.</li>
-      <li class="reveal" style="--d:.05s">Format-agnostic local converter supporting 20+ file types.</li>
-      <li class="reveal" style="--d:.1s">100% local-first architecture for maximum privacy.</li>
-      <li class="reveal" style="--d:.15s">Invisible browser-session proxy evasion powered by Playwright.</li>
+      <li class="reveal">Full yt-dlp engine — download from YouTube and 1,000+ sites (Vimeo, TikTok, Twitter/X, Twitch, and more).</li>
+      <li class="reveal" style="--d:.05s">Automatic metadata &amp; thumbnail tagging on every download.</li>
+      <li class="reveal" style="--d:.1s">Format-agnostic local converter supporting 20+ file types.</li>
+      <li class="reveal" style="--d:.15s">100% local-first architecture for maximum privacy — no limits, no cloud tracking.</li>
     </ul>
 
     <h2 class="section-title reveal" style="margin-top:3.5rem;">Download</h2>
@@ -30,7 +30,7 @@
       <div class="dl-drop">
         <button class="dl-btn primary" data-dropdown>{% include 'partials/icon.html' with name='windows' %} Windows Build <i class="fas fa-chevron-down chev"></i></button>
         <div class="menu">
-          <a href="https://github.com/Gus-Jacobs/ApexConverter/releases/download/v1.0.0/ApexStudio-Setup-1.0.0.exe" target="_blank" rel="noopener noreferrer">v1.0.0 (Latest Stable)</a>
+          <a href="https://github.com/Gus-Jacobs/ApexConverter/releases/download/v1.1.0/Apex-Studio-Setup-1.1.0.exe" target="_blank" rel="noopener noreferrer">v1.1.0 (Latest Stable)</a>
         </div>
       </div>
       <span class="dl-btn disabled">{% include 'partials/icon.html' with name='apple' %} macOS <span class="soon">Soon</span></span>
