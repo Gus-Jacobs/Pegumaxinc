@@ -85,6 +85,56 @@ def game_portal(request):
 def apex_studio_view(request):
     return render(request, 'apex_studio.html')
 
+
+# ---------------------------------------------------------------------------
+#  Student Suite — TikTok ad squeeze page + server-side store-click tracking
+# ---------------------------------------------------------------------------
+import logging
+logger = logging.getLogger('main_site')
+
+# Store destinations (overridable via settings without a code change).
+STUDENT_SUITE_IOS_URL = getattr(
+    settings, 'STUDENT_SUITE_IOS_URL',
+    'https://apps.apple.com/us/app/pgm-student-suite/id6749324995')
+STUDENT_SUITE_ANDROID_URL = getattr(
+    settings, 'STUDENT_SUITE_ANDROID_URL',
+    'https://play.google.com/store/apps/details?id=com.pegumax.studentsuite')
+
+
+def student_suite_landing_view(request):
+    """Dedicated mobile-first squeeze page for TikTok ad traffic."""
+    return render(request, 'student-suite-tiktok.html')
+
+
+def _log_store_click(request, platform, dest):
+    """One structured line per click so conversions are countable in the logs.
+
+    The buttons are plain <a> tags hitting these routes, so every click is a real
+    server request — visible both here (INFO) and in the host's access log — with
+    no JS needed. Pass ?src=<campaign> on the button URLs to segment sources.
+    """
+    logger.info(
+        "store_click platform=%s src=%s ref=%s ip=%s ua=%s -> %s",
+        platform,
+        request.GET.get('src') or request.GET.get('utm_source') or '',
+        (request.META.get('HTTP_REFERER') or '')[:200],
+        request.META.get('REMOTE_ADDR') or '',
+        (request.META.get('HTTP_USER_AGENT') or '')[:200],
+        dest,
+    )
+
+
+def redirect_ios(request):
+    """302 to the App Store (server-side; TikTok-safe, no on-load JS redirect)."""
+    _log_store_click(request, 'ios', STUDENT_SUITE_IOS_URL)
+    return redirect(STUDENT_SUITE_IOS_URL)
+
+
+def redirect_android(request):
+    """302 to Google Play (server-side; TikTok-safe, no on-load JS redirect)."""
+    _log_store_click(request, 'android', STUDENT_SUITE_ANDROID_URL)
+    return redirect(STUDENT_SUITE_ANDROID_URL)
+
 def policy_view(request):
     return render(request, 'main_site/policy.html')
 

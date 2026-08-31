@@ -258,6 +258,8 @@ LOGGING = {
     'handlers': {'console': {'class': 'logging.StreamHandler'}},
     'loggers': {
         'academy': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
+        # Store-redirect click tracking for ad landing pages lands here.
+        'main_site': {'handlers': ['console'], 'level': 'INFO', 'propagate': False},
     },
 }
 
