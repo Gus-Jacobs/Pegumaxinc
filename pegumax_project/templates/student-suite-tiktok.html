@@ -53,6 +53,8 @@
 
     /* ---- The two buttons that dominate the screen ---- */
     .ctas{display:flex;flex-direction:column;gap:13px;width:100%;margin-top:4px}
+    /* Anti-sticker-shock reassurance, sits right on top of the buttons. */
+    .trust-line{font-size:.82rem;font-weight:600;color:#9af0c9;letter-spacing:.01em;margin-bottom:1px}
     .cta{
       display:flex;align-items:center;justify-content:center;gap:13px;
       width:100%;min-height:66px;padding:0 20px;border-radius:16px;
@@ -126,9 +128,10 @@
       <img class="icon" src="{% static 'img/studentsuite_icon.png' %}" width="92" height="92"
            alt="Student Suite app icon">
       <h1>Student Suite</h1>
-      <p class="sub"><span class="hl">50% Off Founder Sale</span> — <b>lock in your price today.</b></p>
+      <p class="sub"><b>Download for Free.</b> Lock in your <span class="hl">50% Founder Discount</span> inside.</p>
 
       <div class="ctas">
+        <p class="trust-line">✅ Free to install • No credit card required</p>
         <a class="cta ios" href="/redirect/ios?src=tiktok" aria-label="Download Student Suite on the App Store">
           <svg class="glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M16.365 12.86c-.02-2.02 1.65-2.99 1.72-3.04-.94-1.37-2.4-1.56-2.92-1.58-1.24-.13-2.42.73-3.05.73-.63 0-1.6-.71-2.63-.69-1.35.02-2.6.79-3.29 2-1.4 2.43-.36 6.02 1 8 .67.96 1.46 2.04 2.5 2 1-.04 1.38-.65 2.59-.65 1.2 0 1.55.65 2.6.63 1.07-.02 1.75-.98 2.41-1.95.76-1.12 1.07-2.2 1.09-2.26-.02-.01-2.09-.8-2.11-3.17zM14.43 6.6c.55-.67.92-1.6.82-2.53-.79.03-1.75.53-2.32 1.19-.51.59-.96 1.53-.84 2.44.88.07 1.79-.45 2.34-1.1z"/>
