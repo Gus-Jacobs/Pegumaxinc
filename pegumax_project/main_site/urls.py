@@ -23,16 +23,6 @@ urlpatterns = [
     path('game-portal/', views.game_portal, name='game_portal'),
     path('apex-studio/', views.apex_studio_view, name='apex_studio'), # NEW APEX STUDIO ROUTE
 
-    # --- Student Suite TikTok ad squeeze page + tracked store redirects ---
-    # Landing page for paid TikTok traffic (short, on-brand URL for the ad).
-    path('student-suite/', views.student_suite_landing_view, name='student_suite_landing'),
-    # Buttons on the squeeze page point here. Server-side 302 (TikTok-safe) and
-    # every click is logged. No trailing slash to match the <a href> exactly and
-    # avoid an APPEND_SLASH 301 hop; slash variants included for safety.
-    path('redirect/ios', views.redirect_ios, name='redirect_ios'),
-    path('redirect/android', views.redirect_android, name='redirect_android'),
-    path('redirect/ios/', views.redirect_ios),
-    path('redirect/android/', views.redirect_android),
     path('signup/', views.signup_view, name='signup'),
     # Django's auth system will handle login and logout views by default
     # path('login/', views.CustomLoginView.as_view(), name='login'), # If you need a custom login view
@@ -50,12 +40,9 @@ urlpatterns = [
     path('admin-dashboard/live-bot-mode/<str:bot_id>/', views.bot_detail_view, name='bot_detail_page'),
     path('policy/', views.policy_view, name='policy'),
     path('careers/', views.careers_view, name='careers'),
-    # Live TikTok paid traffic lands on this URL. Serve the high-converting
-    # squeeze page here directly (rerouted from the old launch page) so we don't
-    # have to change the destination in TikTok Ads Manager and trigger a campaign
-    # re-review. The old full launch page template (student-suite-launch.html)
-    # still exists but is no longer served by this route.
-    path('software-center/student-suite-launch/', views.student_suite_landing_view, name='student_suite_launch'),
+    # Student Suite launch page (Launch Web App + store links). Ad squeeze page
+    # was reverted out on 2026-09-12 — campaign is finished.
+    path('software-center/student-suite-launch/', TemplateView.as_view(template_name='student-suite-launch.html'), name='student_suite_launch'),
     # --- NEW: URL for submitting subscription interest ---
     path('submit-subscription-interest/', views.submit_subscription_interest_view, name='submit_subscription_interest'),
     path('payment-success/', views.payment_success_view, name='payment-success'),
